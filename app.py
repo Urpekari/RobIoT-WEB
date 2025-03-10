@@ -1,20 +1,25 @@
 import re
 from datetime import datetime
+
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"]="mysql://crash:crash@localhost/robiot"
-db = SQLAlchemy(app)
-#db.init_app(app)
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'RobIoT'
+app.config['MYSQL_PASSWORD'] = 'RobIoT'
+app.config['MYSQL_DB'] = 'mydb'
 
-with app.app_context():
-    db.create_all()
+mysql = MySQL(app)
 
 @app.route("/")
 def home():
-    return "Hello, Flask!" + db.engine.url.database
+    cur = mysql.connection.cursor()
+    cur.execute('''SELECT * FROM baimenmotak''')
+    results = cur.fetchall()
+    return str(results)
+#    return "Hello, Flask!"
 
 
 @app.route("/hello/<name>")
