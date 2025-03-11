@@ -1,59 +1,41 @@
-import re
-from datetime import datetime
+from flask import Flask, request, render_template, redirect, url_for, session #Importa Flask y sus funciones principales para crear la aplicación web
+import mysql.connector  # Si usamos MySQL
 
-from flask import Flask, request, redirect, url_for, render_template
-from flask_mysqldb import MySQL
-import extra
 
 app = Flask(__name__)
+app.secret_key = 'pasahitza'
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'RobIoT'
-app.config['MYSQL_PASSWORD'] = 'RobIoT'
-app.config['MYSQL_DB'] = 'mydb'
+#ME FALTA POR CAMBIAR LODEL SQLITE POR MYSQL
 
-mysql = MySQL(app)
+def erabiltzailea_egiaztatu(username, password): 
+    conn = sqlite3.connect('my.db') #sortu konexioa datu basearekin my.db, sqlitearen izena
+    cursor = conn.cursor() # Crea un cursor, que es un objeto que permite ejecutar consultas SQL en la base de datos.
+    cursor.execute("SELECT * FROM usuarios WHERE username = ? AND password = ?", (username, password))
+    usuario = cursor.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+    conn.close()
+    return usuario
 
+@app.route('/')
+def login():
+    return render_template('login.html') #Este código indica que cuando un usuario accede a la ruta /, Flask devuelve la página login.html.
 
-@app.route("/")
-def index():
-    return render_template(
-        "root.html"
-    )
+@app.route('/auth', methods=['POST'])
+def auth(): #define la funcion auth que se ejecuta cuando el usuario intenta iniciar sesion (esta en el html puesto)
+    username = request.form['username'] #flask obtiene el usuario y contraseña enviados desde el form del html
+    password = request.form['password']
+    
+    if erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
+        session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
+        return redirect(url_for('map')) #manda al usuario a la siguiente pagina, en este caso dashboard
+    else:
+        return "Usuario o contraseña incorrectos", 401 #401 es el código de estado HTTP para "No autorizado".
 
-@app.route("/database")
-def database():
-    return render_template(
-        "database.html",
-        items=extra.baimenmotak_lortu(mysql)
-    )
+@app.route('/map')
+def dashboard(): #Define una nueva ruta en "/dashboard", que será la página a la que se accede tras un login exitoso.
+    if 'usuario' in session:
+        return render_template('map.html', usuario=session['usuario'])
+    else:
+        return redirect(url_for('login'))
 
-#@app.route("/hello/<name>")
-#def hello_there(name):
-#    now = datetime.now()
-#    formatted_now = now.strftime("%A, %d %B, %Y at %X")
-
-    # Filter the name argument to letters only using regular expressions. URL arguments
-    # can contain arbitrary text, so we restrict to safe characters only.
-#    match_object = re.match("[a-zA-Z]+", name)
-
-#    if match_object:
-#        clean_name = match_object.group(0)
-#    else:
-#        clean_name = "Friend"
-
-#    content = "Hello there, " + clean_name + "! It's " + formatted_now
-#    return content
-
-@app.route("/hello/", methods=['POST'])
-def hello():
-    name=request.form["name"]
-    return redirect(url_for("hello_there",name=name))
-
-@app.route("/hello/<name>")
-def hello_there(name):
-    return render_template(
-        "hello_there.html",
-        name=name,
-        date=datetime.now()
-    )
+if __name__ == '__main__':
+    app.run(debug=True) #Inicia el servidor de Flask para ejecutar la aplicación.
