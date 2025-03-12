@@ -1,9 +1,9 @@
 import re
 from datetime import datetime
 
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, Response
 from flask_mysqldb import MySQL
-import extra
+import database
 
 app = Flask(__name__)
 
@@ -14,7 +14,6 @@ app.config['MYSQL_DB'] = 'mydb'
 
 mysql = MySQL(app)
 
-
 @app.route("/")
 def index():
     return render_template(
@@ -22,11 +21,21 @@ def index():
     )
 
 @app.route("/database")
-def database():
+def database_show():
     return render_template(
         "database.html",
-        items=extra.baimenmotak_lortu(mysql)
+        header=database.Erabiltzaileak_header,
+        items=database.get_info(mysql,database.Erabiltzaileak)
     )
+
+@app.route("/database/dowload")
+def download_csv():
+    csv = database.create_csv(mysql,database.Erabiltzaileak)
+    return Response(
+        csv,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                 "attachment; filename=Erabiltzaileak.csv"})
 
 #@app.route("/hello/<name>")
 #def hello_there(name):

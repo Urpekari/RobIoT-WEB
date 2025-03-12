@@ -5,17 +5,23 @@
     <body>
         <table>
             <thead>
-                <th>
-                    ID
-                </th>
+                {% for column in header %}
+                    <th>{{ column }}</th>
+                {% endfor %}
             </thead>
             <tbody>
                 {% for row in items %}
                 <tr>
-                    <td>{{ row[0] }}</td>
+                    {% for column in row %}
+                    <td>{{ column }}</td>
+                    {% endfor %}
                 </tr>
                 {% endfor %}
             </tbody>
+            
         </table>
+        <form action="{{url_for('download_csv')}}">
+            <input type="submit" value="Download">
+        </form>
     </body>
 </html>
