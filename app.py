@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 
-from flask import Flask, request, redirect, url_for, render_template, Response
+from flask import Flask, request, redirect, url_for, render_template, Response, session
 from flask_mysqldb import MySQL
 import database
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'RobIoT'
 app.config['MYSQL_PASSWORD'] = 'RobIoT'
-app.config['MYSQL_DB'] = 'mydb'
+app.config['MYSQL_DB'] = 'robiot'
 
 mysql = MySQL(app)
 
@@ -20,39 +20,44 @@ def index():
         "root.html"
     )
 
+@app.route("/login")
+def login():
+    return render_template('login.html')
+
+@app.route('/auth', methods=['POST'])
+def auth():
+    username = request.form['erabiltzailea']
+    password = request.form['pasahitza']
+    
+    if database.erabiltzailea_egiaztatu(mysql,username, password): #llama a la funcion de arriba q mira en la base de datos
+        #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
+        return redirect(url_for('database_show')) #manda al usuario a la siguiente pagina, en este caso dashboard
+    else:
+        return "Usuario o contraseña incorrectos", 401 #401 es el código de estado HTTP para "No autorizado".
+
 @app.route("/database")
 def database_show():
     return render_template(
         "database.html",
-        header=database.Erabiltzaileak_header,
-        items=database.get_info(mysql,database.Erabiltzaileak)
+        header=database.Droneak_header,
+        items=database.get_info(mysql,database.Droneak)
     )
 
 @app.route("/database/dowload")
 def download_csv():
-    csv = database.create_csv(mysql,database.Erabiltzaileak)
+    csv = database.create_csv(mysql,database.Droneak)
     return Response(
         csv,
         mimetype="text/csv",
         headers={"Content-disposition":
                  "attachment; filename=Erabiltzaileak.csv"})
 
-#@app.route("/hello/<name>")
-#def hello_there(name):
-#    now = datetime.now()
-#    formatted_now = now.strftime("%A, %d %B, %Y at %X")
+@app.route("/database/insert",methods=['POST'])
+def in_drone():
+    info=(request.form["izena"],request.form["mota"],request.form["deskribapena"])
+    database.insert_Droneak(mysql,info)
+    return redirect(url_for("database_show")) 
 
-    # Filter the name argument to letters only using regular expressions. URL arguments
-    # can contain arbitrary text, so we restrict to safe characters only.
-#    match_object = re.match("[a-zA-Z]+", name)
-
-#    if match_object:
-#        clean_name = match_object.group(0)
-#    else:
-#        clean_name = "Friend"
-
-#    content = "Hello there, " + clean_name + "! It's " + formatted_now
-#    return content
 
 @app.route("/hello/", methods=['POST'])
 def hello():

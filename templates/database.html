@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="shorcut icon" href="{{url_for('static', filename='favicon.ico')}}">
     </head>
     <body>
         <table>
@@ -22,6 +23,19 @@
         </table>
         <form action="{{url_for('download_csv')}}">
             <input type="submit" value="Download">
+        </form>
+
+        <form action="{{url_for('in_drone')}}" method="post">
+            <label for="mota">Mota:</label>
+            <input type="text" id="mota" name="mota" />
+            <br/>
+            <label for="Izena">Izena:</label>
+            <input type="text" id="izena" name="izena" />
+            <br/>
+            <label for="deskribapena">Deskribapena:</label>
+            <textarea name="deskribapena" id="deskribapena"></textarea>
+            <br/>
+            <input type="submit" value="Sartu"/>
         </form>
     </body>
 </html>
