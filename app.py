@@ -1,41 +1,105 @@
-from flask import Flask, request, render_template, redirect, url_for, session #Importa Flask y sus funciones principales para crear la aplicación web
-import mysql.connector  # Si usamos MySQL
+import re
+from datetime import datetime
 
+from flask import Flask, request, redirect, url_for, render_template, Response, session, jsonify
+from flask_mysqldb import MySQL
+import database
 
 app = Flask(__name__)
-app.secret_key = 'pasahitza'
 
-#ME FALTA POR CAMBIAR LODEL SQLITE POR MYSQL
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'RobIoT'
+app.config['MYSQL_PASSWORD'] = 'RobIoT'
+app.config['MYSQL_DB'] = 'robiot'
 
-def erabiltzailea_egiaztatu(username, password): 
-    conn = sqlite3.connect('my.db') #sortu konexioa datu basearekin my.db, sqlitearen izena
-    cursor = conn.cursor() # Crea un cursor, que es un objeto que permite ejecutar consultas SQL en la base de datos.
-    cursor.execute("SELECT * FROM usuarios WHERE username = ? AND password = ?", (username, password))
-    usuario = cursor.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
-    conn.close()
-    return usuario
+mysql = MySQL(app)
 
-@app.route('/')
+@app.route("/")
+def index():
+    return render_template(
+        "root.html"
+    )
+
+@app.route("/login")
 def login():
-    return render_template('login.html') #Este código indica que cuando un usuario accede a la ruta /, Flask devuelve la página login.html.
+    return render_template('login.html')
 
 @app.route('/auth', methods=['POST'])
-def auth(): #define la funcion auth que se ejecuta cuando el usuario intenta iniciar sesion (esta en el html puesto)
-    username = request.form['username'] #flask obtiene el usuario y contraseña enviados desde el form del html
-    password = request.form['password']
+def auth():
+    username = request.form['erabiltzailea']
+    password = request.form['pasahitza']
     
-    if erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
-        session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
-        return redirect(url_for('map')) #manda al usuario a la siguiente pagina, en este caso dashboard
+    if database.erabiltzailea_egiaztatu(mysql,username, password): #llama a la funcion de arriba q mira en la base de datos
+        #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
+        return redirect(url_for('database_show')) #manda al usuario a la siguiente pagina, en este caso dashboard
     else:
         return "Usuario o contraseña incorrectos", 401 #401 es el código de estado HTTP para "No autorizado".
 
-@app.route('/map')
-def dashboard(): #Define una nueva ruta en "/dashboard", que será la página a la que se accede tras un login exitoso.
-    if 'usuario' in session:
-        return render_template('map.html', usuario=session['usuario'])
-    else:
-        return redirect(url_for('login'))
+@app.route("/database")
+def database_show():
+    return render_template(
+        "database.html",
+        header=database.Droneak_header,
+        items=database.get_info(mysql,database.Droneak)
+    )
 
-if __name__ == '__main__':
-    app.run(debug=True) #Inicia el servidor de Flask para ejecutar la aplicación.
+@app.route("/database/dowload")
+def download_csv():
+    csv = database.create_csv(mysql,database.Droneak)
+    return Response(
+        csv,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                 "attachment; filename=Erabiltzaileak.csv"})
+
+@app.route("/database/insert",methods=['POST'])
+def in_drone():
+    info=(request.form["izena"],request.form["mota"],request.form["deskribapena"])
+    database.insert_Droneak(mysql,info)
+    return redirect(url_for("database_show")) 
+
+
+@app.route("/hello/", methods=['POST'])
+def hello():
+    name=request.form["name"]
+    return redirect(url_for("hello_there",name=name))
+
+@app.route("/hello/<name>")
+def hello_there(name):
+    return render_template(
+        "hello_there.html",
+        name=name,
+        date=datetime.now()
+    )
+
+@app.route('/erregistratu', methods=['POST'])
+def erregistratu():
+    izena = request.form.get('izena')
+    abizena = request.form.get('abizena')
+    pasahitza = request.form.get('pasahitza')
+    email = request.form.get('email')
+    dokumentuak = request.form.get('dokumentuak')
+
+    if izena and abizena and pasahitza and email and dokumentuak:
+        if datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
+            return jsonify({"mensaje": "Zuzen erregistratu zara!"}), 201
+        else:
+            return jsonify({"error": "Arazoa erregistratzerakoan"}), 500
+    return jsonify({"error": "Beharrezkoak diren datu guztiak sartu behar dituzu. (izena eta pasahitza)"}), 400
+
+if __name__ == '__main__':#esto nose para que se hace
+    app.run(debug=True)
+
+
+def datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
+    try:
+        cursor = mysql.connection.cursor()
+        query = "INSERT INTO registros (izena, abizena, pasahitza, email, dokumentuak) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query, (izena, abizena, pasahitza, email, dokumentuak))
+        mysql.connection.commit()
+        return True
+    except Exception as e:
+        print("Error:", e)
+        return False
+    finally:
+        cursor.close()
