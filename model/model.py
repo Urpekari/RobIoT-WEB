@@ -59,16 +59,16 @@ class input():
     def __init__(self,mysql):
         self.mysql=mysql
 
-    def insert_Droneak(mysql,data):
-        cur = mysql.connection.cursor()
+    def insert_Droneak(self,data):
+        cur = self.mysql.connection.cursor()
         query = "INSERT INTO droneak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
         cur.execute(query,(data[0],data[1],data[2]))
-        mysql.connection.commit()
+        self.mysql.connection.commit()
         cur.close()
 
-    def insert_Drone_Sentsore(mysql,data):
-        cur = mysql.connection.cursor()
+    def insert_Drone_Sentsore(self,data):
+        cur = self.mysql.connection.cursor()
         query = "INSERT INTO droneak (Ezizena,Droneak_idDroneak,Sentsoreak_idSentsoreak) VALUES (%s,%d,%d)"
         cur.execute(query,(data[0],data[1],data[2]))
-        mysql.connection.commit()
+        self.mysql.connection.commit()
         cur.close()
