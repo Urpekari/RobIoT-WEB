@@ -1,0 +1,62 @@
+@font-face {
+    font-family: EHUSans;
+    src: url(EHUSans-Regular.otf);
+}
+
+body {
+    font-family: EHUSans;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100vh;
+    background-color: #1c1c1c;
+    margin: 0;
+}
+
+.zentratua {
+    text-align: center;
+}
+
+h1 {
+    font-family: EHUSans;
+    font-size: 500%;
+    color: white;
+    margin-bottom: 30px;
+}
+
+button {
+    font-family: EHUSans;
+    font-weight: bold;
+    width: 150px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ffb60c;
+    color: blue;
+    border-color:#aa801f;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.login-container {
+    background: rgb(197, 197, 197);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(197, 197, 197, 0.448);
+    width: 300px;
+    text-align: center;
+}
+
+input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #7d7d7d;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #aa801f;
+    border-color: #aa801f00;
+}
