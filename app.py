@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import Flask, request, redirect, url_for, render_template, Response, session
 from flask_mysqldb import MySQL
-import database
+from model.model import *
 
 app = Flask(__name__)
 
@@ -12,7 +12,10 @@ app.config['MYSQL_USER'] = 'RobIoT'
 app.config['MYSQL_PASSWORD'] = 'RobIoT'
 app.config['MYSQL_DB'] = 'robiot'
 
-mysql = MySQL(app)
+mysql=MySQL(app)
+
+dboutput=output(mysql)
+dbinput=input(mysql)
 
 @app.route("/")
 def index():
@@ -29,7 +32,7 @@ def auth():
     username = request.form['erabiltzailea']
     password = request.form['pasahitza']
     
-    if database.erabiltzailea_egiaztatu(mysql,username, password): #llama a la funcion de arriba q mira en la base de datos
+    if dboutput.erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
         #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
         return redirect(url_for('database_show')) #manda al usuario a la siguiente pagina, en este caso dashboard
     else:
@@ -39,13 +42,13 @@ def auth():
 def database_show():
     return render_template(
         "database.html",
-        header=database.Droneak_header,
-        items=database.get_info(mysql,database.Droneak)
+        header=tables.Droneak_header,
+        items=dboutput.get_info(tables.Droneak)
     )
 
 @app.route("/database/dowload")
 def download_csv():
-    csv = database.create_csv(mysql,database.Droneak)
+    csv = dboutput.create_csv(tables.Droneak)
     return Response(
         csv,
         mimetype="text/csv",
@@ -55,7 +58,7 @@ def download_csv():
 @app.route("/database/insert",methods=['POST'])
 def in_drone():
     info=(request.form["izena"],request.form["mota"],request.form["deskribapena"])
-    database.insert_Droneak(mysql,info)
+    dbinput.insert_Droneak(info)
     return redirect(url_for("database_show")) 
 
 
