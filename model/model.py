@@ -50,9 +50,9 @@ class output():
         usuario = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
         if usuario is None:
-            return 0
+            return False
         else:
-            return 1
+            return True
 
 class input():
 
@@ -72,3 +72,16 @@ class input():
         cur.execute(query,(data[0],data[1],data[2]))
         self.mysql.connection.commit()
         cur.close()
+
+    def datuak_sartu(self,izena, abizena, pasahitza, email, dokumentuak):
+        try:
+            cursor = self.mysql.connection.cursor()
+            query = "INSERT INTO erabiltzaileak (Izen, Abizena, Pasahitza, Email, Dokumentuak) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(query, (izena, abizena, pasahitza, email, dokumentuak))
+            self.mysql.connection.commit()
+            return True
+        except Exception as e:
+            print("Error:", e)
+            return False
+        finally:
+            cursor.close()

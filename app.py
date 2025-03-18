@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 
-from flask import Flask, request, redirect, url_for, render_template, Response, session
+from flask import Flask, jsonify, request, redirect, url_for, render_template, Response, session
 from flask_mysqldb import MySQL
 from model.model import *
 
@@ -23,20 +23,49 @@ def index():
         "root.html"
     )
 
-@app.route("/login")
+@app.route("/login", methods=['GET','POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        username = request.form['erabiltzailea']
+        password = request.form['pasahitza']
+        
+        if dboutput.erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
+            #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
+            return redirect(url_for('database_show')) #manda al usuario a la siguiente pagina, en este caso dashboard
+        else:
+            return jsonify({"error": "Arazoa erregistratzerakoan"}), 401 #401 es el código de estado HTTP para "No autorizado".
 
-@app.route('/auth', methods=['POST'])
-def auth():
-    username = request.form['erabiltzailea']
-    password = request.form['pasahitza']
-    
-    if dboutput.erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
-        #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
-        return redirect(url_for('database_show')) #manda al usuario a la siguiente pagina, en este caso dashboard
-    else:
-        return "Usuario o contraseña incorrectos", 401 #401 es el código de estado HTTP para "No autorizado".
+@app.route('/sign-up', methods=['GET','POST'])
+def erregistratu():
+    if request.method == 'GET':
+        return render_template('sign_up.html')
+    elif request.method == 'POST':
+        izena = request.form.get('izena')
+        abizena = request.form.get('abizena')
+        pasahitza = request.form.get('pasahitza')
+        email = request.form.get('email')
+        dokumentuak = request.form.get('dokumentuak')
+
+        if dbinput.datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
+            return redirect(url_for('database_show'))
+        else:
+            return jsonify({"error": "Arazoa erregistratzerakoan"}), 500
+
+
+def datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
+    try:
+        cursor = mysql.connection.cursor()
+        query = "INSERT INTO registros (izena, abizena, pasahitza, email, dokumentuak) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query, (izena, abizena, pasahitza, email, dokumentuak))
+        mysql.connection.commit()
+        return True
+    except Exception as e:
+        print("Error:", e)
+        return False
+    finally:
+        cursor.close()
 
 @app.route("/database")
 def database_show():

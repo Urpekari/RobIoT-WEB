@@ -46,7 +46,7 @@ button:hover {
     <body>
     <div class="login-container">
         <h2>Sartu zure erabiltzaile eta pasahitza</h2>
-        <form action="{{url_for('auth')}}" method="post">
+        <form action="/login" method="post">
             <input type="text" id="erabiltzailea" name="erabiltzailea" placeholder="Erabiltzailea" required>
             <input type="password" id="pasahitza" name="pasahitza" placeholder="Pasahitza" required>
             <button type="submit">Sartu</button>
