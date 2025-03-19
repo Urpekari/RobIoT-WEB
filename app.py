@@ -6,16 +6,24 @@ from flask import render_template, render_template_string
 from flask import request
 from flask_mysqldb import MySQL
 
-import folium
-import folium.map
+import env
+
+from view.droneControlPage import *
+
 
 
 app = Flask(__name__)
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'crash'
-app.config['MYSQL_PASSWORD'] = 'crash'
-app.config['MYSQL_DB'] = 'robiot'
+#TODO: LORTU DRONEID DINAMIKOKI
+droneID = 0
+
+# env.py fitxategia EZ DA GITHUBERA IGOKO.
+# .gitignore fitxategi baten bera ekidituko dugu!
+
+app.config['MYSQL_HOST'] = env.mysql_host_ip
+app.config['MYSQL_USER'] = env.mysql_username
+app.config['MYSQL_PASSWORD'] = env.mysql_password
+app.config['MYSQL_DB'] = env.mysql_db_name
 
 mysql = MySQL(app)
 
@@ -27,43 +35,9 @@ def home():
     return str(results)
 #    return "Hello, Flask!"
 
-@app.route("/hello/<name>", methods=["GET", "POST"])
-def hello_there(name):
-    now = datetime.now()
-    formatted_now = now.strftime("%A, %d %B, %Y at %X")
-
-    # Filter the name argument to letters only using regular expressions. URL arguments
-    # can contain arbitrary text, so we restrict to safe characters only.
-    match_object = re.match("[a-zA-Z]+", name)
-
-    if match_object:
-        clean_name = match_object.group(0)
-    else:
-        clean_name = "Friend"
-
-    content = "Hello there, " + clean_name + "! It's " + formatted_now
-    return content
-
 @app.route("/map", methods=["GET", "POST"])
-def map():
-    """Embed a map as an iframe on a page."""
-    m = folium.Map()
-    m.get_root().width = "800px"
-    m.get_root().height = "600px"
-    iframe = m.get_root()._repr_html_()
-
-
-    return render_template_string(
-        """
-            <!DOCTYPE html>
-            <html>
-                <head></head>
-                <body>
-                    <h1>Using an iframe</h1>
-                    {{ iframe|safe }}
-                </body>
-            </html>
-        """,
-        iframe=iframe,
-    )
-    
+def callMap():
+    print(droneID)
+    page = mapPage(droneID)
+    content = page.map(droneID)
+    return content
