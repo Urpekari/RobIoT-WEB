@@ -28,12 +28,6 @@ mysql=MySQL(app)
 dboutput=output(mysql)
 dbinput=input(mysql)
 
-@app.route("/map", methods=["GET", "POST"])
-def callMap():
-    print(droneID)
-    page = mapPage(droneID)
-    content = page.map(droneID)
-    return content
 
 @app.route("/")
 def index():
@@ -71,6 +65,9 @@ def erregistratu():
 
 @app.route("/control")
 def control():
+    return render_template("control.html")
+
+def database_show():
     return render_template(
         "database.html",
         header=tables.Droneak_header,
@@ -93,15 +90,9 @@ def in_drone():
     return redirect(url_for("database_show")) 
 
 
-@app.route("/hello/", methods=['POST'])
-def hello():
-    name=request.form["name"]
-    return redirect(url_for("hello_there",name=name))
-
-@app.route("/hello/<name>")
-def hello_there(name):
-    return render_template(
-        "hello_there.html",
-        name=name,
-        date=datetime.now()
-    )
+@app.route("/map", methods=["GET", "POST"])
+def callMap():
+    print(droneID)
+    page = mapPage(droneID)
+    content = page.map(droneID)
+    return content

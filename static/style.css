@@ -64,3 +64,39 @@ button:hover {
 .error{
     color: red;
 }
+
+.map{
+    height: 75%;
+    width: 70%;
+    left: 0;
+    top: 0;
+    position: fixed;
+    background-color: red;
+}
+
+.mezuen-taula{
+    height: 25%;
+    width: 70%;
+    left: 0;
+    bottom: 0;
+    position: fixed;
+    background-color: blue;
+}
+
+.informazioaren-taula{
+    height: 50%;
+    width: 30%;
+    right: 0;
+    top: 0;
+    position: fixed;
+    background-color: orange;
+}
+
+.dronen-taula{
+    height: 50%;
+    width: 30%;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    background-color: white;
+} 
