@@ -2,20 +2,24 @@ import re
 from datetime import datetime
 
 from flask import Flask
-from flask import render_template, render_template_string
-from flask import request
-from flask import jsonify
-from flask import redirect
-from flask import url_for
-from flask import Response
-from flask import session
 
 from flask_mysqldb import MySQL
-from model.model import *
 
 import env
 
 from view.droneControlPage import *
+
+from flask import request
+from flask import jsonify
+from flask import redirect
+from flask import render_template, render_template_string
+from flask import url_for
+from flask import Response
+from flask import session
+
+from model.model import *
+import env
+
 
 app = Flask(__name__)
 
@@ -25,10 +29,10 @@ droneID = 0
 # env.py fitxategia EZ DA GITHUBERA IGOKO.
 # .gitignore fitxategi baten bera ekidituko dugu!
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'RobIoT'
-app.config['MYSQL_PASSWORD'] = 'RobIoT'
-app.config['MYSQL_DB'] = 'robiot'
+app.config['MYSQL_HOST'] = env.mysql_host_ip
+app.config['MYSQL_USER'] = env.mysql_username
+app.config['MYSQL_PASSWORD'] = env.mysql_password
+app.config['MYSQL_DB'] = env.mysql_db_name
 
 
 mysql=MySQL(app)
