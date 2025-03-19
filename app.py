@@ -1,21 +1,47 @@
 import re
 from datetime import datetime
 
-from flask import Flask, jsonify, request, redirect, url_for, render_template, Response, session
+from flask import Flask
+from flask import render_template, render_template_string
+from flask import request
+from flask import jsonify
+from flask import redirect
+from flask import url_for
+from flask import Response
+from flask import session
+
 from flask_mysqldb import MySQL
 from model.model import *
 
+import env
+
+from view.droneControlPage import *
+
 app = Flask(__name__)
+
+#TODO: LORTU DRONEID DINAMIKOKI
+droneID = 0
+
+# env.py fitxategia EZ DA GITHUBERA IGOKO.
+# .gitignore fitxategi baten bera ekidituko dugu!
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'RobIoT'
 app.config['MYSQL_PASSWORD'] = 'RobIoT'
 app.config['MYSQL_DB'] = 'robiot'
 
+
 mysql=MySQL(app)
 
 dboutput=output(mysql)
 dbinput=input(mysql)
+
+@app.route("/map", methods=["GET", "POST"])
+def callMap():
+    print(droneID)
+    page = mapPage(droneID)
+    content = page.map(droneID)
+    return content
 
 @app.route("/")
 def index():
