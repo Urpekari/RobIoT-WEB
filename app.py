@@ -1,24 +1,12 @@
 import re
 from datetime import datetime
 
-from flask import Flask
-
+from flask import *
 from flask_mysqldb import MySQL
 
 import env
-
 from view.droneControlPage import *
-
-from flask import request
-from flask import jsonify
-from flask import redirect
-from flask import render_template, render_template_string
-from flask import url_for
-from flask import Response
-from flask import session
-
 from model.model import *
-import env
 
 
 app = Flask(__name__)
@@ -49,9 +37,7 @@ def callMap():
 
 @app.route("/")
 def index():
-    return render_template(
-        "root.html"
-    )
+    return render_template("root.html")
 
 @app.route("/login", methods=['GET','POST'])
 def login():
