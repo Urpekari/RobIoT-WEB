@@ -60,3 +60,7 @@ button:hover {
     background-color: #aa801f;
     border-color: #aa801f00;
 }
+
+.error{
+    color: red;
+}

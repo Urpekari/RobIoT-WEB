@@ -26,21 +26,21 @@ def index():
 @app.route("/login", methods=['GET','POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html',error = None)
     elif request.method == 'POST':
         username = request.form['erabiltzailea']
         password = request.form['pasahitza']
         
         if dboutput.erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
             #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
-            return redirect(url_for('database_show')) #manda al usuario a la siguiente pagina, en este caso dashboard
+            return redirect(url_for('control')) #manda al usuario a la siguiente pagina, en este caso dashboard
         else:
-            return jsonify({"error": "Arazoa erregistratzerakoan"}), 401 #401 es el código de estado HTTP para "No autorizado".
-
+            return render_template('login.html',error = "Erabiltzaile edo pasahitz ezegokia")
+        
 @app.route('/sign-up', methods=['GET','POST'])
 def erregistratu():
     if request.method == 'GET':
-        return render_template('sign_up.html')
+        return render_template('sign_up.html',error=None)
     elif request.method == 'POST':
         izena = request.form.get('izena')
         abizena = request.form.get('abizena')
@@ -49,26 +49,12 @@ def erregistratu():
         dokumentuak = request.form.get('dokumentuak')
 
         if dbinput.datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
-            return redirect(url_for('database_show'))
+            return redirect(url_for('control'))
         else:
-            return jsonify({"error": "Arazoa erregistratzerakoan"}), 500
+            return render_template('sign_up.html',error="Jadanik existitzen da erabiltzaile bat izen horrekin.")
 
-
-def datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
-    try:
-        cursor = mysql.connection.cursor()
-        query = "INSERT INTO registros (izena, abizena, pasahitza, email, dokumentuak) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(query, (izena, abizena, pasahitza, email, dokumentuak))
-        mysql.connection.commit()
-        return True
-    except Exception as e:
-        print("Error:", e)
-        return False
-    finally:
-        cursor.close()
-
-@app.route("/database")
-def database_show():
+@app.route("/control")
+def control():
     return render_template(
         "database.html",
         header=tables.Droneak_header,

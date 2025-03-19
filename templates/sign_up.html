@@ -8,6 +8,11 @@
     <title>Sign up</title>
 </head>
 <body>
+    {% if error%}
+        <script>
+            alert("{{error}}")
+        </script>
+    {% endif %}
     <div class="login-container">
         <h2>Sartu zure erabiltzaile eta pasahitza</h2>
         <form action="/sign-up" method="post">
@@ -16,6 +21,9 @@
             <input type="password" id="pasahitza" name="pasahitza" placeholder="Pasahitza" required>
             <input type="email" id="email" name="email" placeholder="E-mail">
             <input type="text" id="dokumentuak" name="dokumentuak" placeholder="Dokumentuak">
+            {% if error %}
+                <p class="error"><strong>Error:</strong> {{error}}</p>
+            {%endif%}
             <button type="submit">Sartu</button>
         </form>
     </div>

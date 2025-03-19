@@ -49,10 +49,7 @@ class output():
         cur.execute("SELECT * FROM erabiltzaileak WHERE Izen = %s AND Pasahitza = %s", (username, password))
         usuario = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
-        if usuario is None:
-            return False
-        else:
-            return True
+        return True if usuario else False
 
 class input():
 
@@ -76,7 +73,7 @@ class input():
     def datuak_sartu(self,izena, abizena, pasahitza, email, dokumentuak):
         try:
             cursor = self.mysql.connection.cursor()
-            query = "INSERT INTO erabiltzaileak (Izen, Abizena, Pasahitza, Email, Dokumentuak) VALUES (%s, %s, %s, %s, %s)"
+            query = "INSERT INTO erabiltzaileak (Izen, Abizena, Pasahitza, Email, Hegan_egiteko_baimena) VALUES (%s, %s, %s, %s, %s)"
             cursor.execute(query, (izena, abizena, pasahitza, email, dokumentuak))
             self.mysql.connection.commit()
             return True
