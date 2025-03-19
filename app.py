@@ -67,6 +67,7 @@ def erregistratu():
 def control():
     return render_template("control.html")
 
+@app.route("/database")
 def database_show():
     return render_template(
         "database.html",
