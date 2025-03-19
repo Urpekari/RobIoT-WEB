@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <title>Login</title>
+</head>
+<body>
+    {% if error%}
+        <script>
+            alert("{{error}}")
+        </script>
+    {% endif %}
+    <div class="login-container">
+        <h2>Sartu zure erabiltzaile eta pasahitza</h2>
+        <form action="/login" method="post">
+            <input type="text" id="erabiltzailea" name="erabiltzailea" placeholder="Erabiltzailea" required>
+            <input type="password" id="pasahitza" name="pasahitza" placeholder="Pasahitza" required>
+            {% if error %}
+                <p class="error"><strong>Error:</strong> {{error}}</p>
+            {%endif%}
+            <button type="submit">Sartu</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign up</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <title>Sign up</title>
+</head>
+<body>
+    {% if error%}
+        <script>
+            alert("{{error}}")
+        </script>
+    {% endif %}
+    <div class="login-container">
+        <h2>Sartu zure erabiltzaile eta pasahitza</h2>
+        <form action="/sign-up" method="post">
+            <input type="text" id="izena" name="izena" placeholder="Izena" required>
+            <input type="text" id="abizena" name="abizena" placeholder="Abizena">
+            <input type="password" id="pasahitza" name="pasahitza" placeholder="Pasahitza" required>
+            <input type="email" id="email" name="email" placeholder="E-mail">
+            <input type="text" id="dokumentuak" name="dokumentuak" placeholder="Dokumentuak">
+            {% if error %}
+                <p class="error"><strong>Error:</strong> {{error}}</p>
+            {%endif%}
+            <button type="submit">Sartu</button>
+        </form>
+    </div>
+</body>
+</html>
