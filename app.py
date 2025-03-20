@@ -1,30 +1,18 @@
 import re
 from datetime import datetime
 
-from flask import Flask
-
+from flask import *
 from flask_mysqldb import MySQL
 
 import env
-
 from view.droneControlPage import *
-
-from flask import request
-from flask import jsonify
-from flask import redirect
-from flask import render_template, render_template_string
-from flask import url_for
-from flask import Response
-from flask import session
-
 from model.model import *
-import env
 
 
 app = Flask(__name__)
 
 #TODO: LORTU DRONEID DINAMIKOKI
-droneID = 0
+droneID = 1
 
 # env.py fitxategia EZ DA GITHUBERA IGOKO.
 # .gitignore fitxategi baten bera ekidituko dugu!
@@ -34,24 +22,17 @@ app.config['MYSQL_USER'] = env.mysql_username
 app.config['MYSQL_PASSWORD'] = env.mysql_password
 app.config['MYSQL_DB'] = env.mysql_db_name
 
-
 mysql=MySQL(app)
 
 dboutput=output(mysql)
 dbinput=input(mysql)
 
-@app.route("/map", methods=["GET", "POST"])
-def callMap():
-    print(droneID)
-    page = mapPage(droneID)
-    content = page.map(droneID)
-    return content
+def getDBOutput():
+    return dboutput
 
 @app.route("/")
 def index():
-    return render_template(
-        "root.html"
-    )
+    return render_template("root.html")
 
 @app.route("/login", methods=['GET','POST'])
 def login():
@@ -85,6 +66,9 @@ def erregistratu():
 
 @app.route("/control")
 def control():
+    return render_template("control.html")
+
+def database_show():
     return render_template(
         "database.html",
         header=tables.Droneak_header,
@@ -107,15 +91,12 @@ def in_drone():
     return redirect(url_for("database_show")) 
 
 
-@app.route("/hello/", methods=['POST'])
-def hello():
-    name=request.form["name"]
-    return redirect(url_for("hello_there",name=name))
+@app.route("/map", methods=["GET", "POST"])
+def callMap():
+    print(droneID)
+    page = mapPage(droneID)
+    content = page.map(droneID)
+    return content
 
-@app.route("/hello/<name>")
-def hello_there(name):
-    return render_template(
-        "hello_there.html",
-        name=name,
-        date=datetime.now()
-    )
+def getApp(self):
+    return app

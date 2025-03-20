@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html>
-    <head></head>
+    <head>
+        {{ header|safe }}
+    </head>
     <body>
-        <table>
-            <tr>
-                <td>
-                    {{ iframe|safe }}
-                </td>
-                <td>
-                
-                </td>
-            </tr>
-        </table>
+        <h1>iframe gabeko testa</h1>
+        {{ body_html|safe }}
+        <script>
+            {{ script|safe }}
+        </script>
     </body>
 </html>

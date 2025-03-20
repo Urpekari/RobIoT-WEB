@@ -1,9 +1,12 @@
 import folium
 import folium.map
-from flask import render_template
+from flask_mysqldb import MySQL
+from flask import render_template, render_template_string
 
 #from view.droneViewer import *
 from model.dataSim import *
+from model.model import *
+import app
 
 class mapPage():
 
@@ -11,17 +14,18 @@ class mapPage():
     pastWaypoints = []
     droneName = ""
     droneType = ""
-    droneID = 0
+    droneID = 1
 
     def __init__(self, droneID):
-        datasim = dataSim()
+        dbOutput = app.getDBOutput()
         self.droneID = droneID
-        self.realPath = datasim.getRealLocations(droneID)
-        self.droneName = datasim.getDroneName(droneID)
-        self.droneType = datasim.getDroneType(droneID)
+        datasim = dataSim()
+        self.realPath = dbOutput.getRealLocations(droneID)
+        self.droneName = dbOutput.getDroneName(droneID)[0][0]
+        self.droneType = dbOutput.getDroneType(droneID)[0][0]
         self.pastWaypoints = datasim.getPastWaypoints(droneID)
         self.nextWaypoints = datasim.getNextWaypoints(droneID)
-        self.droneType = datasim.getDroneType(droneID)
+        self.bannedAreas = datasim.getBannedAreas(self.droneType)
 
     def map(self, droneID):
         """Embed a map as an iframe on a page."""
@@ -36,11 +40,12 @@ class mapPage():
         folium.PolyLine(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C').add_to(pastWPs)
 
         # Oraingo posizioa.
+        print(self.droneType)
         folium.Marker(
             location=self.realPath[-1],
             tooltip="Latest",
             popup="Latest known position for {}".format(self.droneName),
-            icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType),
+            icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
         ).add_to(m)
 
         # Hasierako waypoint-a
@@ -71,7 +76,7 @@ class mapPage():
             ).add_to(nextWPs)
 
         remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
-        folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F').add_to(nextWPs)
+        folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(nextWPs)
 
         # Amaierako waypointa
         folium.Marker(
@@ -80,12 +85,29 @@ class mapPage():
             popup="Homne at {} for {}".format(self.nextWaypoints[-1], self.droneName),
             icon=folium.Icon(color='black', icon_color='#DC267F',prefix="fa", icon="flag-checkered")
         ).add_to(nextWPs)
-        
+
         m.get_root().width = "1000vw"
         m.get_root().height = "650vh"
         folium.LayerControl().add_to(m)
 
-        iframe = m.get_root()._repr_html_()
+        #iframe = m.get_root()._repr_html_()
+
+        #folium.ClickForMarker("<b>Lat:</b> ${lat}<br /><b>Lon:</b> ${lng}")
 
 
-        return render_template("map.html", iframe=iframe)
+        #return render_template("map.html", iframe=iframe)
+
+        m.get_root().render()
+        header = m.get_root().header.render()
+        body_html = m.get_root().html.render()
+        script = m.get_root().script.render()
+
+        folium.Map().add_child(
+            folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
+        )
+
+        return render_template("map.html", header=header, body_html=body_html, script=script)
+
+ 
+
+        return map_object
