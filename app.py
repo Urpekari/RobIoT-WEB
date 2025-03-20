@@ -68,6 +68,7 @@ def erregistratu():
 def control():
     return render_template("control.html")
 
+@app.route("/database")
 def database_show():
     return render_template(
         "database.html",
@@ -96,7 +97,5 @@ def callMap():
     print(droneID)
     page = mapPage(droneID)
     content = page.map(droneID)
-    return content
 
-def getApp(self):
-    return app
+    return content
