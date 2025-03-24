@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_da22653437ea1089d2b5cca05c55a04c {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_da22653437ea1089d2b5cca05c55a04c" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_da22653437ea1089d2b5cca05c55a04c = L.map(
+                "map_da22653437ea1089d2b5cca05c55a04c",
+                {
+                    center: [43.3533, -3.12659],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 16,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_164e8a3b3684712fa54656fd9c0bbeff = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_164e8a3b3684712fa54656fd9c0bbeff.addTo(map_da22653437ea1089d2b5cca05c55a04c);
+        
+    
+            var feature_group_1447e073411860180698691de75408ef = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var poly_line_a243526188975b14c84fb1b8edc7b7eb = L.polyline(
+                [[43.3533, -3.12659]],
+                {"bubblingMouseEvents": true, "color": "#FFB60C", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FFB60C", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_1447e073411860180698691de75408ef);
+        
+    
+            poly_line_a243526188975b14c84fb1b8edc7b7eb.bindTooltip(
+                `<div>
+                     Path followed by Hegazkin
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_ae83afb06f7826e9d5c5e6ac1a26118c = L.marker(
+                [43.3533, -3.1266],
+                {
+}
+            ).addTo(feature_group_1447e073411860180698691de75408ef);
+        
+    
+            var icon_eaf07c11ea5e5f9df49bd25f9c58d3ab = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "black",
+  "iconColor": "#FFB60C",
+  "icon": "house",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_aa37219360d74d626215f379248afaa0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_39be9fed72b0f70a606427953bee7fab = $(`<div id="html_39be9fed72b0f70a606427953bee7fab" style="width: 100.0%; height: 100.0%;">Home at [43.3533, -3.1266] for Hegazkin</div>`)[0];
+                popup_aa37219360d74d626215f379248afaa0.setContent(html_39be9fed72b0f70a606427953bee7fab);
+            
+        
+
+        marker_ae83afb06f7826e9d5c5e6ac1a26118c.bindPopup(popup_aa37219360d74d626215f379248afaa0)
+        ;
+
+        
+    
+    
+            marker_ae83afb06f7826e9d5c5e6ac1a26118c.bindTooltip(
+                `<div>
+                     Home point: [43.3533, -3.1266]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ae83afb06f7826e9d5c5e6ac1a26118c.setIcon(icon_eaf07c11ea5e5f9df49bd25f9c58d3ab);
+            
+    
+            var marker_bd405e3a1429b50de23413d4fd94641a = L.marker(
+                [43.3542, -3.1266],
+                {
+}
+            ).addTo(feature_group_1447e073411860180698691de75408ef);
+        
+    
+            var icon_4a7c1606a468c5f9a23a37ca2d0a12b7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "#1c1c1c",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6b53057be0c9b88df3cb4fafe4eebb41 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8e5fcf8796f3bba944d64b9aa62cf921 = $(`<div id="html_8e5fcf8796f3bba944d64b9aa62cf921" style="width: 100.0%; height: 100.0%;">Waypoint at [43.3542, -3.1266] past by Hegazkin</div>`)[0];
+                popup_6b53057be0c9b88df3cb4fafe4eebb41.setContent(html_8e5fcf8796f3bba944d64b9aa62cf921);
+            
+        
+
+        marker_bd405e3a1429b50de23413d4fd94641a.bindPopup(popup_6b53057be0c9b88df3cb4fafe4eebb41)
+        ;
+
+        
+    
+    
+            marker_bd405e3a1429b50de23413d4fd94641a.bindTooltip(
+                `<div>
+                     Past waypoint: [43.3542, -3.1266]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bd405e3a1429b50de23413d4fd94641a.setIcon(icon_4a7c1606a468c5f9a23a37ca2d0a12b7);
+            
+    
+            var marker_55a0c5beb82a6684644b6c2c1b43f732 = L.marker(
+                [43.355, -3.1266],
+                {
+}
+            ).addTo(feature_group_1447e073411860180698691de75408ef);
+        
+    
+            var icon_011f1c7157e597168d98577e28771d84 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "#1c1c1c",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8cde455217f554cf5f0754395d2ef3b8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_38b231df35056c0ec8072cd92ce37b51 = $(`<div id="html_38b231df35056c0ec8072cd92ce37b51" style="width: 100.0%; height: 100.0%;">Waypoint at [43.355, -3.1266] past by Hegazkin</div>`)[0];
+                popup_8cde455217f554cf5f0754395d2ef3b8.setContent(html_38b231df35056c0ec8072cd92ce37b51);
+            
+        
+
+        marker_55a0c5beb82a6684644b6c2c1b43f732.bindPopup(popup_8cde455217f554cf5f0754395d2ef3b8)
+        ;
+
+        
+    
+    
+            marker_55a0c5beb82a6684644b6c2c1b43f732.bindTooltip(
+                `<div>
+                     Past waypoint: [43.355, -3.1266]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_55a0c5beb82a6684644b6c2c1b43f732.setIcon(icon_011f1c7157e597168d98577e28771d84);
+            
+    
+            feature_group_1447e073411860180698691de75408ef.addTo(map_da22653437ea1089d2b5cca05c55a04c);
+        
+    
+            var feature_group_752b79fbd431ec7b50e452a1e8124ade = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_c021fd55be357f548477007b42ac6eb6 = L.marker(
+                [43.356236, -3.13085],
+                {
+}
+            ).addTo(feature_group_752b79fbd431ec7b50e452a1e8124ade);
+        
+    
+            var icon_a56ed42af43a80dbdec815d96bbf470e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "purple",
+  "iconColor": "#1c1c1c",
+  "icon": "compass",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b583e36be0a04102849e5e6440de9d4a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fbe5e33186f588e9d1770afe43001e30 = $(`<div id="html_fbe5e33186f588e9d1770afe43001e30" style="width: 100.0%; height: 100.0%;">Waypoint at [43.356236, -3.13085] for Hegazkin</div>`)[0];
+                popup_b583e36be0a04102849e5e6440de9d4a.setContent(html_fbe5e33186f588e9d1770afe43001e30);
+            
+        
+
+        marker_c021fd55be357f548477007b42ac6eb6.bindPopup(popup_b583e36be0a04102849e5e6440de9d4a)
+        ;
+
+        
+    
+    
+            marker_c021fd55be357f548477007b42ac6eb6.bindTooltip(
+                `<div>
+                     Waypoint: [43.356236, -3.13085]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c021fd55be357f548477007b42ac6eb6.setIcon(icon_a56ed42af43a80dbdec815d96bbf470e);
+            
+    
+            var marker_a4705b52aa8acb9f91fd6f11195af32a = L.marker(
+                [43.354236, -3.131069],
+                {
+}
+            ).addTo(feature_group_752b79fbd431ec7b50e452a1e8124ade);
+        
+    
+            var icon_738ba487f6e4c1915e15fcea63483540 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "purple",
+  "iconColor": "#1c1c1c",
+  "icon": "compass",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_53014f266421b449babca2b122bf0fa8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_cf514d8cc4db515adc0082b1f1158d58 = $(`<div id="html_cf514d8cc4db515adc0082b1f1158d58" style="width: 100.0%; height: 100.0%;">Waypoint at [43.354236, -3.131069] for Hegazkin</div>`)[0];
+                popup_53014f266421b449babca2b122bf0fa8.setContent(html_cf514d8cc4db515adc0082b1f1158d58);
+            
+        
+
+        marker_a4705b52aa8acb9f91fd6f11195af32a.bindPopup(popup_53014f266421b449babca2b122bf0fa8)
+        ;
+
+        
+    
+    
+            marker_a4705b52aa8acb9f91fd6f11195af32a.bindTooltip(
+                `<div>
+                     Waypoint: [43.354236, -3.131069]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a4705b52aa8acb9f91fd6f11195af32a.setIcon(icon_738ba487f6e4c1915e15fcea63483540);
+            
+    
+            var marker_3c199fcd4c4f2795ff0c4004d426fc3b = L.marker(
+                [43.353209, -3.133613],
+                {
+}
+            ).addTo(feature_group_752b79fbd431ec7b50e452a1e8124ade);
+        
+    
+            var icon_f491f11db2f19c4d4ddcb6c432b666b4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "purple",
+  "iconColor": "#1c1c1c",
+  "icon": "compass",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_26a5a82bedd31f6278cd8371c99d54de = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_849f82b5945da100edc21dc51859224e = $(`<div id="html_849f82b5945da100edc21dc51859224e" style="width: 100.0%; height: 100.0%;">Waypoint at [43.353209, -3.133613] for Hegazkin</div>`)[0];
+                popup_26a5a82bedd31f6278cd8371c99d54de.setContent(html_849f82b5945da100edc21dc51859224e);
+            
+        
+
+        marker_3c199fcd4c4f2795ff0c4004d426fc3b.bindPopup(popup_26a5a82bedd31f6278cd8371c99d54de)
+        ;
+
+        
+    
+    
+            marker_3c199fcd4c4f2795ff0c4004d426fc3b.bindTooltip(
+                `<div>
+                     Waypoint: [43.353209, -3.133613]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3c199fcd4c4f2795ff0c4004d426fc3b.setIcon(icon_f491f11db2f19c4d4ddcb6c432b666b4);
+            
+    
+            var marker_ae337c2ee2f5d563de1b06de22a6bef1 = L.marker(
+                [43.35324, -3.138345],
+                {
+}
+            ).addTo(feature_group_752b79fbd431ec7b50e452a1e8124ade);
+        
+    
+            var icon_85392796b80ecc02a2452b317debfa52 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "purple",
+  "iconColor": "#1c1c1c",
+  "icon": "compass",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_686f430ef8cc01dcfb8e5619392b477b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6489acf61034d658f7e35cc8fce1bca8 = $(`<div id="html_6489acf61034d658f7e35cc8fce1bca8" style="width: 100.0%; height: 100.0%;">Waypoint at [43.35324, -3.138345] for Hegazkin</div>`)[0];
+                popup_686f430ef8cc01dcfb8e5619392b477b.setContent(html_6489acf61034d658f7e35cc8fce1bca8);
+            
+        
+
+        marker_ae337c2ee2f5d563de1b06de22a6bef1.bindPopup(popup_686f430ef8cc01dcfb8e5619392b477b)
+        ;
+
+        
+    
+    
+            marker_ae337c2ee2f5d563de1b06de22a6bef1.bindTooltip(
+                `<div>
+                     Waypoint: [43.35324, -3.138345]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ae337c2ee2f5d563de1b06de22a6bef1.setIcon(icon_85392796b80ecc02a2452b317debfa52);
+            
+    
+            var marker_c134d6f1243240f931360ae9788a5bfb = L.marker(
+                [43.352237, -3.142307],
+                {
+}
+            ).addTo(feature_group_752b79fbd431ec7b50e452a1e8124ade);
+        
+    
+            var icon_42d6cfc5b6419f44b4c687b6f0bb412a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "purple",
+  "iconColor": "#1c1c1c",
+  "icon": "compass",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_560019ae93f72fb3692d9881bde29dc4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_01fb5aaed529e372d921c0375d176937 = $(`<div id="html_01fb5aaed529e372d921c0375d176937" style="width: 100.0%; height: 100.0%;">Waypoint at [43.352237, -3.142307] for Hegazkin</div>`)[0];
+                popup_560019ae93f72fb3692d9881bde29dc4.setContent(html_01fb5aaed529e372d921c0375d176937);
+            
+        
+
+        marker_c134d6f1243240f931360ae9788a5bfb.bindPopup(popup_560019ae93f72fb3692d9881bde29dc4)
+        ;
+
+        
+    
+    
+            marker_c134d6f1243240f931360ae9788a5bfb.bindTooltip(
+                `<div>
+                     Waypoint: [43.352237, -3.142307]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c134d6f1243240f931360ae9788a5bfb.setIcon(icon_42d6cfc5b6419f44b4c687b6f0bb412a);
+            
+    
+            var marker_f9eae7c9401cfa9ec9603c4ac027af44 = L.marker(
+                [43.350692, -3.144254],
+                {
+}
+            ).addTo(feature_group_752b79fbd431ec7b50e452a1e8124ade);
+        
+    
+            var icon_5f6debdb6aa5c8b5c61758e914125cde = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "purple",
+  "iconColor": "#1c1c1c",
+  "icon": "compass",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_50f05414507d66c030eff59070f9c1c0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b6aaaf820c6a901ce2a44c8f3cfaa32f = $(`<div id="html_b6aaaf820c6a901ce2a44c8f3cfaa32f" style="width: 100.0%; height: 100.0%;">Waypoint at [43.350692, -3.144254] for Hegazkin</div>`)[0];
+                popup_50f05414507d66c030eff59070f9c1c0.setContent(html_b6aaaf820c6a901ce2a44c8f3cfaa32f);
+            
+        
+
+        marker_f9eae7c9401cfa9ec9603c4ac027af44.bindPopup(popup_50f05414507d66c030eff59070f9c1c0)
+        ;
+
+        
+    
+    
+            marker_f9eae7c9401cfa9ec9603c4ac027af44.bindTooltip(
+                `<div>
+                     Waypoint: [43.350692, -3.144254]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f9eae7c9401cfa9ec9603c4ac027af44.setIcon(icon_5f6debdb6aa5c8b5c61758e914125cde);
+            
+    
+            var poly_line_ae72572133e02ea042783d5818b2e862 = L.polyline(
+                [[43.3533, -3.12659], [43.356236, -3.13085], [43.354236, -3.131069], [43.353209, -3.133613], [43.35324, -3.138345], [43.352237, -3.142307], [43.350692, -3.144254], [43.349986, -3.143157]],
+                {"bubblingMouseEvents": true, "color": "#DC267F", "dashArray": 10, "dashOffset": null, "fill": false, "fillColor": "#DC267F", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_752b79fbd431ec7b50e452a1e8124ade);
+        
+    
+            poly_line_ae72572133e02ea042783d5818b2e862.bindTooltip(
+                `<div>
+                     Path to be followed Hegazkin
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_30144c7900c92f07c0301603d82ea351 = L.marker(
+                [43.349986, -3.143157],
+                {
+}
+            ).addTo(feature_group_752b79fbd431ec7b50e452a1e8124ade);
+        
+    
+            var icon_60750a099f8b33f95bc2d0f2f5316809 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "black",
+  "iconColor": "#DC267F",
+  "icon": "flag-checkered",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_48a9051d3ec711b858df09bf11882670 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a589756c8739e7a9fdfbe5f12ac5c702 = $(`<div id="html_a589756c8739e7a9fdfbe5f12ac5c702" style="width: 100.0%; height: 100.0%;">Homne at [43.349986, -3.143157] for Hegazkin</div>`)[0];
+                popup_48a9051d3ec711b858df09bf11882670.setContent(html_a589756c8739e7a9fdfbe5f12ac5c702);
+            
+        
+
+        marker_30144c7900c92f07c0301603d82ea351.bindPopup(popup_48a9051d3ec711b858df09bf11882670)
+        ;
+
+        
+    
+    
+            marker_30144c7900c92f07c0301603d82ea351.bindTooltip(
+                `<div>
+                     Home point: [43.349986, -3.143157]
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_30144c7900c92f07c0301603d82ea351.setIcon(icon_60750a099f8b33f95bc2d0f2f5316809);
+            
+    
+            feature_group_752b79fbd431ec7b50e452a1e8124ade.addTo(map_da22653437ea1089d2b5cca05c55a04c);
+        
+    
+            var marker_be105e345683cbd2023fd392197bdc9c = L.marker(
+                [43.3533, -3.12659],
+                {
+}
+            ).addTo(map_da22653437ea1089d2b5cca05c55a04c);
+        
+    
+            var icon_d0850531c0d2589eca9210a5e604bc8a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "black",
+  "iconColor": "#FFB60C",
+  "icon": "plane",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9bc515d3e97d99f04334e2fd73368d39 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8b2433d0cf90d3114fba35f03dec92ed = $(`<div id="html_8b2433d0cf90d3114fba35f03dec92ed" style="width: 100.0%; height: 100.0%;">Latest known position for Hegazkin</div>`)[0];
+                popup_9bc515d3e97d99f04334e2fd73368d39.setContent(html_8b2433d0cf90d3114fba35f03dec92ed);
+            
+        
+
+        marker_be105e345683cbd2023fd392197bdc9c.bindPopup(popup_9bc515d3e97d99f04334e2fd73368d39)
+        ;
+
+        
+    
+    
+            marker_be105e345683cbd2023fd392197bdc9c.bindTooltip(
+                `<div>
+                     Latest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_be105e345683cbd2023fd392197bdc9c.setIcon(icon_d0850531c0d2589eca9210a5e604bc8a);
+            
+    
+            var layer_control_8b31def104858b82f9cd4e1c9bfac420_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_164e8a3b3684712fa54656fd9c0bbeff,
+                },
+                overlays :  {
+                    "Past Waypoints" : feature_group_1447e073411860180698691de75408ef,
+                    "Next Waypoints" : feature_group_752b79fbd431ec7b50e452a1e8124ade,
+                },
+            };
+            let layer_control_8b31def104858b82f9cd4e1c9bfac420 = L.control.layers(
+                layer_control_8b31def104858b82f9cd4e1c9bfac420_layers.base_layers,
+                layer_control_8b31def104858b82f9cd4e1c9bfac420_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_da22653437ea1089d2b5cca05c55a04c);
+
+        
+    
+            tile_layer_164e8a3b3684712fa54656fd9c0bbeff.addTo(map_da22653437ea1089d2b5cca05c55a04c);
+        
+    
+                marker_ae83afb06f7826e9d5c5e6ac1a26118c.setIcon(icon_eaf07c11ea5e5f9df49bd25f9c58d3ab);
+            
+    
+                marker_bd405e3a1429b50de23413d4fd94641a.setIcon(icon_4a7c1606a468c5f9a23a37ca2d0a12b7);
+            
+    
+                marker_55a0c5beb82a6684644b6c2c1b43f732.setIcon(icon_011f1c7157e597168d98577e28771d84);
+            
+    
+            feature_group_1447e073411860180698691de75408ef.addTo(map_da22653437ea1089d2b5cca05c55a04c);
+        
+    
+                marker_c021fd55be357f548477007b42ac6eb6.setIcon(icon_a56ed42af43a80dbdec815d96bbf470e);
+            
+    
+                marker_a4705b52aa8acb9f91fd6f11195af32a.setIcon(icon_738ba487f6e4c1915e15fcea63483540);
+            
+    
+                marker_3c199fcd4c4f2795ff0c4004d426fc3b.setIcon(icon_f491f11db2f19c4d4ddcb6c432b666b4);
+            
+    
+                marker_ae337c2ee2f5d563de1b06de22a6bef1.setIcon(icon_85392796b80ecc02a2452b317debfa52);
+            
+    
+                marker_c134d6f1243240f931360ae9788a5bfb.setIcon(icon_42d6cfc5b6419f44b4c687b6f0bb412a);
+            
+    
+                marker_f9eae7c9401cfa9ec9603c4ac027af44.setIcon(icon_5f6debdb6aa5c8b5c61758e914125cde);
+            
+    
+                marker_30144c7900c92f07c0301603d82ea351.setIcon(icon_60750a099f8b33f95bc2d0f2f5316809);
+            
+    
+            feature_group_752b79fbd431ec7b50e452a1e8124ade.addTo(map_da22653437ea1089d2b5cca05c55a04c);
+        
+    
+                marker_be105e345683cbd2023fd392197bdc9c.setIcon(icon_d0850531c0d2589eca9210a5e604bc8a);
+            
+    
+                function getLatLng(e){
+                    var lat = e.latlng.lat.toFixed(6),
+                        lng = e.latlng.lng.toFixed(6);
+                    var txt = "[" + lat + "," + lng + "]";
+                    navigator.clipboard.writeText(txt);
+                    alert("Copied to clipboard : \n    " + txt);
+                    };
+                map_da22653437ea1089d2b5cca05c55a04c.on('click', getLatLng);
+            
+</script>
+</html>

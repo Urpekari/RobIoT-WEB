@@ -30,7 +30,6 @@ class mapPage():
     def map(self, droneID):
         """Embed a map as an iframe on a page."""
         m = folium.Map((self.realPath[-1]), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap", 
-        
         # __init__ constructor!
         data = dataSim()
 
@@ -102,11 +101,13 @@ class mapPage():
         body_html = m.get_root().html.render()
         script = m.get_root().script.render()
 
-        folium.Map().add_child(
+        m.add_child(
             folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
         )
 
-        return render_template("map.html", header=header, body_html=body_html, script=script)
+        m.save('templates/map1.html')
+
+        return render_template("control.html")
 
  
 
