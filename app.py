@@ -1,51 +1,84 @@
 import re
 from datetime import datetime
 
-from flask import Flask, request, redirect, url_for, render_template, Response, session, jsonify
+from flask import *
 from flask_mysqldb import MySQL
-import database
+
+import env
+from view.droneControlPage import *
+from model.model import *
+
 
 app = Flask(__name__)
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'RobIoT'
-app.config['MYSQL_PASSWORD'] = 'RobIoT'
-app.config['MYSQL_DB'] = 'robiot'
+#TODO: LORTU DRONEID DINAMIKOKI
+droneID = 1
 
-mysql = MySQL(app)
+# env.py fitxategia EZ DA GITHUBERA IGOKO.
+# .gitignore fitxategi baten bera ekidituko dugu!
+
+app.config['MYSQL_HOST'] = env.mysql_host_ip
+app.config['MYSQL_USER'] = env.mysql_username
+app.config['MYSQL_PASSWORD'] = env.mysql_password
+app.config['MYSQL_DB'] = env.mysql_db_name
+
+mysql=MySQL(app)
+
+dboutput=output(mysql)
+dbinput=input(mysql)
+
+def getDBOutput():
+    return dboutput
 
 @app.route("/")
 def index():
-    return render_template(
-        "root.html"
-    )
+    return render_template("root.html")
 
-@app.route("/login")
+@app.route("/login", methods=['GET','POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('login.html',error = None)
+    elif request.method == 'POST':
+        username = request.form['erabiltzailea']
+        password = request.form['pasahitza']
+        
+        if dboutput.erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
+            #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
+            return redirect(url_for('control')) #manda al usuario a la siguiente pagina, en este caso dashboard
+        else:
+            return render_template('login.html',error = "Erabiltzaile edo pasahitz ezegokia")
+        
+@app.route('/sign-up', methods=['GET','POST'])
+def erregistratu():
+    if request.method == 'GET':
+        return render_template('sign_up.html',error=None)
+    elif request.method == 'POST':
+        izena = request.form.get('izena')
+        abizena = request.form.get('abizena')
+        pasahitza = request.form.get('pasahitza')
+        email = request.form.get('email')
+        dokumentuak = request.form.get('dokumentuak')
 
-@app.route('/auth', methods=['POST'])
-def auth():
-    username = request.form['erabiltzailea']
-    password = request.form['pasahitza']
-    
-    if database.erabiltzailea_egiaztatu(mysql,username, password): #llama a la funcion de arriba q mira en la base de datos
-        #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
-        return redirect(url_for('database_show')) #manda al usuario a la siguiente pagina, en este caso dashboard
-    else:
-        return "Usuario o contraseña incorrectos", 401 #401 es el código de estado HTTP para "No autorizado".
+        if dbinput.datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
+            return redirect(url_for('control'))
+        else:
+            return render_template('sign_up.html',error="Jadanik existitzen da erabiltzaile bat izen horrekin.")
+
+@app.route("/control")
+def control():
+    return render_template("control.html")
 
 @app.route("/database")
 def database_show():
     return render_template(
         "database.html",
-        header=database.Droneak_header,
-        items=database.get_info(mysql,database.Droneak)
+        header=tables.Droneak_header,
+        items=dboutput.get_info(tables.Droneak)
     )
 
 @app.route("/database/dowload")
 def download_csv():
-    csv = database.create_csv(mysql,database.Droneak)
+    csv = dboutput.create_csv(tables.Droneak)
     return Response(
         csv,
         mimetype="text/csv",
@@ -55,51 +88,29 @@ def download_csv():
 @app.route("/database/insert",methods=['POST'])
 def in_drone():
     info=(request.form["izena"],request.form["mota"],request.form["deskribapena"])
-    database.insert_Droneak(mysql,info)
+    dbinput.insert_Droneak(info)
     return redirect(url_for("database_show")) 
 
 
-@app.route("/hello/", methods=['POST'])
-def hello():
-    name=request.form["name"]
-    return redirect(url_for("hello_there",name=name))
+@app.route("/map", methods=["GET", "POST"])
+def callMap():
+    print(droneID)
+    page = mapPage(droneID)
+    content = page.map(droneID)
 
-@app.route("/hello/<name>")
-def hello_there(name):
-    return render_template(
-        "hello_there.html",
-        name=name,
-        date=datetime.now()
-    )
+    return content
 
-@app.route('/erregistratu', methods=['POST'])
-def erregistratu():
-    izena = request.form.get('izena')
-    abizena = request.form.get('abizena')
-    pasahitza = request.form.get('pasahitza')
-    email = request.form.get('email')
-    dokumentuak = request.form.get('dokumentuak')
+@app.route('/insert_drone', methods=['GET','POST'])
+def erregistratu2():
+    if request.method == 'GET':
+        return render_template('insert_drone.html',error=None)
+    elif request.method == 'POST':
+        izenaDrone = request.form.get('izenaDrone')
+        mota = request.form.get('mota')
+        deskribapena = request.form.get('deskribapena')
 
-    if izena and abizena and pasahitza and email and dokumentuak:
-        if datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
-            return jsonify({"mensaje": "Zuzen erregistratu zara!"}), 201
+
+        if dbinput.insert_Droneak(izenaDrone, mota, deskribapena):
+            return redirect(url_for('control'))
         else:
-            return jsonify({"error": "Arazoa erregistratzerakoan"}), 500
-    return jsonify({"error": "Beharrezkoak diren datu guztiak sartu behar dituzu. (izena eta pasahitza)"}), 400
-
-if __name__ == '__main__':#esto nose para que se hace
-    app.run(debug=True)
-
-
-def datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
-    try:
-        cursor = mysql.connection.cursor()
-        query = "INSERT INTO registros (izena, abizena, pasahitza, email, dokumentuak) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(query, (izena, abizena, pasahitza, email, dokumentuak))
-        mysql.connection.commit()
-        return True
-    except Exception as e:
-        print("Error:", e)
-        return False
-    finally:
-        cursor.close()
+            return render_template('insert_drone.html',error="Jadanik existitzen da dron bat izen horrekin.")
