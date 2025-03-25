@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>insert_drone</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    </head>
+    <body>
+        <!--{% if error%}
+            <script>
+                alert("{{error}}")
+            </script>
+        {% endif %}-->
+            <h1>Droneak gehitzeko formularioa</h1>
+            <form action="/insert-drone" method="post">
+                <input type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
+                <input type="text" id="mota" name="mota" placeholder="Mota">
+                <input type="text" id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>
+                <!--{% if error %}
+                    <p class="error"><strong>Error:</strong> {{error}}</p>
+                {%endif%} -->
+                <button type="submit">Sartu</button>
+    </body>
+</html>
+
+<!-- Luego en el app.py hay que meter esta funcion. Tmabien hay que cambiar el insert_Droneak en el model.py
+ 
+@app.route('/insert_drone', methods=['GET','POST'])
+def erregistratu2():
+    if request.method == 'GET':
+        return render_template('insert_drone.html',error=None)
+    elif request.method == 'POST':
+        izenaDrone = request.form.get('izenaDrone')
+        mota = request.form.get('mota')
+        deskribapena = request.form.get('deskribapena')
+
+
+        if dbinput.insert_Droneak(izenaDrone, mota, deskribapena):
+            return redirect(url_for('control'))
+        else:
+            return render_template('insert_drone.html',error="Jadanik existitzen da dron bat izen horrekin.")-->
