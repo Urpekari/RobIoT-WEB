@@ -1,2 +1,5 @@
 env.py
-__pycache__/
+*/__pycache__/
+*__pycache__
+*map1.html
+templates/map1.html
