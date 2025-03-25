@@ -21,6 +21,7 @@ app.config['MYSQL_HOST'] = env.mysql_host_ip
 app.config['MYSQL_USER'] = env.mysql_username
 app.config['MYSQL_PASSWORD'] = env.mysql_password
 app.config['MYSQL_DB'] = env.mysql_db_name
+app.secret_key = 'hackerdeminecraft'
 
 mysql=MySQL(app)
 
@@ -32,6 +33,7 @@ def getDBOutput():
 
 @app.route("/")
 def index():
+    session.pop('erabiltzailea', None)
     return render_template("root.html")
 
 @app.route("/login", methods=['GET','POST'])
@@ -43,7 +45,7 @@ def login():
         password = request.form['pasahitza']
         
         if dboutput.erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
-            #session['usuario'] = username #guarda el usuario en session que es como una memoria temporal del flask
+            session['erabiltzailea'] = username #guarda el usuario en session que es como una memoria temporal del flask
             return redirect(url_for('control')) #manda al usuario a la siguiente pagina, en este caso dashboard
         else:
             return render_template('login.html',error = "Erabiltzaile edo pasahitz ezegokia")
@@ -59,7 +61,8 @@ def erregistratu():
         email = request.form.get('email')
         dokumentuak = request.form.get('dokumentuak')
 
-        if dbinput.datuak_sartu(izena, abizena, pasahitza, email, dokumentuak):
+        if dbinput.insert_Erabiltzaileak(izena, abizena, pasahitza, email, dokumentuak):
+            session['erabiltzailea'] = izena
             return redirect(url_for('control'))
         else:
             return render_template('sign_up.html',error="Jadanik existitzen da erabiltzaile bat izen horrekin.")
@@ -67,6 +70,7 @@ def erregistratu():
 @app.route("/control")
 def control():
     page = mapPage(droneID)
+    print(dboutput.get_Erabiltzaile_id(session['erabiltzailea']))
     return page.map(droneID)
 
 @app.route("/database")
@@ -100,3 +104,12 @@ def callMap():
     content = page.map(droneID)
 
     return content
+
+@app.route('/get_coords', methods=['POST'])
+def get_coords():
+    data = request.get_json()
+    lat = data['lat']
+    lng = data['lng']
+    print(lat)
+    print(lng)
+    return jsonify({'lat': lat, 'lng': lng})
