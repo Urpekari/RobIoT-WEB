@@ -92,6 +92,15 @@ def in_drone():
     dbinput.insert_Droneak(info)
     return redirect(url_for("database_show")) 
 
+@app.route("/gwInsert/<uuid>",methods=['POST'])
+def gw_insert(uuid):
+    content = request.get_json()
+    print(content['hello'])
+    print(content['robiotId'])
+    print(content['lat'])
+    print(content['lon'])
+    print(content['alt'])
+    return(jsonify({"uuid":uuid}))
 
 @app.route("/map", methods=["GET", "POST"])
 def callMap():
