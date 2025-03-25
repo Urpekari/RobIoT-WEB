@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>insert_sensor</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    </head>
+    <body>
+        <!--{% if error%}
+            <script>
+                alert("{{error}}")
+            </script>
+        {% endif %}-->
+            <h1>Sentsorea gehitzeko formularioa</h1>
+            <form action="/insert-sensor" method="post">
+                <input type="text" id="izenaSentsorea" name="izenaSentsorea" placeholder="Izena" required>
+                <input type="text" id="motaSentsorea" name="motaSentsorea" placeholder="Mota">
+                <input type="text" id="deskribapenaSentsorea" name="deskribapenaSentsorea" placeholder="Deskribapena" required>
+                <!--{% if error %}
+                    <p class="error"><strong>Error:</strong> {{error}}</p>
+                {%endif%} -->
+                <button type="submit">Sartu</button>
+    </body>
+</html>
+
+<!-- Luego en el app.py hay que meter esta funcion. Tmabien hay que cambiar el insert_Droneak en el model.py
+ 
+@app.route('/insert_sensor', methods=['GET','POST'])
+def erregistratu3():
+    if request.method == 'GET':
+        return render_template('insert_sensor.html',error=None)
+    elif request.method == 'POST':
+        izenaSentsorea = request.form.get('izenaSentsorea')
+        motaSentsorea = request.form.get('motaSentsorea')
+        deskribapenaSentsorea = request.form.get('deskribapenaSentsorea')
+
+
+        if dbinput.insert_Droneak(izenaSentsorea, motaSentsorea, deskribapenaSentsorea):
+            return redirect(url_for('control'))
+        else:
+            return render_template('insert_sensor.html',error="Jadanik existitzen da dron bat izen horrekin.")
+            
+            
+model.py-an funtzio hau sartu eta editatu:
+    def insert_Sentsoreak(self,data):
+        cur = self.mysql.connection.cursor()
+        query = "INSERT INTO Sentsoreak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
+        cur.execute(query,(data[0],data[1],data[2]))
+        self.mysql.connection.commit()
+        cur.close()
+        -->
