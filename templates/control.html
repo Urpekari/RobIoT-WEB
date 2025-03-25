@@ -9,6 +9,30 @@
 <body>
     <div class="map">
         {% include 'map1.html' %}
+        <script>
+            $(document).ready(function() {
+                $('#map').load('map.html', function() {
+                    var map = L.map('map').setView([43.2630, -2.9350], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+    
+                    map.on('click', function(e) {
+                        var lat = e.latlng.lat;
+                        var lng = e.latlng.lng;
+                        $.ajax({
+                            url: '/get_coords',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({lat: lat, lng: lng}),
+                            success: function(response) {
+                                alert('Coordinates: ' + response.lat + ', ' + response.lng);
+                            }
+                        });
+                    });
+                });
+            });
+        </script>
     </div>
     <div class="mezuen-taula">
     </div>

@@ -4,7 +4,7 @@ import env
 class tables():
     Baimenak="Baimenak"
     Droneak="Droneak"
-    Drone_Sentsore="Drone_sentsore"
+    Drone_Sentsore="Drone_Sentsore"
     Erabiltzaileak="Erabiltzaileak"
     Mezuak="Mezuak"
     Partekatzeak="Partekatzeak"
@@ -54,6 +54,34 @@ class output():
         cur.close()
         return True if usuario else False
     
+    def get_Drone_id(self,izena,mota,deskribapena):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Droneak WHERE Izena = %s AND Mota = %s AND Deskribapena = %s", (izena,mota,deskribapena))
+        drone = cur.fetchall()
+        cur.close()
+        return drone[-1][0]
+    
+    def get_Erabiltzaile_id(self,izena):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
+        usuario = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return usuario[0]
+    
+    def get_Sentsore_id(self,izena):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Sentsoreak WHERE Izen = %s", (izena,))
+        sents = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return sents[0]
+    
+    def get_jabe_droneak(self,id_erab):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s AND Baimenak_idBaimenak = %s", (id_erab,"Jabea"))
+        jabe_dron = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return jabe_dron
+
     # Maparekin erabiltzeko atalak
 
     def getRealLocations(self, droneID):
@@ -86,21 +114,21 @@ class input():
     def __init__(self,mysql):
         self.mysql=mysql
 
-    def insert_Droneak(self,data):
+    def insert_Drone_Sentsore(self,ezizen,id_drone,id_sents):
+        cur = self.mysql.connection.cursor()
+        query = "INSERT INTO Drone_Sentsore (Ezizena,Droneak_idDroneak,Sentsoreak_idSentsoreak) VALUES (%s,%s,%s)"
+        cur.execute(query,(ezizen,id_drone,id_sents))
+        self.mysql.connection.commit()
+        cur.close()
+
+    def insert_Droneak(self,izena,mota,deskribapena):
         cur = self.mysql.connection.cursor()
         query = "INSERT INTO Droneak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
-        cur.execute(query,(data[0],data[1],data[2]))
+        cur.execute(query,(izena,mota,deskribapena))
         self.mysql.connection.commit()
         cur.close()
 
-    def insert_Drone_Sentsore(self,data):
-        cur = self.mysql.connection.cursor()
-        query = "INSERT INTO Droneak (Ezizena,Droneak_idDroneak,Sentsoreak_idSentsoreak) VALUES (%s,%d,%d)"
-        cur.execute(query,(data[0],data[1],data[2]))
-        self.mysql.connection.commit()
-        cur.close()
-
-    def datuak_sartu(self,izena, abizena, pasahitza, email, dokumentuak):
+    def insert_Erabiltzaileak(self,izena, abizena, pasahitza, email, dokumentuak):
         try:
             cursor = self.mysql.connection.cursor()
             query = "INSERT INTO Erabiltzaileak (Izen, Abizena, Pasahitza, Email, Hegan_egiteko_baimena) VALUES (%s, %s, %s, %s, %s)"
@@ -112,3 +140,38 @@ class input():
             return False
         finally:
             cursor.close()
+
+    def insert_GPS_kokapena(self,id_drone,lng,ltd,alt,timestamp,noranzkoa):
+        cur = self.mysql.connection.cursor()
+        query = "INSERT INTO GPS_kokapena (Droneak_idDroneak,Longitude,Latitude,Altitude,Timestamp,Noranzkoa) VALUES (%s,%s,%s,%s,%s,%s)"
+        cur.execute(query,(id_drone,lng,ltd,alt,timestamp,noranzkoa))
+        self.mysql.connection.commit()
+        cur.close()
+
+    def insert_Mezuak(self,id_drone,edukia,timestamp,noranzkoa):
+        cur = self.mysql.connection.cursor()
+        query = "INSERT INTO Mezuak (Droneak_idDroneak,Eduikia,Timestamp,Noranzkoa) VALUES (%s,%s,%s,%s)"
+        cur.execute(query,(id_drone,edukia,timestamp,noranzkoa))
+        self.mysql.connection.commit()
+        cur.close()
+
+    def insert_Partekatzeak(self,id_erabiltzaile,id_drone,baimena):
+        cur = self.mysql.connection.cursor()
+        query = "INSERT INTO Partekatzeak (Erabiltzaileak_idErabiltzaileak,Droneak_idDroneak,Baimenak_idBaimenak) VALUES (%s,%s,%s)"
+        cur.execute(query,(id_erabiltzaile,id_drone,baimena))
+        self.mysql.connection.commit()
+        cur.close()
+
+    def insert_Sentsore_info(self,id_drone_sents,balioa,timestamp):
+        cur = self.mysql.connection.cursor()
+        query = "INSERT INTO Sentsore_info (Dronea_Sentsore_idDroneSentsore,Balioa,Timestamp) VALUES (%s,%s,%s)"
+        cur.execute(query,(id_drone_sents,balioa,timestamp))
+        self.mysql.connection.commit()
+        cur.close()
+
+    def insert_Sentsoreak(self,izena,mota,deskribapena):
+        cur = self.mysql.connection.cursor()
+        query = "INSERT INTO Sentsoreak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
+        cur.execute(query,(izena,mota,deskribapena))
+        self.mysql.connection.commit()
+        cur.close()

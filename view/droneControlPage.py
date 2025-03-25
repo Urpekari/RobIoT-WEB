@@ -102,7 +102,8 @@ class mapPage():
         script = m.get_root().script.render()
 
         m.add_child(
-            folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
+            #folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
+            folium.LatLngPopup()
         )
 
         m.save('templates/map1.html')
