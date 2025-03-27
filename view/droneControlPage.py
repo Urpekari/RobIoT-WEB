@@ -4,8 +4,8 @@ from flask_mysqldb import MySQL
 from flask import render_template, render_template_string
 
 #from view.droneViewer import *
-from model.dataSim import *
-from model.model import *
+from controller.dataSim import *
+from controller.database_controller import *
 import app
 
 class mapPage():
