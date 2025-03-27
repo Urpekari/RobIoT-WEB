@@ -25,6 +25,11 @@ h1 {
     margin-bottom: 30px;
 }
 
+h2 {
+    font-family: EHUSans;
+    color: white;
+}
+
 button {
     font-family: EHUSans;
     font-weight: bold;
@@ -71,7 +76,8 @@ button:hover {
     left: 0;
     top: 0;
     position: fixed;
-    background-color: red;
+    background-color: #1c1c1c;
+    padding: 10px;
 }
 
 .mezuen-taula{
@@ -80,7 +86,8 @@ button:hover {
     left: 0;
     bottom: 0;
     position: fixed;
-    background-color: blue;
+    background-color: #1c1c1c;
+    padding: 10px;
 }
 
 .informazioaren-taula{
@@ -89,7 +96,8 @@ button:hover {
     right: 0;
     top: 0;
     position: fixed;
-    background-color: orange;
+    background-color: #1c1c1c;
+    padding: 10px;
 }
 
 .dronen-taula{
@@ -98,5 +106,6 @@ button:hover {
     right: 0;
     bottom: 0;
     position: fixed;
-    background-color: white;
+    background-color: #1c1c1c;
+    padding: 10px;
 } 
