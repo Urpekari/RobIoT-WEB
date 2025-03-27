@@ -75,12 +75,47 @@ class output():
         cur.close()
         return sents[0]
     
+    def get_erab_droneak(self,id_erab):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (id_erab,))
+        erab_dron = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return erab_dron
+
     def get_jabe_droneak(self,id_erab):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s AND Baimenak_idBaimenak = %s", (id_erab,"Jabea"))
         jabe_dron = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
         return jabe_dron
+    
+    def get_drone_GPS(self,id_drone):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM GPS_kokapena WHERE Droneak_idDronek = %s", (id_drone,))
+        GPS_drone = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return GPS_drone[-1]
+
+    def get_drone_mezuak(self,id_drone):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Mezuak WHERE Droneak_idDronek = %s", (id_drone,))
+        mezu_drone = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return mezu_drone
+    
+    def get_drone_sentsore(self,id_drone,id_sentsore):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDronek = %s AND Sentsoreak_idSentsoreak = %s", (id_drone,id_sentsore))
+        dron_sens = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return dron_sens
+    
+    def get_sentsore_info(self,id_dron_sens):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Sentsore_info WHERE Drone_Sentsore_idDroneSentsore = %s", (id_dron_sens,))
+        sens_info = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return sens_info[-1]
 
     # Maparekin erabiltzeko atalak
 

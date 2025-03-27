@@ -6,7 +6,7 @@ from flask_mysqldb import MySQL
 
 import env
 from view.droneControlPage import *
-from model.model import *
+from controller.database_controller import *
 
 
 app = Flask(__name__)
