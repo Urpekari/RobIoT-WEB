@@ -54,21 +54,21 @@ class output():
         cur.close()
         return True if usuario else False
     
-    def get_Drone_id(self,izena,mota,deskribapena):
+    def get_drone_id(self,izena,mota,deskribapena):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Droneak WHERE Izena = %s AND Mota = %s AND Deskribapena = %s", (izena,mota,deskribapena))
         drone = cur.fetchall()
         cur.close()
         return drone[-1][0]
     
-    def get_Erabiltzaile_id(self,izena):
+    def get_erab_id(self,izena):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
         usuario = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
         return usuario[0]
     
-    def get_Sentsore_id(self,izena):
+    def get_sentsore_id(self,izena):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Sentsoreak WHERE Izen = %s", (izena,))
         sents = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
@@ -80,14 +80,21 @@ class output():
         cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (id_erab,))
         erab_dron = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
-        return erab_dron
+        return [sublist[2] for sublist in erab_dron]
+    
+    def get_drone_info(self,id_drone):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (id_drone,))
+        drone = cur.fetchone()
+        cur.close()
+        return drone[1]
 
     def get_jabe_droneak(self,id_erab):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s AND Baimenak_idBaimenak = %s", (id_erab,"Jabea"))
         jabe_dron = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
-        return jabe_dron
+        return [sublist[2] for sublist in jabe_dron]
     
     def get_drone_GPS(self,id_drone):
         cur = self.mysql.connection.cursor()

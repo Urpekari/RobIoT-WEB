@@ -13,7 +13,7 @@
             </script>
         {% endif %}-->
             <h1>Droneak gehitzeko formularioa</h1>
-            <form action="/insert-drone" method="post">
+            <form action="/insert_drone" method="post">
                 <input type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
                 <input type="text" id="mota" name="mota" placeholder="Mota">
                 <input type="text" id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>
@@ -21,6 +21,7 @@
                     <p class="error"><strong>Error:</strong> {{error}}</p>
                 {%endif%} -->
                 <button type="submit">Sartu</button>
+            </form>
     </body>
 </html>
 

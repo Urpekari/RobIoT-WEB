@@ -67,11 +67,41 @@ def erregistratu():
         else:
             return render_template('sign_up.html',error="Jadanik existitzen da erabiltzaile bat izen horrekin.")
 
-@app.route("/control")
+@app.route("/control", methods=['GET','POST'])
 def control():
-    page = mapPage(droneID)
-    print(dboutput.get_Erabiltzaile_id(session['erabiltzailea']))
-    return page.map(droneID)
+    if request.method == 'GET':
+        mapInit.map_empty()
+        erab_id=dboutput.get_erab_id(session['erabiltzailea'])
+        id_drone=dboutput.get_erab_droneak(erab_id)
+        droneak=[]
+        for id in id_drone:
+            drone=dboutput.get_drone_info(id)
+            droneak.append(drone)
+        return render_template("control.html", droneak=droneak)
+    elif request.method == 'POST':
+        page = mapPage(droneID)
+        print(dboutput.get_Erabiltzaile_id(session['erabiltzailea']))
+        return page.map(droneID)
+    
+@app.route('/insert_drone', methods=['GET','POST'])
+def erregistratu2():
+    if request.method == 'GET':
+        return render_template('insert_drone.html')
+    elif request.method == 'POST':
+        izenaDrone = request.form.get('izenaDrone')
+        mota = request.form.get('mota')
+        deskribapena = request.form.get('deskribapena')
+
+        dbinput.insert_Droneak(izenaDrone, mota, deskribapena)
+        erab_id=dboutput.get_erab_id(session['erabiltzailea'])
+        drone_id=dboutput.get_drone_id(izenaDrone, mota, deskribapena)
+        dbinput.insert_Partekatzeak(erab_id,drone_id,"Jabea")
+        return redirect(url_for('control'))
+
+        #if dbinput.insert_Droneak(izenaDrone, mota, deskribapena):
+        #    return redirect(url_for('control'))
+        #else:
+        #    return render_template('insert_drone.html',error="Jadanik existitzen da dron bat izen horrekin.")
 
 @app.route("/database")
 def database_show():

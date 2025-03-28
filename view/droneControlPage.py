@@ -113,3 +113,15 @@ class mapPage():
  
 
         return map_object
+
+class mapInit():
+    def map_empty():
+        m = folium.Map((43.263973, -2.951087), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap", 
+
+        m.get_root().width = "1000vw"
+        m.get_root().height = "650vh"
+        folium.LayerControl().add_to(m)
+
+        m.get_root().render()
+
+        m.save('templates/map1.html')
