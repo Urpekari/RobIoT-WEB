@@ -66,7 +66,12 @@
             <tbody>
                 {% for row in droneak %}
                 <tr>
-                    <td>{{ row }}</td>
+                    <td>
+                        <form action="/control" method="post">
+                            <button class="link-button" name="drone_izena" value="{{ row }}">{{ row }}</button>
+                        </form>
+                            
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

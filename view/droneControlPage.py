@@ -108,11 +108,11 @@ class mapPage():
 
         m.save('templates/map1.html')
 
-        return render_template("control.html")
+        #return render_template("control.html")
 
  
 
-        return map_object
+        #return map_object
 
 class mapInit():
     def map_empty():

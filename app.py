@@ -12,7 +12,6 @@ from controller.database_controller import *
 app = Flask(__name__)
 
 #TODO: LORTU DRONEID DINAMIKOKI
-droneID = 1
 
 # env.py fitxategia EZ DA GITHUBERA IGOKO.
 # .gitignore fitxategi baten bera ekidituko dugu!
@@ -71,6 +70,8 @@ def erregistratu():
 def control():
     if request.method == 'GET':
         mapInit.map_empty()
+        #page = mapPage(1)
+        #page.map(1)
         erab_id=dboutput.get_erab_id(session['erabiltzailea'])
         id_drone=dboutput.get_erab_droneak(erab_id)
         droneak=[]
@@ -79,9 +80,20 @@ def control():
             droneak.append(drone)
         return render_template("control.html", droneak=droneak)
     elif request.method == 'POST':
+        droneID=0
+        drone_izena=request.form.get('drone_izena')
+        erab_id=dboutput.get_erab_id(session['erabiltzailea'])
+        id_drone=dboutput.get_erab_droneak(erab_id)
+        droneak=[]
+        for id in id_drone:
+            drone=dboutput.get_drone_info(id)
+            if drone == drone_izena:
+                droneID=id
+            droneak.append(drone)
         page = mapPage(droneID)
-        print(dboutput.get_Erabiltzaile_id(session['erabiltzailea']))
-        return page.map(droneID)
+        page.map(droneID)
+        #mapInit.map_empty()
+        return render_template("control.html", droneak=droneak)
     
 @app.route('/insert_drone', methods=['GET','POST'])
 def erregistratu2():
@@ -138,6 +150,7 @@ def gw_insert(uuid):
 
 @app.route("/map", methods=["GET", "POST"])
 def callMap():
+    droneID=1
     print(droneID)
     page = mapPage(droneID)
     content = page.map(droneID)
