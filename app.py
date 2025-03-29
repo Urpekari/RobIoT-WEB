@@ -69,7 +69,6 @@ def erregistratu():
 @app.route("/control", methods=['GET','POST'])
 def control():
     if request.method == 'GET':
-        mapInit.map_empty()
         #page = mapPage(1)
         #page.map(1)
         erab_id=dboutput.get_erab_id(session['erabiltzailea'])
@@ -78,9 +77,9 @@ def control():
         for id in id_drone:
             drone=dboutput.get_drone_info(id)
             droneak.append(drone)
-        return render_template("control.html", droneak=droneak)
+        header, body_html, script=mapInit.map_empty()
+        return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
     elif request.method == 'POST':
-        droneID=0
         drone_izena=request.form.get('drone_izena')
         erab_id=dboutput.get_erab_id(session['erabiltzailea'])
         id_drone=dboutput.get_erab_droneak(erab_id)
@@ -91,9 +90,10 @@ def control():
                 droneID=id
             droneak.append(drone)
         page = mapPage(droneID)
-        page.map(droneID)
+        header, body_html, script=page.map()
+        return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
         #mapInit.map_empty()
-        return render_template("control.html", droneak=droneak)
+        #return render_template("control.html", header=array[0], body_html=array[1], script=array[2], droneak=droneak)
     
 @app.route('/insert_drone', methods=['GET','POST'])
 def erregistratu2():

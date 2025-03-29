@@ -27,7 +27,7 @@ class mapPage():
         self.nextWaypoints = datasim.getNextWaypoints(droneID)
         self.bannedAreas = datasim.getBannedAreas(self.droneType)
 
-    def map(self, droneID):
+    def map(self):
         """Embed a map as an iframe on a page."""
         m = folium.Map((self.realPath[-1]), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap", 
         # __init__ constructor!
@@ -96,18 +96,20 @@ class mapPage():
 
         #return render_template("map.html", iframe=iframe)
 
-        m.get_root().render()
-        header = m.get_root().header.render()
-        body_html = m.get_root().html.render()
-        script = m.get_root().script.render()
-
         m.add_child(
             #folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
             folium.LatLngPopup()
         )
 
+        m.get_root().render()
+        header = m.get_root().header.render()
+        body_html = m.get_root().html.render()
+        script = m.get_root().script.render()
+
+
         m.save('templates/map1.html')
 
+        return header, body_html, script
         #return render_template("control.html")
 
  
@@ -123,5 +125,11 @@ class mapInit():
         folium.LayerControl().add_to(m)
 
         m.get_root().render()
+        header = m.get_root().header.render()
+        body_html = m.get_root().html.render()
+        script = m.get_root().script.render()
+
 
         m.save('templates/map1.html')
+
+        return header, body_html, script

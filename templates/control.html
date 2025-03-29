@@ -5,11 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    {{ header|safe }}
 </head>
 <body>
     <div class="map">
-        {% include 'map1.html' %}
-        <!-- <script>
+        {{ body_html|safe }}
+        <script>
+            {{ script|safe }}
+        </script>
+        <!--{% include 'map1.html' %}
+        <script>
             $(document).ready(function() {
                 $('#map').load('map.html', function() {
                     var map = L.map('map').setView([43.2630, -2.9350], 13);
