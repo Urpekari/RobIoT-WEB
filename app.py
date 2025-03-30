@@ -141,11 +141,18 @@ def in_drone():
 @app.route("/gwInsert/<uuid>",methods=['POST'])
 def gw_insert(uuid):
     content = request.get_json()
-    print(content['hello'])
-    print(content['robiotId'])
+    #print(content['hello'])
+    #print(content['robiotId'])
     print(content['lat'])
     print(content['lon'])
-    print(content['alt'])
+    #print(content['alt'])
+
+    # Ez dakit hau nahiago dugun edo GPS-tik lortutako ordua.
+    date = datetime.now()
+    print(date)
+    time_parsed = date#.strftime("%y-%m-%d %H:%M:%S.%f")
+
+    dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], time_parsed, "DOW")
     return(jsonify({"uuid":uuid}))
 
 @app.route("/map", methods=["GET", "POST"])

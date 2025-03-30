@@ -43,7 +43,7 @@ class mapPage():
         folium.Marker(
             location=self.realPath[-1],
             tooltip="Latest",
-            popup="Latest known position for {}".format(self.droneName),
+            popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1]),
             icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
         ).add_to(m)
 
