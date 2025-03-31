@@ -109,9 +109,6 @@ class mapPage():
         body_html = m.get_root().html.render()
         script = m.get_root().script.render()
 
-
-        m.save('templates/map1.html')
-
         return header, body_html, script
         #return render_template("control.html")
 
@@ -131,8 +128,5 @@ class mapInit():
         header = m.get_root().header.render()
         body_html = m.get_root().html.render()
         script = m.get_root().script.render()
-
-
-        m.save('templates/map1.html')
 
         return header, body_html, script
