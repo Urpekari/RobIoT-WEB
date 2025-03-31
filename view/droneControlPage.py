@@ -97,8 +97,11 @@ class mapPage():
         #return render_template("map.html", iframe=iframe)
 
         m.add_child(
-            #folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
             folium.LatLngPopup()
+        )
+
+        m.add_child(
+            folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
         )
 
         m.get_root().render()
