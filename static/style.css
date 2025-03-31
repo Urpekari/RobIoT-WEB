@@ -109,9 +109,9 @@ button:hover {
     background-color: #1c1c1c;
     padding: 10px;
 
-    border: 2px solid white; /* Bordes blancos */
+    border: 2px solid white; 
     text-align: center;
-    color: white; /* Texto blanco para contraste */
+    color: white; 
 }
 
 .link-button {
