@@ -5,6 +5,42 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+        <style>
+       .nav > li {
+				float:left;
+			}
+			
+			.nav li a {
+				background-color:#000;
+				color:#fff;
+				text-decoration:none;
+				padding:10px 12px;
+				display:block;
+			}
+			
+			.nav li a:hover {
+				background-color:#434343;
+			}
+			
+			.nav li ul {
+				display:none;
+				position:absolute;
+				min-width:140px;
+			}
+			
+			.nav li:hover > ul {
+				display:block;
+			}
+			
+			.nav li ul li {
+				position:relative;
+			}
+			
+			.nav li ul li ul {
+				right:-140px;
+				top:0px;
+			}
+        </style>
     </head>
     <body>
         <!--{% if error%}
@@ -15,7 +51,16 @@
             <h1>Droneak gehitzeko formularioa</h1>
             <form action="/insert-drone" method="post">
                 <input type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
-                <input type="text" id="mota" name="mota" placeholder="Mota">
+                <li><a href="">Motak</a>
+                    <ul class="nav"></ul>
+					<ul>
+						<li><a href="">Hegazkina</a></li>
+						<li><a href="">Itsasontzia</a></li>
+						<li><a href="">Submarinoa</a></li>
+						<li><a href="">Multikopteroa</a></li>
+                            <li><a href="">Kotxea</a></li>
+                    </ul>
+                </li>
                 <input type="text" id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>
                 <!--{% if error %}
                     <p class="error"><strong>Error:</strong> {{error}}</p>
@@ -23,7 +68,6 @@
                 <button type="submit">Sartu</button>
     </body>
 </html>
-
 <!-- Luego en el app.py hay que meter esta funcion. Tmabien hay que cambiar el insert_Droneak en el model.py
  
 @app.route('/insert_drone', methods=['GET','POST'])
