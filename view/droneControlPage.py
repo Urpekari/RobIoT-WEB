@@ -2,7 +2,6 @@ import folium
 import folium.map
 
 #from view.droneViewer import *
-from controller.dataSim import *
 from controller.database_controller import *
 import app
 
@@ -17,7 +16,6 @@ class mapPage():
     def __init__(self, droneID):
         dbOutput = app.getDBOutput()
         self.droneID = droneID
-        datasim = dataSim()
         self.realPath = dbOutput.getRealLocations(droneID)
         self.droneName = dbOutput.getDroneName(droneID)[0][0]
         self.droneType = dbOutput.getDroneType(droneID)[0][0]
@@ -44,10 +42,10 @@ class mapPage():
             ).add_to(pastWPs)
 
         folium.Marker(
-            location=self.nextWaypoints[-1],
+            location=self.nextWaypoints[0],
             tooltip="Goal point: {}".format(self.nextWaypoints[0]),
             popup="Goal at {} for {}".format(self.nextWaypoints[0], self.droneName),
-            icon=folium.Icon(color='white', icon_color='#1c1c1c',prefix="fa", icon="font-awesome")
+            icon=folium.Icon(color='darkpurple', icon_color='#FcFcFc',prefix="fa", icon="compass")
         ).add_to(futureWPs)
 
         for wp in self.nextWaypoints[1:-1]:
@@ -65,8 +63,22 @@ class mapPage():
             icon=folium.Icon(color='black', icon_color='#DC267F',prefix="fa", icon="flag-checkered")
         ).add_to(futureWPs)
         
+
+    def ibilbideaMarkatu(self, m, realLine, futureLine):
+        folium.Marker(
+            location=self.realPath[-1],
+            tooltip="Latest",
+            popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1]),
+            icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
+        ).add_to(m)
+
+        folium.PolyLine(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C').add_to(realLine)
+        remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
+        folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(futureLine)
+
         
-    def debekuak_markatu(self, m):
+        
+    def debekuakMarkatu(self, m):
         for center in self.bannedAreas:
             print("Center", end="  ")
             print(center)
@@ -87,52 +99,18 @@ class mapPage():
     def map(self):
 
         if len(self.realPath) > 1:
-
-            m = folium.Map((self.realPath[-1]), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap", 
-            # __init__ constructor!
-            data = dataSim()
+            m = folium.Map((self.realPath[-1]), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap",
 
             pastWPs = folium.FeatureGroup("Past Waypoints").add_to(m)
             futureWPs = folium.FeatureGroup("Next Waypoints").add_to(m)
             realLine = folium.FeatureGroup("Real followed path").add_to(m)
+            futureLine = folium.FeatureGroup("Future estimated path").add_to(m)
 
-            folium.PolyLine(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C').add_to(realLine)
-
-            # Oraingo posizioa.
-            print(self.droneType)
-            folium.Marker(
-                location=self.realPath[-1],
-                tooltip="Latest",
-                popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1]),
-                icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
-            ).add_to(m)
-
-            # Tarteko waypoint guztiak
-            # Lehenik pasatu ditugunak jada:
-            # for wp in self.pastWaypoints[1:]:
-            #     folium.Marker(
-            #         location=wp,
-            #         tooltip="Past waypoint: {}".format(wp),
-            #         popup="Waypoint at {} past by {}".format(wp, self.droneName),
-            #         icon=folium.Icon(color='orange', icon_color='#1c1c1c',prefix="fa", icon="flag")
-            #     ).add_to(pastWPs)
             self.waypointakMarkatu(pastWPs, futureWPs)
-            self.debekuak_markatu(m)
-
-            # pasatu behar ditugunak
-            # for wp in self.nextWaypoints[0:-1]:
-            #     folium.Marker(
-            #         location=wp,
-            #         tooltip="Waypoint: {}".format(wp),
-            #         popup="Waypoint at {} for {}".format(wp, self.droneName),
-            #         icon=folium.Icon(color='purple', icon_color='#1c1c1c',prefix="fa", icon="compass")
-            #     ).add_to(futureWPs)
-
-            remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
-            folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(futureWPs)
+            self.debekuakMarkatu(m)
+            self.ibilbideaMarkatu(m, realLine, futureLine)
 
             # Amaierako waypointa
-
 
             m.get_root().width = "1000vw"
             m.get_root().height = "650vh"
