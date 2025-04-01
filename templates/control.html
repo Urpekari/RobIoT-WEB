@@ -61,8 +61,8 @@
                 <td><span id="hora"></span></td>
             </tr>
             <tr>
-                <td>     N</td><!--Orain dronak duen posizioa sartu-->
-                <td>     W</td>
+                <td>{{lat}} N</td><!--Orain dronak duen posizioa sartu-->
+                <td>{{lng}} W</td>
             </tr>
             <tr>
                 <td>Next Waypoint</td>
@@ -125,7 +125,6 @@
                         <form action="/control" method="post">
                             <button class="link-button" name="drone_izena" value="{{ row }}">{{ row }}</button>
                         </form>
-                            
                     </td>
                 </tr>
                 {% endfor %}
