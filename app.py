@@ -69,8 +69,6 @@ def erregistratu():
 @app.route("/control", methods=['GET','POST'])
 def control():
     if request.method == 'GET':
-        #page = mapPage(1)
-        #page.map(1)
         erab_id=dboutput.get_erab_id(session['erabiltzailea'])
         id_drone=dboutput.get_erab_droneak(erab_id)
         droneak=[]
@@ -92,8 +90,6 @@ def control():
         page = mapPage(droneID)
         header, body_html, script=page.map()
         return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
-        #mapInit.map_empty()
-        #return render_template("control.html", header=array[0], body_html=array[1], script=array[2], droneak=droneak)
     
 @app.route('/insert_drone', methods=['GET','POST'])
 def erregistratu2():
@@ -115,29 +111,6 @@ def erregistratu2():
         #else:
         #    return render_template('insert_drone.html',error="Jadanik existitzen da dron bat izen horrekin.")
 
-@app.route("/database")
-def database_show():
-    return render_template(
-        "database.html",
-        header=tables.Droneak_header,
-        items=dboutput.get_info(tables.Droneak)
-    )
-
-@app.route("/database/dowload")
-def download_csv():
-    csv = dboutput.create_csv(tables.Droneak)
-    return Response(
-        csv,
-        mimetype="text/csv",
-        headers={"Content-disposition":
-                 "attachment; filename=Erabiltzaileak.csv"})
-
-@app.route("/database/insert",methods=['POST'])
-def in_drone():
-    info=(request.form["izena"],request.form["mota"],request.form["deskribapena"])
-    dbinput.insert_Droneak(info)
-    return redirect(url_for("database_show")) 
-
 @app.route("/gwInsert/<uuid>",methods=['POST'])
 def gw_insert(uuid):
     content = request.get_json()
@@ -155,14 +128,36 @@ def gw_insert(uuid):
     dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], time_parsed, "DOW")
     return(jsonify({"uuid":uuid}))
 
-@app.route("/map", methods=["GET", "POST"])
-def callMap():
-    droneID=1
-    print(droneID)
-    page = mapPage(droneID)
-    content = page.map(droneID)
+#@app.route("/database")
+#def database_show():
+#    return render_template(
+#        "database.html",
+#        header=tables.Droneak_header,
+#        items=dboutput.get_info(tables.Droneak)
+#    )
 
-    return content
+#@app.route("/database/dowload")
+#def download_csv():
+#    csv = dboutput.create_csv(tables.Droneak)
+#    return Response(
+#        csv,
+#        mimetype="text/csv",
+#        headers={"Content-disposition":
+#                 "attachment; filename=Erabiltzaileak.csv"})
+
+#@app.route("/database/insert",methods=['POST'])
+#def in_drone():
+#    info=(request.form["izena"],request.form["mota"],request.form["deskribapena"])
+#    dbinput.insert_Droneak(info)
+#    return redirect(url_for("database_show"))
+
+#@app.route("/map", methods=["GET", "POST"])
+#def callMap():
+#    droneID=1
+#    print(droneID)
+#    page = mapPage(droneID)
+#    content = page.map(droneID)
+#    return content
 
 @app.route('/get_coords', methods=['POST'])
 def get_coords():
