@@ -124,6 +124,14 @@ class mapInit():
         m.get_root().height = "650vh"
         folium.LayerControl().add_to(m)
 
+        m.add_child(
+            folium.LatLngPopup()
+        )
+
+        m.add_child(
+            folium.ClickForLatLng(format_str='lat + "," + lng', alert=False)
+        )
+
         m.get_root().render()
         header = m.get_root().header.render()
         body_html = m.get_root().html.render()

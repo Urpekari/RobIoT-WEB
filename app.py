@@ -8,6 +8,8 @@ import env
 from view.droneControlPage import *
 from controller.database_controller import *
 
+import tkinter as tk
+
 
 app = Flask(__name__)
 
@@ -26,6 +28,8 @@ mysql=MySQL(app)
 
 dboutput=output(mysql)
 dbinput=input(mysql)
+
+
 
 def getDBOutput():
     return dboutput
@@ -91,6 +95,47 @@ def control():
         header, body_html, script=page.map()
         return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
     
+
+@app.route("/froga", methods=['GET','POST'])
+def froga():
+    if request.method == 'GET':
+        header, body_html, script=mapInit.map_empty()
+        return render_template("froga.html", header=header, body_html=body_html, script=script)
+    elif request.method == 'POST':
+
+        bot=request.form.get('botoia')
+        lat=""
+        long=""
+        list=[]
+        if bot == '2':
+            liststr = request.form.get('list')
+            latin = request.form.get('lat')
+            longin = request.form.get('long')
+            coords = latin + " " + longin
+            if liststr:
+                list = re.findall('\'(.*?)\'',liststr)
+            list.append(coords)
+        elif bot == '1':
+            list=request.form.get('list')
+            root=tk.Tk()
+            clipboard_content = root.clipboard_get()
+            lines = clipboard_content.split(',')
+
+            lat=lines[0]
+            long=lines[1]
+
+        header, body_html, script=mapInit.map_empty()
+
+        return render_template("froga.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list)
+    
+@app.route("/froga1", methods=['POST'])
+def froga1():
+    list = request.form.get('list')
+    lat = request.form.get('lat')
+    long = request.form.get('long')
+
+    return redirect(url_for('froga', lat=lat, long=long))
+
 @app.route('/insert_drone', methods=['GET','POST'])
 def erregistratu2():
     if request.method == 'GET':
