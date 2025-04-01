@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Root</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    {{ header|safe }}
+</head>
+<body>
+    <div class="map">
+        {{ body_html|safe }}
+        <script>
+            {{ script|safe }}
+        </script>      
+    </div>
+    <div class="mezuen-taula">
+        <h2 class="izenburu">Azken mezu esanguratsuak:</h2>
+        <table>
+            <thead>
+                <th>Timestamp</th>
+                <th>Dronea</th>
+                <th>Noranzkoa</th>
+                <th>Mezua</th>
+            </thead>
+            <tbody>
+                {% for row in mezu %}
+                <tr>
+                    {% for column in row %}
+                    <td>{{ column }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="informazioaren-taula">
+        <h1>Ikusten: M.Ship+ROV:</h1>
+        <table>
+            <tr>
+                <th>Xehetasunak</th>
+                <th>Timestamp</th>
+            </tr> 
+            <tr>
+                <td>Position</td>
+                <td><!--ordua sartu--></td>
+            </tr>
+            <tr>
+                <td>     N</td>
+                <td>     W</td>
+            </tr>
+            <tr>
+                <td>Next Waypoint</td>
+                <td>ETA: </td>
+            </tr>
+            <tr>
+                <td>     N</td>
+                <td>     W</td>
+            </tr>
+            <tr>
+                <td>Destination</td>
+                <td>ETA: </td>
+            </tr>
+            <tr>
+                <td>     N</td>
+                <td>     W</td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <table>
+        <tr>
+            <td>
+                <a href="/">
+                    <button>Ibilbidearen xehetasunak</button>
+                </a>
+            </td>
+            <td>
+                <a href="/">
+                    <button>Ezeztatu</button>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="/">
+                    <button>Bueltatu etxera</button>
+                </a>
+            </td>
+            <td>
+                <a href="/">
+                    <button>Kontrolak</button>
+                </a>
+            </td>
+        </tr>
+    </table>
+    <div class="dronen-taula">
+        <h1>Dronen zerrenda:</h1>
+        <table>
+            <thead class="taula">
+                <th>Dronea</th>
+            </thead>
+            <tbody class="taula">
+                {% for row in droneak %}
+                <tr>
+                    <td>
+                        <form action="/control" method="post">
+                            <button class="link-button" name="drone_izena" value="{{ row }}">{{ row }}</button>
+                        </form>
+                            
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <a href="/insert_drone">
+            <button>Gehitu dronea</button>
+        </a>
+    </div>
+</body>
+</html>
