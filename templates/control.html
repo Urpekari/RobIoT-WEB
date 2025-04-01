@@ -6,38 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     {{ header|safe }}
+
+    <script>
+        function actualizarHora() {
+            const ahora = new Date();
+            const horas = ahora.getHours().toString().padStart(2, '0');
+            const minutos = ahora.getMinutes().toString().padStart(2, '0');
+            document.getElementById("hora").innerText = horas + ":" + minutos;
+        }
+        setInterval(actualizarHora, 60000);
+        window.onload = actualizarHora; 
+    </script>
+
 </head>
 <body>
     <div class="map">
         {{ body_html|safe }}
         <script>
             {{ script|safe }}
-        </script>
-        <!--{% include 'map1.html' %}
-        <script>
-            $(document).ready(function() {
-                $('#map').load('map.html', function() {
-                    var map = L.map('map').setView([43.2630, -2.9350], 13);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors'
-                    }).addTo(map);
-    
-                    map.on('click', function(e) {
-                        var lat = e.latlng.lat;
-                        var lng = e.latlng.lng;
-                        $.ajax({
-                            url: '/get_coords',
-                            type: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({lat: lat, lng: lng}),
-                            success: function(response) {
-                                alert('Coordinates: ' + response.lat + ', ' + response.lng);
-                            }
-                        });
-                    });
-                });
-            });
-        </script> -->
+        </script>      
     </div>
     <div class="mezuen-taula">
         <h2 class="izenburu">Azken mezu esanguratsuak:</h2>
@@ -60,8 +47,71 @@
         </table>
     </div>
     <div class="informazioaren-taula">
-        <h1>Ikusten:</h1>
-    </div>
+        <h1>Ikusten: M.Ship+ROV:</h1>
+        <table>
+            <thead class="taula">
+            <tr>
+                <th>Xehetasunak</th>
+                <th>Timestamp</th>
+            </tr> 
+        </thead>
+        <tbody class="taula">
+            <tr>
+                <td>Position</td>
+                <td><span id="hora"></span></td>
+            </tr>
+            <tr>
+                <td>{{lat}} N</td><!--Orain dronak duen posizioa sartu-->
+                <td>{{lng}} W</td>
+            </tr>
+            <tr>
+                <td>Next Waypoint</td>
+                <td>ETA: </td>
+            </tr>
+            <tr>
+                <td>     N</td>
+                <td>     W</td>
+            </tr>
+            <tr>
+                <td>Destination</td>
+                <td>ETA: </td>
+            </tr>
+            <tr>
+                <td>     N</td>
+                <td>     W</td>
+            </tr>
+        </tbody>
+        </table>
+    <br>
+    <table>
+
+        <tr>
+            <td>
+                <a href="/">
+                    <button>Ibilbidearen xehetasunak</button>
+                </a>
+            </td>
+            <td>
+                <a href="/">
+                    <button>Ezeztatu</button>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="/">
+                    <button>Bueltatu etxera</button>
+                </a>
+            </td>
+            <td>
+                <a href="/">
+                    <button>Kontrolak</button>
+                </a>
+            </td>
+        </tr>
+    
+    </table>
+</div>
     <div class="dronen-taula">
         <h1>Dronen zerrenda:</h1>
         <table>
@@ -75,7 +125,6 @@
                         <form action="/control" method="post">
                             <button class="link-button" name="drone_izena" value="{{ row }}">{{ row }}</button>
                         </form>
-                            
                     </td>
                 </tr>
                 {% endfor %}
