@@ -1,10 +1,7 @@
 import folium
 import folium.map
-from flask_mysqldb import MySQL
-from flask import render_template, render_template_string
 
 #from view.droneViewer import *
-from controller.dataSim import *
 from controller.database_controller import *
 import app
 
@@ -19,34 +16,14 @@ class mapPage():
     def __init__(self, droneID):
         dbOutput = app.getDBOutput()
         self.droneID = droneID
-        datasim = dataSim()
         self.realPath = dbOutput.getRealLocations(droneID)
         self.droneName = dbOutput.getDroneName(droneID)[0][0]
         self.droneType = dbOutput.getDroneType(droneID)[0][0]
-        self.pastWaypoints = datasim.getPastWaypoints(droneID)
-        self.nextWaypoints = datasim.getNextWaypoints(droneID)
-        self.bannedAreas = datasim.getBannedAreas(self.droneType)
+        self.pastWaypoints = dbOutput.get_waypoint_past(droneID)
+        self.nextWaypoints = dbOutput.get_waypoint_future(droneID)
+        self.bannedAreas = dbOutput.get_banned_areas(self.droneType)
 
-    def map(self):
-        """Embed a map as an iframe on a page."""
-        m = folium.Map((self.realPath[-1]), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap", 
-        # __init__ constructor!
-        data = dataSim()
-
-        pastWPs = folium.FeatureGroup("Past Waypoints").add_to(m)
-        nextWPs = folium.FeatureGroup("Next Waypoints").add_to(m)
-
-        folium.PolyLine(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C').add_to(pastWPs)
-
-        # Oraingo posizioa.
-        print(self.droneType)
-        folium.Marker(
-            location=self.realPath[-1],
-            tooltip="Latest",
-            popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1]),
-            icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
-        ).add_to(m)
-
+    def waypointakMarkatu(self, pastWPs, futureWPs):
         # Hasierako waypoint-a
         folium.Marker(
             location=self.pastWaypoints[0],
@@ -54,9 +31,8 @@ class mapPage():
             popup="Home at {} for {}".format(self.pastWaypoints[0], self.droneName),
             icon=folium.Icon(color='black', icon_color='#FFB60C',prefix="fa", icon="house")
         ).add_to(pastWPs)
-
-        # Tarteko waypoint guztiak
-        # Lehenik pasatu ditugunak jada:
+        
+        # Pasatutako tarteko waypointak
         for wp in self.pastWaypoints[1:]:
             folium.Marker(
                 location=wp,
@@ -65,56 +41,108 @@ class mapPage():
                 icon=folium.Icon(color='orange', icon_color='#1c1c1c',prefix="fa", icon="flag")
             ).add_to(pastWPs)
 
-        # pasatu behar ditugunak
-        for wp in self.nextWaypoints[0:-1]:
+        folium.Marker(
+            location=self.nextWaypoints[0],
+            tooltip="Goal point: {}".format(self.nextWaypoints[0]),
+            popup="Goal at {} for {}".format(self.nextWaypoints[0], self.droneName),
+            icon=folium.Icon(color='darkpurple', icon_color='#FcFcFc',prefix="fa", icon="compass")
+        ).add_to(futureWPs)
+
+        for wp in self.nextWaypoints[1:-1]:
             folium.Marker(
                 location=wp,
                 tooltip="Waypoint: {}".format(wp),
                 popup="Waypoint at {} for {}".format(wp, self.droneName),
                 icon=folium.Icon(color='purple', icon_color='#1c1c1c',prefix="fa", icon="compass")
-            ).add_to(nextWPs)
+            ).add_to(futureWPs)
 
-        remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
-        folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(nextWPs)
-
-        # Amaierako waypointa
         folium.Marker(
             location=self.nextWaypoints[-1],
-            tooltip="Home point: {}".format(self.nextWaypoints[-1]),
-            popup="Homne at {} for {}".format(self.nextWaypoints[-1], self.droneName),
+            tooltip="Goal point: {}".format(self.nextWaypoints[-1]),
+            popup="Goal at {} for {}".format(self.nextWaypoints[-1], self.droneName),
             icon=folium.Icon(color='black', icon_color='#DC267F',prefix="fa", icon="flag-checkered")
-        ).add_to(nextWPs)
+        ).add_to(futureWPs)
+        
 
-        m.get_root().width = "1000vw"
-        m.get_root().height = "650vh"
-        folium.LayerControl().add_to(m)
+    def ibilbideaMarkatu(self, m, realLine, futureLine):
+        folium.Marker(
+            location=self.realPath[-1],
+            tooltip="Latest",
+            popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1]),
+            icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
+        ).add_to(m)
 
-        #iframe = m.get_root()._repr_html_()
+        folium.PolyLine(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C').add_to(realLine)
+        remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
+        folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(futureLine)
 
-        #folium.ClickForMarker("<b>Lat:</b> ${lat}<br /><b>Lon:</b> ${lng}")
+        
+        
+    def debekuakMarkatu(self, m):
+        for center in self.bannedAreas:
+            print("Center", end="  ")
+            print(center)
+            radius=center[2]
+            folium.Circle(
+                location=[center[0], center[1]],
+                radius=radius,
+                color="red",
+                weight=1,
+                fill_opacity=0.4,
+                opacity=1,
+                fill_color="red",
+                fill=False,  # gets overridden by fill_color
+                popup="{} meters".format(radius),
+                tooltip="Altitude maximoa koordinatu gabe: 45m",
+            ).add_to(m)
 
+    def map(self):
 
-        #return render_template("map.html", iframe=iframe)
+        if len(self.realPath) > 1:
+            m = folium.Map((self.realPath[-1]), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap",
 
-        m.add_child(
-            folium.LatLngPopup()
-        )
+            pastWPs = folium.FeatureGroup("Past Waypoints").add_to(m)
+            futureWPs = folium.FeatureGroup("Next Waypoints").add_to(m)
+            realLine = folium.FeatureGroup("Real followed path").add_to(m)
+            futureLine = folium.FeatureGroup("Future estimated path").add_to(m)
 
-        m.add_child(
-            folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
-        )
+            self.waypointakMarkatu(pastWPs, futureWPs)
+            self.debekuakMarkatu(m)
+            self.ibilbideaMarkatu(m, realLine, futureLine)
 
-        m.get_root().render()
-        header = m.get_root().header.render()
-        body_html = m.get_root().html.render()
-        script = m.get_root().script.render()
+            # Amaierako waypointa
 
-        return header, body_html, script
-        #return render_template("control.html")
+            m.get_root().width = "1000vw"
+            m.get_root().height = "650vh"
+            folium.LayerControl().add_to(m)
 
- 
+            m.add_child(
+                folium.LatLngPopup()
+            )
 
-        #return map_object
+            m.add_child(
+                folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
+            )
+
+            m.get_root().render()
+            header = m.get_root().header.render()
+            body_html = m.get_root().html.render()
+            script = m.get_root().script.render()
+
+            return header, body_html, script
+        
+        else:
+
+            m = folium.Map((43.263973, -2.951087), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap",
+            
+            m.get_root().render()
+            header = m.get_root().header.render()
+            body_html = m.get_root().html.render()
+            script = m.get_root().script.render()
+
+            return header, body_html, script
+        
+        
 
 class mapInit():
     def map_empty():
