@@ -93,7 +93,7 @@ def control():
             droneak.append(drone)
         page = mapPage(droneID)
         header, body_html, script=page.map()
-        return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
+        return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneak=droneak)
     
 
 @app.route("/froga", methods=['GET','POST'])

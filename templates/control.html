@@ -7,17 +7,6 @@
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     {{ header|safe }}
 
-    <script>
-        function actualizarHora() {
-            const ahora = new Date();
-            const horas = ahora.getHours().toString().padStart(2, '0');
-            const minutos = ahora.getMinutes().toString().padStart(2, '0');
-            document.getElementById("hora").innerText = horas + ":" + minutos;
-        }
-        setInterval(actualizarHora, 60000);
-        window.onload = actualizarHora; 
-    </script>
-
 </head>
 <body>
     <div class="map">
@@ -47,7 +36,7 @@
         </table>
     </div>
     <div class="informazioaren-taula">
-        <h1>Ikusten: M.Ship+ROV:</h1>
+        <h1>Ikusten: {{dronea}}:</h1>
         <table>
             <thead class="taula">
             <tr>
@@ -58,7 +47,7 @@
         <tbody class="taula">
             <tr>
                 <td>Position</td>
-                <td><span id="hora"></span></td>
+                <td>{{timestamp}}</td>
             </tr>
             <tr>
                 <td>{{lat}} N</td><!--Orain dronak duen posizioa sartu-->
