@@ -114,7 +114,8 @@ def froga():
             coords = latin + " " + longin
             if liststr:
                 list = re.findall('\'(.*?)\'',liststr)
-            list.append(coords)
+            if not coords==" ":
+                list.append(coords)
         elif bot == '1':
             list=request.form.get('list')
             root=tk.Tk()

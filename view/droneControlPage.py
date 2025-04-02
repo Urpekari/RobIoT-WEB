@@ -23,6 +23,7 @@ class mapPage():
         self.nextWaypoints = dbOutput.get_waypoint_future(droneID)
         self.bannedAreas = dbOutput.get_banned_areas(self.droneType)
 
+
     def waypointakMarkatu(self, pastWPs, futureWPs):
         # Hasierako waypoint-a
         folium.Marker(
