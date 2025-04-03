@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Root</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    {{ header|safe }}
+</head>
+<body>
+    <div class="izenburu_azalpena">
+        <h1>Aukeratu ibilbidea {{dronea}} dronearentzako:</h1>
+        <p class="izenburu">Koordenatu bat aukeratzeko mapan sakatu eta, behin nahi duzun koordenatua daukazunean "paste" botoia sakatu sure aukera itsasteko.
+             Bestela eskuz sar dezakezu nahi dituzun koordenatuak. Hauek erregistratzeko "enter" botoia sakatu. Bide guztia duzunean "Gorde bidea" botoiarekin gorde dezakezu.</p>
+    </div>
+    <div class="mapa_interaktiboa">
+        {{ body_html|safe }}
+        <script>
+            {{ script|safe }}
+        </script>
+    </div>
+    <div class="insert_bidea">
+        <form action="/insert_path" method="post">
+            <input type="hidden" id="list" name="list" value="{{list}}">
+            <button type="submit" name="botoia" value="1">Paste</button>
+        </form>
+        <br>
+        <table class="izenburu">
+            <tbody>
+                <form action="/insert_path" method="post">
+                    <tr><td><pre style="text-align: right;" class="izenburu">Latitude:     </pre></td><td><input type="number" id="lat" name="lat" value="{{lat}}" required></td></tr>
+                    <tr><td><pre class="izenburu">Longitude:     </pre></td><td><input type="number" id="long" name="long" value="{{long}}" required></td></tr>
+                    </table>
+                    <br>
+                    <input type="hidden" id="list" name="list" value="{{list}}">
+                    <button type="submit" name="botoia" value="2">Enter</button>
+                </form>
+            </tbody>
+            
+        </table>
+        <br><br><br>
+        {%if list%}
+            <h2 class="izenburu">Sartuko den bidea:</h2>
+            <ol class="izenburu">
+                {%for coords in list%}
+                    <li>Latitude: {{coords[0]}}     Longitude: {{coords[1]}}</li>
+                {%endfor%}
+            </ol>
+            <form action="/insert_path" method="post">
+                <input type="hidden" id="list" name="list" value="{{list}}">
+                <button type="submit" name="botoia" value="3">Gorde bidea</button>
+            </form>
+        {%endif%}
+    </div>
+    

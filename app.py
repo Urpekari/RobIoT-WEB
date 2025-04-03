@@ -96,11 +96,11 @@ def control():
         return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneak=droneak)
     
 
-@app.route("/froga", methods=['GET','POST'])
+@app.route("/insert_path", methods=['GET','POST'])
 def froga():
     if request.method == 'GET':
         header, body_html, script=mapInit.map_empty()
-        return render_template("froga.html", header=header, body_html=body_html, script=script)
+        return render_template("insert_path.html", header=header, body_html=body_html, script=script)
     elif request.method == 'POST':
 
         bot=request.form.get('botoia')
@@ -111,31 +111,36 @@ def froga():
             liststr = request.form.get('list')
             latin = request.form.get('lat')
             longin = request.form.get('long')
-            coords = latin + " " + longin
+            coords = [latin,longin]
             if liststr:
-                list = re.findall('\'(.*?)\'',liststr)
-            if not coords==" ":
-                list.append(coords)
+                listtmp = re.findall('\[(.*?)\]',liststr)
+                for coord in listtmp:
+                    coord = re.findall('\'(.*?)\'',coord)
+                    list.append(coord)
+            list.append(coords)
+            if list[0]==[]:
+                list=list[1:]
+
         elif bot == '1':
-            list=request.form.get('list')
+            liststr=request.form.get('list')
+            if liststr:
+                listtmp = re.findall('\[(.*?)\]',liststr)
+                for coord in listtmp:
+                    coord = re.findall('\'(.*?)\'',coord)
+                    list.append(coord)
             root=tk.Tk()
             clipboard_content = root.clipboard_get()
             lines = clipboard_content.split(',')
 
             lat=lines[0]
             long=lines[1]
+        
+        if list:
+            header, body_html, script=mapInit.map_with_pointers(list)
+        else:
+            header, body_html, script=mapInit.map_empty()
 
-        header, body_html, script=mapInit.map_empty()
-
-        return render_template("froga.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list)
-    
-@app.route("/froga1", methods=['POST'])
-def froga1():
-    list = request.form.get('list')
-    lat = request.form.get('lat')
-    long = request.form.get('long')
-
-    return redirect(url_for('froga', lat=lat, long=long))
+        return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list)
 
 @app.route('/insert_drone', methods=['GET','POST'])
 def erregistratu2():
