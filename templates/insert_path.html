@@ -24,6 +24,9 @@
             <input type="hidden" id="list" name="list" value="{{list}}">
             <button type="submit" name="botoia" value="1">Paste</button>
         </form>
+        {% if error %}
+            <p class="error"><strong>Error:</strong> {{error}}</p>
+        {%endif%}
         <br>
         <table class="izenburu">
             <tbody>
@@ -43,7 +46,7 @@
             <h2 class="izenburu">Sartuko den bidea:</h2>
             <ol class="izenburu">
                 {%for coords in list%}
-                    <li>Latitude: {{coords[0]}}     Longitude: {{coords[1]}}</li>
+                    <li>Latitude: {{coords[0]}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Longitude: {{coords[1]}}</li>
                 {%endfor%}
             </ol>
             <form action="/insert_path" method="post">

@@ -107,6 +107,7 @@ def froga():
         lat=""
         long=""
         list=[]
+        error = None
         if bot == '2':
             liststr = request.form.get('list')
             latin = request.form.get('lat')
@@ -128,19 +129,23 @@ def froga():
                 for coord in listtmp:
                     coord = re.findall('\'(.*?)\'',coord)
                     list.append(coord)
+                if list[0]==[]:
+                    list=list[1:]
             root=tk.Tk()
             clipboard_content = root.clipboard_get()
             lines = clipboard_content.split(',')
-
-            lat=lines[0]
-            long=lines[1]
+            if len(lines)<2:
+                error="Ez dira koordenatuak ondo kopiatu"
+            else:
+                lat=lines[0]
+                long=lines[1]
         
         if list:
             header, body_html, script=mapInit.map_with_pointers(list)
         else:
             header, body_html, script=mapInit.map_empty()
 
-        return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list)
+        return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error)
 
 @app.route('/insert_drone', methods=['GET','POST'])
 def erregistratu2():
