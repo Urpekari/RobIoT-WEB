@@ -231,12 +231,3 @@ def gw_insert(uuid):
 #    page = mapPage(droneID)
 #    content = page.map(droneID)
 #    return content
-
-@app.route('/get_coords', methods=['POST'])
-def get_coords():
-    data = request.get_json()
-    lat = data['lat']
-    lng = data['lng']
-    print(lat)
-    print(lng)
-    return jsonify({'lat': lat, 'lng': lng})
