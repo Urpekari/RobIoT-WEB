@@ -47,9 +47,9 @@ def login():
         username = request.form['erabiltzailea']
         password = request.form['pasahitza']
         
-        if dboutput.erabiltzailea_egiaztatu(username, password): #llama a la funcion de arriba q mira en la base de datos
-            session['erabiltzailea'] = username #guarda el usuario en session que es como una memoria temporal del flask
-            return redirect(url_for('control')) #manda al usuario a la siguiente pagina, en este caso dashboard
+        if dboutput.erabiltzailea_egiaztatu(username, password):    # Goiko datu-base funtzioa deitzen du
+            session['erabiltzailea'] = username                     # Erabiltzailea "session" baten gordetzen du, flask-ek kudeatzen du
+            return redirect(url_for('control'))                     # Hurrengo orrira bidaltzen du erabiltzailea
         else:
             return render_template('login.html',error = "Erabiltzaile edo pasahitz ezegokia")
         
@@ -162,58 +162,30 @@ def erregistratu2():
         dbinput.insert_Partekatzeak(erab_id,drone_id,"Jabea")
         return redirect(url_for('control'))
 
-        #if dbinput.insert_Droneak(izenaDrone, mota, deskribapena):
-        #    return redirect(url_for('control'))
-        #else:
-        #    return render_template('insert_drone.html',error="Jadanik existitzen da dron bat izen horrekin.")
-
-@app.route("/gwInsert/<uuid>",methods=['POST'])
-def gw_insert(uuid):
+@app.route("/gwInsert/<gwid>",methods=['POST'])
+def gw_insert(gwid):
     content = request.get_json()
-    #print(content['hello'])
-    #print(content['robiotId'])
-    print(content['lat'])
-    print(content['lon'])
-    #print(content['alt'])
 
-    # Ez dakit hau nahiago dugun edo GPS-tik lortutako ordua.
     date = datetime.now()
     print(date)
     time_parsed = date#.strftime("%y-%m-%d %H:%M:%S.%f")
 
     dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], time_parsed, "DOW")
-    return(jsonify({"uuid":uuid}))
+    waypoints = []
+    waypoints = dboutput.get_next_waypoint(content['robiotId'])
+    
+    print(waypoints)
 
-#@app.route("/database")
-#def database_show():
-#    return render_template(
-#        "database.html",
-#        header=tables.Droneak_header,
-#        items=dboutput.get_info(tables.Droneak)
-#    )
+    reply = {
 
-#@app.route("/database/dowload")
-#def download_csv():
-#    csv = dboutput.create_csv(tables.Droneak)
-#    return Response(
-#        csv,
-#        mimetype="text/csv",
-#        headers={"Content-disposition":
-#                 "attachment; filename=Erabiltzaileak.csv"})
+        "gwid":gwid,
+        "robiotId" : content['robiotId'],
+        "wpLat":waypoints[0],
+        "wpLon" : waypoints[1],
+        "wpAlt" : waypoints[2],
+    }
 
-#@app.route("/database/insert",methods=['POST'])
-#def in_drone():
-#    info=(request.form["izena"],request.form["mota"],request.form["deskribapena"])
-#    dbinput.insert_Droneak(info)
-#    return redirect(url_for("database_show"))
-
-#@app.route("/map", methods=["GET", "POST"])
-#def callMap():
-#    droneID=1
-#    print(droneID)
-#    page = mapPage(droneID)
-#    content = page.map(droneID)
-#    return content
+    return(reply)
 
 @app.route('/get_coords', methods=['POST'])
 def get_coords():

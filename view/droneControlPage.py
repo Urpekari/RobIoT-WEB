@@ -24,60 +24,69 @@ class mapPage():
         self.bannedAreas = dbOutput.get_banned_areas(self.droneType)
 
 
-    def waypointakMarkatu(self, pastWPs, futureWPs):
-        # Hasierako waypoint-a
-        folium.Marker(
-            location=self.pastWaypoints[0],
-            tooltip="Home point: {}".format(self.pastWaypoints[0]),
-            popup="Home at {} for {}".format(self.pastWaypoints[0], self.droneName),
-            icon=folium.Icon(color='black', icon_color='#FFB60C',prefix="fa", icon="house")
-        ).add_to(pastWPs)
+    def waypointakMarkatu(self, pastWPs, futureWPs, futureLine):
         
-        # Pasatutako tarteko waypointak
-        for wp in self.pastWaypoints[1:]:
+        if len(self.pastWaypoints) > 0:
+            
+            # Hasierako waypoint-a
             folium.Marker(
-                location=wp,
-                tooltip="Past waypoint: {}".format(wp),
-                popup="Waypoint at {} past by {}".format(wp, self.droneName),
-                icon=folium.Icon(color='orange', icon_color='#1c1c1c',prefix="fa", icon="flag")
+                location=self.pastWaypoints[0],
+                tooltip="Home point: {}".format(self.pastWaypoints[0]),
+                popup="Home at {} for {}".format(self.pastWaypoints[0], self.droneName),
+                icon=folium.Icon(color='black', icon_color='#FFB60C',prefix="fa", icon="house")
             ).add_to(pastWPs)
+            
+            # Pasatutako tarteko waypointak
+            for wp in self.pastWaypoints[1:]:
+                folium.Marker(
+                    location=wp,
+                    tooltip="Past waypoint: {}".format(wp),
+                    popup="Waypoint at {} past by {}".format(wp, self.droneName),
+                    icon=folium.Icon(color='orange', icon_color='#1c1c1c',prefix="fa", icon="flag")
+                ).add_to(pastWPs)
 
-        folium.Marker(
-            location=self.nextWaypoints[0],
-            tooltip="Goal point: {}".format(self.nextWaypoints[0]),
-            popup="Goal at {} for {}".format(self.nextWaypoints[0], self.droneName),
-            icon=folium.Icon(color='darkpurple', icon_color='#FcFcFc',prefix="fa", icon="compass")
-        ).add_to(futureWPs)
+        if len(self.nextWaypoints) > 0:
 
-        for wp in self.nextWaypoints[1:-1]:
             folium.Marker(
-                location=wp,
-                tooltip="Waypoint: {}".format(wp),
-                popup="Waypoint at {} for {}".format(wp, self.droneName),
-                icon=folium.Icon(color='purple', icon_color='#1c1c1c',prefix="fa", icon="compass")
+                location=self.nextWaypoints[0],
+                tooltip="Goal point: {}".format(self.nextWaypoints[0]),
+                popup="Goal at {} for {}".format(self.nextWaypoints[0], self.droneName),
+                icon=folium.Icon(color='darkpurple', icon_color='#FcFcFc',prefix="fa", icon="compass")
             ).add_to(futureWPs)
 
-        folium.Marker(
-            location=self.nextWaypoints[-1],
-            tooltip="Goal point: {}".format(self.nextWaypoints[-1]),
-            popup="Goal at {} for {}".format(self.nextWaypoints[-1], self.droneName),
-            icon=folium.Icon(color='black', icon_color='#DC267F',prefix="fa", icon="flag-checkered")
-        ).add_to(futureWPs)
+            if len(self.nextWaypoints) > 1:
+                for wp in self.nextWaypoints[1:-1]:
+                    folium.Marker(
+                        location=wp,
+                        tooltip="Waypoint: {}".format(wp),
+                        popup="Waypoint at {} for {}".format(wp, self.droneName),
+                        icon=folium.Icon(color='purple', icon_color='#1c1c1c',prefix="fa", icon="compass")
+                    ).add_to(futureWPs)
+
+                # Etorkizuneko ibilbidea dronetik hasiko da, dronearen GPS datuak baditugu.
+                if len(self.realPath) > 0:
+                    remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
+                else:
+                    remainingPath = self.nextWaypoints[:]
+
+                folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(futureLine)
+
+            folium.Marker(
+                location=self.nextWaypoints[-1],
+                tooltip="Goal point: {}".format(self.nextWaypoints[-1]),
+                popup="Goal at {} for {}".format(self.nextWaypoints[-1], self.droneName),
+                icon=folium.Icon(color='black', icon_color='#DC267F',prefix="fa", icon="flag-checkered")
+            ).add_to(futureWPs)
         
 
-    def ibilbideaMarkatu(self, m, realLine, futureLine):
+    def ibilbideaMarkatu(self, m, realLine):
         folium.Marker(
             location=self.realPath[-1],
             tooltip="Latest",
             popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1]),
             icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
         ).add_to(m)
-
         folium.PolyLine(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C').add_to(realLine)
-        remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
-        folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(futureLine)
-
-        
         
     def debekuakMarkatu(self, m):
         for center in self.bannedAreas:
@@ -99,49 +108,38 @@ class mapPage():
 
     def map(self):
 
-        if len(self.realPath) > 1:
+        if len(self.realPath) > 0:
             m = folium.Map((self.realPath[-1]), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap",
-
-            pastWPs = folium.FeatureGroup("Past Waypoints").add_to(m)
-            futureWPs = folium.FeatureGroup("Next Waypoints").add_to(m)
             realLine = folium.FeatureGroup("Real followed path").add_to(m)
-            futureLine = folium.FeatureGroup("Future estimated path").add_to(m)
-
-            self.waypointakMarkatu(pastWPs, futureWPs)
-            self.debekuakMarkatu(m)
-            self.ibilbideaMarkatu(m, realLine, futureLine)
-
-            # Amaierako waypointa
-
-            m.get_root().width = "1000vw"
-            m.get_root().height = "650vh"
-            folium.LayerControl().add_to(m)
-
-            m.add_child(
-                folium.LatLngPopup()
-            )
-
-            m.add_child(
-                folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
-            )
-
-            m.get_root().render()
-            header = m.get_root().header.render()
-            body_html = m.get_root().html.render()
-            script = m.get_root().script.render()
-
-            return header, body_html, script
-        
+            self.ibilbideaMarkatu(m, realLine)
         else:
-
             m = folium.Map((43.263973, -2.951087), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap",
-            
-            m.get_root().render()
-            header = m.get_root().header.render()
-            body_html = m.get_root().html.render()
-            script = m.get_root().script.render()
 
-            return header, body_html, script
+        pastWPs = folium.FeatureGroup("Past Waypoints").add_to(m)
+        futureWPs = folium.FeatureGroup("Next Waypoints").add_to(m)
+        futureLine = folium.FeatureGroup("Future estimated path").add_to(m)
+
+        self.waypointakMarkatu(pastWPs, futureWPs, futureLine)
+        self.debekuakMarkatu(m)
+
+        m.get_root().width = "1000vw"
+        m.get_root().height = "650vh"
+        folium.LayerControl().add_to(m)
+
+        m.add_child(
+            folium.LatLngPopup()
+        )
+
+        m.add_child(
+            folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
+        )
+
+        m.get_root().render()
+        header = m.get_root().header.render()
+        body_html = m.get_root().html.render()
+        script = m.get_root().script.render()
+
+        return header, body_html, script
         
         
 
