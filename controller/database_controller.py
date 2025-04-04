@@ -80,7 +80,7 @@ class output():
         cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (id_erab,))
         erab_dron = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
-        return [sublist[2] for sublist in erab_dron]
+        return [sublist[2] for sublist in erab_dron], [sublist[3] for sublist in erab_dron]
     
     def get_drone_info(self,id_drone):
         cur = self.mysql.connection.cursor()

@@ -20,7 +20,7 @@
         </script>
     </div>
     <div class="insert_bidea">
-        <form action="/insert_path" method="post">
+        <form action="{{url_for('insert_path',drone=dronea)}}" method="post">
             <input type="hidden" id="list" name="list" value="{{list}}">
             <button type="submit" name="botoia" value="1">Paste</button>
         </form>
@@ -30,7 +30,7 @@
         <br>
         <table class="izenburu">
             <tbody>
-                <form action="/insert_path" method="post">
+                <form action="{{url_for('insert_path',drone=dronea)}}" method="post">
                     <tr><td><pre style="text-align: right;" class="izenburu">Latitude:     </pre></td><td><input type="number" id="lat" name="lat" value="{{lat}}" required></td></tr>
                     <tr><td><pre class="izenburu">Longitude:     </pre></td><td><input type="number" id="long" name="long" value="{{long}}" required></td></tr>
                     </table>
@@ -50,7 +50,7 @@
                 {%endfor%}
             </ol>
                 
-            <form style="bottom: 0;position: fixed;" action="/insert_path" method="post">
+            <form style="bottom: 0;position: fixed;" action="{{url_for('insert_path',drone=dronea)}}" method="post">
                 <input type="hidden" id="list" name="list" value="{{list}}">
                 <button type="submit" name="botoia" value="3">Gorde bidea</button>
             </form>
