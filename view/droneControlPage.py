@@ -1,5 +1,6 @@
 import folium
 import folium.map
+from folium import plugins
 
 #from view.droneViewer import *
 from controller.database_controller import *
@@ -22,6 +23,7 @@ class mapPage():
         self.pastWaypoints = dbOutput.get_waypoint_past(droneID)
         self.nextWaypoints = dbOutput.get_waypoint_future(droneID)
         self.bannedAreas = dbOutput.get_banned_areas(self.droneType)
+        self.restrictedAreas = dbOutput.get_restricted_areas(self.droneType)
 
 
     def waypointakMarkatu(self, pastWPs, futureWPs, futureLine):
@@ -80,31 +82,65 @@ class mapPage():
         
 
     def ibilbideaMarkatu(self, m, realLine):
+        
+        folium.plugins.BoatMarker(
+            location=(self.realPath[-1]),
+            heading=45,
+            color="#FFB60C"
+        ).add_to(m)
+        
         folium.Marker(
             location=self.realPath[-1],
             tooltip="Latest",
             popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1]),
             icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
         ).add_to(m)
-        folium.PolyLine(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C').add_to(realLine)
+        folium.plugins.AntPath(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C', dash_array=[30, 50]).add_to(realLine)
         
     def debekuakMarkatu(self, m):
-        for center in self.bannedAreas:
-            print("Center", end="  ")
-            print(center)
-            radius=center[2]
-            folium.Circle(
-                location=[center[0], center[1]],
-                radius=radius,
-                color="red",
-                weight=1,
-                fill_opacity=0.4,
-                opacity=1,
-                fill_color="red",
-                fill=False,  # gets overridden by fill_color
-                popup="{} meters".format(radius),
-                tooltip="Altitude maximoa koordinatu gabe: 45m",
-            ).add_to(m)
+
+        bans = folium.FeatureGroup("Banned areas").add_to(m)
+        limits = folium.FeatureGroup("Restricted operation").add_to(m)
+
+        if self.restrictedAreas:
+            for center in self.restrictedAreas:
+                tooltip = center[4]
+                radius=center[2]
+                if center[3] > 0:
+                    maxAltitude = center[3]
+                    popup = "Maximum altitude: {}m".format(maxAltitude)
+                else:
+                    popup = "Specific and special permission required."
+                    
+                folium.Circle(
+                    location=[center[0], center[1]],
+                    radius=radius,
+                    color="orange",
+                    weight=1,
+                    fill_opacity=0.4,
+                    opacity=1,
+                    fill_color="orange",
+                    fill=False,  # gets overridden by fill_color
+                    popup=popup,
+                    tooltip=tooltip,
+                ).add_to(limits)
+
+        if self.bannedAreas:
+            for center in self.bannedAreas:
+                tooltip = center[4]
+                radius=center[2]
+                folium.Circle(
+                    location=[center[0], center[1]],
+                    radius=radius,
+                    color="darkpurple",
+                    weight=1,
+                    fill_opacity=0.4,
+                    opacity=1,
+                    fill_color="purple",
+                    fill=False,  # gets overridden by fill_color
+                    popup=tooltip,
+                    tooltip=tooltip,
+                ).add_to(bans)
 
     def map(self):
 
@@ -118,9 +154,10 @@ class mapPage():
         pastWPs = folium.FeatureGroup("Past Waypoints").add_to(m)
         futureWPs = folium.FeatureGroup("Next Waypoints").add_to(m)
         futureLine = folium.FeatureGroup("Future estimated path").add_to(m)
+        restrictions = folium.FeatureGroup("Restricted and banned areas").add_to(m)
 
         self.waypointakMarkatu(pastWPs, futureWPs, futureLine)
-        self.debekuakMarkatu(m)
+        self.debekuakMarkatu(restrictions)
 
         m.get_root().width = "1000vw"
         m.get_root().height = "650vh"
@@ -140,8 +177,6 @@ class mapPage():
         script = m.get_root().script.render()
 
         return header, body_html, script
-        
-        
 
 class mapInit():
     def map_empty():
@@ -182,7 +217,7 @@ class mapInit():
             if listfloat[0]==[]:
                 listfloat=listfloat[1:]
         
-        folium.PolyLine(listfloat, tooltip="Path that will be followed", color='#FFB60C').add_to(m)
+        # folium.plugins.AntPath(listfloat, tooltip="Path that will be followed", color='#FFB60C').add_to(m)
 
         m.get_root().width = "1000vw"
         m.get_root().height = "650vh"

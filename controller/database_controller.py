@@ -1,5 +1,4 @@
-
-import env
+import other.banned_areas as bans
 
 class tables():
     Baimenak="Baimenak"
@@ -200,17 +199,19 @@ class output():
     
     def get_waypoint_past(self, droneID):
         waypoints = self.get_waypoints(droneID, "UPP")
-        print(waypoints)
         return waypoints
 
     def get_waypoint_future(self, droneID):
         waypoints = self.get_waypoints(droneID, "UPF")
-        print(waypoints)
         return waypoints
 
     def get_banned_areas(self, droneType):
-        # Bilboko aireportuaren koordenatuak eta 8km-ko erradioa. Hemen barruan 45m baino baxuago hegan egin daiteke soilik.
-        return([[43.303071,-2.916789, 8000, 45]])
+        if droneType.lower() == "plane":
+            return(bans.planeBans)
+    
+    def get_restricted_areas(self, droneType):
+        if droneType.lower() == "plane":
+            return(bans.planeLimits)
 
 class input():
     _instance = None

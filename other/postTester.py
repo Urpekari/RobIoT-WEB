@@ -7,7 +7,7 @@ idealLon = -3.141321
 
 gwid = 2
 
-url = "http://127.0.0.1:8080/gwInsert/{}".format(gwid)
+url = "http://127.0.0.1:5000/gwInsert/{}".format(gwid)
 
 while True:
     data = {
