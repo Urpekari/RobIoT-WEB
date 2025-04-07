@@ -72,23 +72,26 @@ def erregistratu():
 
 @app.route("/control", methods=['GET','POST'])
 def control():
-    if request.method == 'GET':
-        droneak,_=get_erab_drone_list(session['erabiltzailea'])
-        header, body_html, script=mapInit.map_empty()
-        return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
-    elif request.method == 'POST':
-        bot=request.form.get('botoia')
-        drone_izena=request.form.get('drone_izena')
-        ikusi=None
-        droneak,id=get_erab_drone_list(session['erabiltzailea'])
-        for pos,drone in enumerate(droneak):
-            if drone == drone_izena:
-                droneID=id[pos]
-        page = mapPage(droneID)
-        header, body_html, script=page.map()
-        if not drone_izena[-3:] == "_pi":
-            ikusi=1
-        return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneak=droneak, ikusi=ikusi)
+    if session['erabiltzailea']==None:
+        return redirect(url_for('index'))
+    else:
+        if request.method == 'GET':
+            droneak,_=get_erab_drone_list(session['erabiltzailea'])
+            header, body_html, script=mapInit.map_empty()
+            return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
+        elif request.method == 'POST':
+            bot=request.form.get('botoia')
+            drone_izena=request.form.get('drone_izena')
+            ikusi=None
+            droneak,id=get_erab_drone_list(session['erabiltzailea'])
+            for pos,drone in enumerate(droneak):
+                if drone == drone_izena:
+                    droneID=id[pos]
+            page = mapPage(droneID)
+            header, body_html, script=page.map()
+            if not drone_izena[-3:] == "_pi":
+                ikusi=1
+            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneak=droneak, ikusi=ikusi)
 
     
 def get_erab_drone_list(erab):
@@ -106,83 +109,84 @@ def get_erab_drone_list(erab):
 
 @app.route("/insert_path/<drone>", methods=['GET','POST'])
 def insert_path(drone):
-    if request.method == 'GET':
-        header, body_html, script=mapInit.map_empty()
-        return render_template("insert_path.html", header=header, body_html=body_html, script=script, dronea=drone)
-    elif request.method == 'POST':
-        bot=request.form.get('botoia')
-        lat=""
-        long=""
-        list=[]
-        error = None
-        liststr=request.form.get('list')
-        if liststr:
-            listtmp = re.findall('\[(.*?)\]',liststr)
-            for coord in listtmp:
-                coord = re.findall('\'(.*?)\'',coord)
-                list.append(coord)
-            if list[0]==[]:
-                list=list[1:]
-        
-        if bot == '1': 
-            root=tk.Tk()
-            clipboard_content = root.clipboard_get()
-            lines = clipboard_content.split(',')
-            if len(lines)<2:
-                error="Ez dira koordenatuak ondo kopiatu"
-            else:
-                lat=lines[0]
-                long=lines[1]
-
-            if list:
-                header, body_html, script=mapInit.map_with_pointers(list)
-            else:
-                header, body_html, script=mapInit.map_empty()
-            return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
-
-        elif bot == '2':
-            latin = request.form.get('lat')
-            longin = request.form.get('long')
-            coords = [latin,longin]
-            list.append(coords)
-            if list[0]==[]:
-                list=list[1:]
-        
-            if list:
-                header, body_html, script=mapInit.map_with_pointers(list)
-            else:
-                header, body_html, script=mapInit.map_empty()
-            return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
-        
-        elif bot == '3':
-            droneak,id=get_erab_drone_list(session['erabiltzailea'])
-            for pos,dronea in enumerate(droneak):
-                if dronea == drone:
-                    droneID=id[pos]
-            for coords in list:
-                dbinput.insert_GPS_kokapena(droneID,coords[1],coords[0],None,datetime.now(),"UPF")
+    if session['erabiltzailea']==None:
+        return redirect(url_for('index'))
+    else:
+        if request.method == 'GET':
+            header, body_html, script=mapInit.map_empty()
+            return render_template("insert_path.html", header=header, body_html=body_html, script=script, dronea=drone)
+        elif request.method == 'POST':
+            bot=request.form.get('botoia')
+            lat=""
+            long=""
+            list=[]
+            error = None
+            liststr=request.form.get('list')
+            if liststr:
+                listtmp = re.findall('\[(.*?)\]',liststr)
+                for coord in listtmp:
+                    coord = re.findall('\'(.*?)\'',coord)
+                    list.append(coord)
+                if list[0]==[]:
+                    list=list[1:]
             
-            return redirect(url_for('control'))
+            if bot == '1': 
+                root=tk.Tk()
+                clipboard_content = root.clipboard_get()
+                lines = clipboard_content.split(',')
+                if len(lines)<2:
+                    error="Ez dira koordenatuak ondo kopiatu"
+                else:
+                    lat=lines[0]
+                    long=lines[1]
+
+                if list:
+                    header, body_html, script=mapInit.map_with_pointers(list)
+                else:
+                    header, body_html, script=mapInit.map_empty()
+                return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
+
+            elif bot == '2':
+                latin = request.form.get('lat')
+                longin = request.form.get('long')
+                coords = [latin,longin]
+                list.append(coords)
+                if list[0]==[]:
+                    list=list[1:]
+            
+                if list:
+                    header, body_html, script=mapInit.map_with_pointers(list)
+                else:
+                    header, body_html, script=mapInit.map_empty()
+                return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
+            
+            elif bot == '3':
+                droneak,id=get_erab_drone_list(session['erabiltzailea'])
+                for pos,dronea in enumerate(droneak):
+                    if dronea == drone:
+                        droneID=id[pos]
+                for coords in list:
+                    dbinput.insert_GPS_kokapena(droneID,coords[1],coords[0],None,datetime.now(),"UPF")
+                
+                return redirect(url_for('control'))
 
 @app.route('/insert_drone', methods=['GET','POST'])
-def erregistratu2():
-    if request.method == 'GET':
-        return render_template('insert_drone.html')
-    elif request.method == 'POST':
-        izenaDrone = request.form.get('izenaDrone')
-        mota = request.form.get('mota')
-        deskribapena = request.form.get('deskribapena')
+def drone_erregistratu():
+    if session['erabiltzailea']==None:
+        return redirect(url_for('index'))
+    else:
+        if request.method == 'GET':
+            return render_template('insert_drone.html')
+        elif request.method == 'POST':
+            izenaDrone = request.form.get('izenaDrone')
+            mota = request.form.get('mota')
+            deskribapena = request.form.get('deskribapena')
 
-        dbinput.insert_Droneak(izenaDrone, mota, deskribapena)
-        erab_id=dboutput.get_erab_id(session['erabiltzailea'])
-        drone_id=dboutput.get_drone_id(izenaDrone, mota, deskribapena)
-        dbinput.insert_Partekatzeak(erab_id,drone_id,"Jabea")
-        return redirect(url_for('control'))
-
-        #if dbinput.insert_Droneak(izenaDrone, mota, deskribapena):
-        #    return redirect(url_for('control'))
-        #else:
-        #    return render_template('insert_drone.html',error="Jadanik existitzen da dron bat izen horrekin.")
+            dbinput.insert_Droneak(izenaDrone, mota, deskribapena)
+            erab_id=dboutput.get_erab_id(session['erabiltzailea'])
+            drone_id=dboutput.get_drone_id(izenaDrone, mota, deskribapena)
+            dbinput.insert_Partekatzeak(erab_id,drone_id,"Jabea")
+            return redirect(url_for('control'))
 
 @app.route("/gwInsert/<uuid>",methods=['POST'])
 def gw_insert(uuid):
