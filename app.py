@@ -84,7 +84,7 @@ def control():
                     droneID=id[pos]
             page = mapPage(droneID)
             header, body_html, script=page.map()
-            if not drone_izena[-2:] == "_i":
+            if not drone_izena[-6:] == "_ikusi":
                 ikusi=1
             return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneak=droneak, ikusi=ikusi)
     except KeyError as e:

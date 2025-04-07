@@ -72,7 +72,7 @@ class output():
         cur.execute("SELECT Izen FROM Erabiltzaileak WHERE idErabiltzaileak = %s", (id_erab,))
         erab_izen = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
-        return erab_izen
+        return erab_izen[0]
     
     def get_sentsore_id(self,izena):
         cur = self.mysql.connection.cursor()
