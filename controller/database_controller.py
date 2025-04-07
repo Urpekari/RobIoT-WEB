@@ -1,5 +1,4 @@
-
-import env
+import other.banned_areas as bans
 
 class tables():
     Baimenak="Baimenak"
@@ -152,23 +151,27 @@ class output():
     
     def get_latitudes(self, droneID, dir):
         cur = self.mysql.connection.cursor()
-        query = ("SELECT Latitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s")
+        query = ("SELECT Latitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
         cur.execute(query,(droneID,dir))
         lats = cur.fetchall()
         cur.close()
-        print("Lats:",end="  ")
-        print(lats)
         return lats
 
     def get_longitudes(self, droneID, dir):
         cur = self.mysql.connection.cursor()
-        query = ("SELECT Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s")
+        query = ("SELECT Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s ")
         cur.execute(query,(droneID,dir))
         lons = cur.fetchall()
         cur.close()
-        print("Lon:",end="  ")
-        print(lons)
         return lons
+    
+    def get_altitudes(self, droneID, dir):
+        cur = self.mysql.connection.cursor()
+        query = ("SELECT Altitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
+        cur.execute(query,(droneID,dir))
+        lats = cur.fetchall()
+        cur.close()
+        return lats
 
     def get_waypoints(self, droneID, dir):
         lats = self.get_latitudes(droneID, dir)
@@ -176,23 +179,38 @@ class output():
         waypoints = []
         if len(lats) == len(lons):
             for i in range(len(lats)):
-                print("{} iteration with {} and {}".format(i, lats[i][0], lons[i][0]))
                 waypoints.append([lats[i][0], lons[i][0]])
         return waypoints
     
+    def get_waypoints_full(self, droneID, dir):
+        lats = self.get_latitudes(droneID, dir)
+        lons = self.get_longitudes(droneID, dir)
+        alts = self.get_altitudes(droneID, dir)
+        waypoints = []
+        if len(lats) == len(lons):
+            for i in range(len(lats)):
+                waypoints.append([lats[i][0], lons[i][0], alts[i][0]])
+        return waypoints
+
+    def get_next_waypoint(self, droneID):
+        waypoints = self.get_waypoints_full(droneID, "UPF")
+        return(waypoints[0])
+        
     def get_waypoint_past(self, droneID):
         waypoints = self.get_waypoints(droneID, "UPP")
-        print(waypoints)
         return waypoints
 
     def get_waypoint_future(self, droneID):
         waypoints = self.get_waypoints(droneID, "UPF")
-        print(waypoints)
         return waypoints
 
     def get_banned_areas(self, droneType):
-        # Bilboko aireportuaren koordenatuak eta 8km-ko erradioa. Hemen barruan 45m baino baxuago hegan egin daiteke soilik.
-        return([[43.303071,-2.916789, 8000, 45]])
+        if droneType.lower() == "plane":
+            return(bans.planeBans)
+    
+    def get_restricted_areas(self, droneType):
+        if droneType.lower() == "plane":
+            return(bans.planeLimits)
 
 class input():
     _instance = None
