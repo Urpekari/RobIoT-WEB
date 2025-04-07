@@ -76,9 +76,11 @@
 
         <tr>
             <td>
-                <a href="/">
-                    <button>Ibilbidearen xehetasunak</button>
-                </a>
+                {%if ikusi%}
+                    <a href="{{url_for('insert_path',drone=dronea)}}">
+                        <button>Ibilbidea gehitu</button>
+                    </a>
+                {%endif%}
             </td>
             <td>
                 <a href="/">
@@ -112,7 +114,8 @@
                 <tr>
                     <td>
                         <form action="/control" method="post">
-                            <button class="link-button" name="drone_izena" value="{{ row }}">{{ row }}</button>
+                            <input type="hidden" name="drone_izena" value="{{ row }}">
+                            <button class="link-button" name="botoia" value="1">{{ row }}</button>
                         </form>
                     </td>
                 </tr>
