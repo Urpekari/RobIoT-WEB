@@ -142,6 +142,7 @@ def insert_path(drone):
                     header, body_html, script=mapInit.map_with_pointers(list)
                 else:
                     header, body_html, script=mapInit.map_empty()
+                root.destroy()
                 return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
 
             elif bot == '2':
