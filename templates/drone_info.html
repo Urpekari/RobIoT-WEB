@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>drone_info</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    </head>
+<body>
+    <div class="dronearen-informazioa"></div>
+        <h1>Dronearen informazioa: {{dronea}}</h1>
+        <table>
+            <tr>
+                <td>Izena</td>
+                <td>{{izena}}</td>
+            </tr>
+            <tr>
+                <td>Mota</td>
+                <td>{{mota}}</td>
+            </tr>
+            <tr>
+                <td>Deskribapena</td>
+                <td>{{deskribapena}}</td>
+            </tr>
+        </table>
+        <form action="/modify_drone" method="post">
+            <button type="submit">Aldatu informazioa</button>
+            <button type="submit">Atzera</button>
+        </form>
+        </div>
+</body>
+</html>
