@@ -7,6 +7,20 @@
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
     <body>
-        
+        <h1>Droneak aldatzeko formularioa</h1>
+        <h2>Aukeratu zure dronetatik zein modifikatu nahi duzun:</h2>
+        <form action="/modify_drone" method="post">
+            <input type="text" id="izenaDrone" name="izenaDrone" placeholder="Izen berria" required>
+            <select id="mota" name="mota">
+                <option value="Hegazkina">Hegazkina</option>
+                <option value="Itsasontzia">Itsasontzia</option>
+                <option value="Submarinoa">Submarinoa</option>
+                <option value="Multikopteroa">Multikopteroa</option>
+                <option value="Kotxea">Kotxea</option>
+            </select>
+            <input type="text" id="deskribapena" name="deskribapena" placeholder="Deskribapen berria" required>
+            <button type="submit">Aldatu</button>
+            <button type="submit">Sentsore gehitu</button>
+        </form>
     </body>
 </html>
