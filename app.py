@@ -96,9 +96,10 @@ def get_erab_drone_list(erab):
     droneak=[]
     for pos,id in enumerate(id_drone):
         drone=dboutput.get_drone_info(id)
-        jabe=dboutput.get_drone_jabe(id)
-        if not jabe==erab:
-            drone=drone+"_"+jabe
+        jabe_id=dboutput.get_drone_jabe(id)
+        jabe_izen=dboutput.get_erab_izen(jabe_id)
+        if not jabe_izen==erab:
+            drone=drone+"_"+jabe_izen
             if baimen[pos] == "Kontrolatu":
                 drone=drone+"_kontrolatu"
             elif baimen[pos] == "Ikusi":
@@ -169,7 +170,7 @@ def insert_path(drone):
     except KeyError as e:
         return redirect(url_for('index'))
 
-@app.route('/insert_drone', methods=['GET','POST'])
+@app.route('/insert-drone', methods=['GET','POST'])
 def drone_erregistratu():
     try:
         if request.method == 'GET':

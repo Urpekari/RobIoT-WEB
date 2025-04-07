@@ -67,6 +67,13 @@ class output():
         cur.close()
         return usuario[0]
     
+    def get_erab_izen(self,id_erab):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT Izen FROM Erabiltzaileak WHERE idErabiltzaileak = %s", (id_erab,))
+        erab_izen = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return erab_izen
+    
     def get_sentsore_id(self,izena):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Sentsoreak WHERE Izen = %s", (izena,))
@@ -90,7 +97,7 @@ class output():
 
     def get_drone_jabe(self,id_dron):
         cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
+        cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
         jabe_dron = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
         return jabe_dron
