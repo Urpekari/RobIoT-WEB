@@ -70,15 +70,12 @@ def erregistratu():
 
 @app.route("/control", methods=['GET','POST'])
 def control():
-    if session['erabiltzailea']==None:
-        return redirect(url_for('index'))
-    else:
+    try:
         if request.method == 'GET':
             droneak,_=get_erab_drone_list(session['erabiltzailea'])
             header, body_html, script=mapInit.map_empty()
             return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
         elif request.method == 'POST':
-            bot=request.form.get('botoia')
             drone_izena=request.form.get('drone_izena')
             ikusi=None
             droneak,id=get_erab_drone_list(session['erabiltzailea'])
@@ -87,10 +84,11 @@ def control():
                     droneID=id[pos]
             page = mapPage(droneID)
             header, body_html, script=page.map()
-            if not drone_izena[-3:] == "_pi":
+            if not drone_izena[-2:] == "_i":
                 ikusi=1
             return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneak=droneak, ikusi=ikusi)
-
+    except KeyError as e:
+        return redirect(url_for('index'))
     
 def get_erab_drone_list(erab):
     erab_id=dboutput.get_erab_id(erab)
@@ -98,18 +96,19 @@ def get_erab_drone_list(erab):
     droneak=[]
     for pos,id in enumerate(id_drone):
         drone=dboutput.get_drone_info(id)
-        if baimen[pos] == "Kontrolatu":
-            drone=drone+"_pk"
-        elif baimen[pos] == "Ikusi":
-            drone=drone+"_pi"
+        jabe=dboutput.get_drone_jabe(id)
+        if not jabe==erab:
+            drone=drone+"_"+jabe
+            if baimen[pos] == "Kontrolatu":
+                drone=drone+"_kontrolatu"
+            elif baimen[pos] == "Ikusi":
+                drone=drone+"_ikusi"
         droneak.append(drone)
     return droneak,id_drone
 
 @app.route("/insert_path/<drone>", methods=['GET','POST'])
 def insert_path(drone):
-    if session['erabiltzailea']==None:
-        return redirect(url_for('index'))
-    else:
+    try:
         if request.method == 'GET':
             header, body_html, script=mapInit.map_empty()
             return render_template("insert_path.html", header=header, body_html=body_html, script=script, dronea=drone)
@@ -167,12 +166,12 @@ def insert_path(drone):
                     dbinput.insert_GPS_kokapena(droneID,coords[1],coords[0],None,datetime.now(),"UPF")
                 
                 return redirect(url_for('control'))
+    except KeyError as e:
+        return redirect(url_for('index'))
 
 @app.route('/insert_drone', methods=['GET','POST'])
 def drone_erregistratu():
-    if session['erabiltzailea']==None:
-        return redirect(url_for('index'))
-    else:
+    try:
         if request.method == 'GET':
             return render_template('insert_drone.html')
         elif request.method == 'POST':
@@ -185,9 +184,11 @@ def drone_erregistratu():
             drone_id=dboutput.get_drone_id(izenaDrone, mota, deskribapena)
             dbinput.insert_Partekatzeak(erab_id,drone_id,"Jabea")
             return redirect(url_for('control'))
+    except KeyError as e:
+        return redirect(url_for('index'))
 
-@app.route("/gwInsert/<uuid>",methods=['POST'])
-def gw_insert(uuid):
+@app.route("/gwInsert/<gwid>",methods=['POST'])
+def gw_insert(gwid):
     content = request.get_json()
 
     date = datetime.now()

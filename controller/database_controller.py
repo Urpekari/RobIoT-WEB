@@ -88,16 +88,16 @@ class output():
         cur.close()
         return drone[1]
 
-    def get_jabe_droneak(self,id_erab):
+    def get_drone_jabe(self,id_dron):
         cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s AND Baimenak_idBaimenak = %s", (id_erab,"Jabea"))
-        jabe_dron = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.execute("SELECT * FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
+        jabe_dron = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
-        return [sublist[2] for sublist in jabe_dron]
+        return jabe_dron
     
     def get_drone_GPS(self,id_drone):
         cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM GPS_kokapena WHERE Droneak_idDronek = %s", (id_drone,))
+        cur.execute("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s", (id_drone,))
         GPS_drone = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
         return GPS_drone[-1]
