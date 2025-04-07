@@ -170,6 +170,19 @@ def insert_path(drone):
                     dbinput.insert_GPS_kokapena(droneID,coords[1],coords[0],None,datetime.now(),"UPF")
                 
                 return redirect(url_for('control'))
+            
+            elif bot == '4':
+                rm_coords=request.form.get('rm_coord')
+                coords = re.findall('\'(.*?)\'',rm_coords)
+                list.remove(coords)
+
+                if list:
+                    header, body_html, script=mapInit.map_with_pointers(list)
+                else:
+                    header, body_html, script=mapInit.map_empty()
+                
+                return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
+
     except KeyError as e:
         return redirect(url_for('index'))
 

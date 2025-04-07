@@ -218,7 +218,7 @@ class mapInit():
             if listfloat[0]==[]:
                 listfloat=listfloat[1:]
         
-        # folium.plugins.AntPath(listfloat, tooltip="Path that will be followed", color='#FFB60C').add_to(m)
+        folium.PolyLine(listfloat, tooltip="Path that will be followed", color='#FFB60C').add_to(m)
 
         m.get_root().width = "1000vw"
         m.get_root().height = "650vh"

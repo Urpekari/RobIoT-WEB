@@ -47,10 +47,15 @@
             <ol style="max-height: 50%;overflow-y: scroll;" class="izenburu">
                 {%for coords in list%}
                     <li>Latitude: {{coords[0]}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Longitude: {{coords[1]}}</li>
+                    <form action="{{url_for('insert_path',drone=dronea)}}" method="post">
+                        <input type="hidden" id="rm_coord" name="rm_coord" value="{{coords}}">
+                        <input type="hidden" id="list" name="list" value="{{list}}">
+                        <button type="submit" name="botoia" value="4">Ezabatu</button>
+                    </form>
                 {%endfor%}
             </ol>
                 
-            <form style="bottom: 0;position: fixed;" action="{{url_for('insert_path',drone=dronea)}}" method="post">
+            <form style="bottom: 1;position: fixed;" action="{{url_for('insert_path',drone=dronea)}}" method="post">
                 <input type="hidden" id="list" name="list" value="{{list}}">
                 <button type="submit" name="botoia" value="3">Gorde bidea</button>
             </form>
