@@ -1,6 +1,8 @@
 import folium
 import folium.map
 from folium import plugins
+from folium import JsCode
+from folium.plugins import Realtime
 
 #from view.droneViewer import *
 from controller.database_controller import *
@@ -27,7 +29,6 @@ class mapPage():
 
 
     def waypointakMarkatu(self, pastWPs, futureWPs, futureLine):
-        
         if len(self.pastWaypoints) > 0:
             
             # Hasierako waypoint-a

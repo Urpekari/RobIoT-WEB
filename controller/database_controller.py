@@ -196,7 +196,6 @@ class output():
         waypoints = self.get_waypoints_full(droneID, "UPF")
         return(waypoints[0])
         
-    
     def get_waypoint_past(self, droneID):
         waypoints = self.get_waypoints(droneID, "UPP")
         return waypoints

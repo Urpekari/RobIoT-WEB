@@ -29,8 +29,6 @@ mysql=MySQL(app)
 dboutput=output(mysql)
 dbinput=input(mysql)
 
-
-
 def getDBOutput():
     return dboutput
 
@@ -168,7 +166,7 @@ def gw_insert(gwid):
 
     date = datetime.now()
     print(date)
-    time_parsed = date#.strftime("%y-%m-%d %H:%M:%S.%f")
+    time_parsed = date #.strftime("%y-%m-%d %H:%M:%S.%f")
 
     dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], time_parsed, "DOW")
     waypoints = []
