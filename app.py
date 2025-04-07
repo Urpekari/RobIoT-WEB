@@ -201,16 +201,22 @@ def gw_insert(gwid):
     waypoints = []
     waypoints = dboutput.get_next_waypoint(content['robiotId'])
     
-    print(waypoints)
+    if len(waypoints) > 0:
 
-    reply = {
+    #print(waypoints)
 
-        "gwid":gwid,
-        "robiotId" : content['robiotId'],
-        "wpLat":waypoints[0],
-        "wpLon" : waypoints[1],
-        "wpAlt" : waypoints[2],
-    }
+        reply = {
+
+            "gwid":gwid,
+            "robiotId" : content['robiotId'],
+            "wpLat":waypoints[0],
+            "wpLon" : waypoints[1],
+            "wpAlt" : waypoints[2],
+        }
+    else:
+        reply = {
+            "gwid":gwid,
+        }
 
     return(reply)
 

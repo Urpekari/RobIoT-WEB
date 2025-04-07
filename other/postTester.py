@@ -13,7 +13,7 @@ while True:
     data = {
 
         "gwid":gwid,
-        "robiotId":1,
+        "robiotId":2,
         "lat":random.uniform(idealLat-0.002, idealLat+0.002),
         "lon":random.uniform(idealLon-0.002, idealLon+0.002),
         "alt":random.uniform(15,25),
