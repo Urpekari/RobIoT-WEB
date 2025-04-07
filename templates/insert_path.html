@@ -55,7 +55,7 @@
                 {%endfor%}
             </ol>
                 
-            <form style="bottom: 1;position: fixed;" action="{{url_for('insert_path',drone=dronea)}}" method="post">
+            <form action="{{url_for('insert_path',drone=dronea)}}" method="post">
                 <input type="hidden" id="list" name="list" value="{{list}}">
                 <button type="submit" name="botoia" value="3">Gorde bidea</button>
             </form>
