@@ -9,6 +9,8 @@ from view.droneControlPage import *
 from controller.database_controller import *
 
 import tkinter as tk
+import haversine as hs
+from haversine import Unit
 
 
 app = Flask(__name__)
@@ -198,20 +200,22 @@ def gw_insert(gwid):
     time_parsed = date #.strftime("%y-%m-%d %H:%M:%S.%f")
 
     dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], time_parsed, "DOW")
-    waypoints = []
-    waypoints = dboutput.get_next_waypoint(content['robiotId'])
+    waypoint = []
+    waypoint = dboutput.get_next_waypoint(content['robiotId'])
     
-    if len(waypoints) > 0:
 
-    #print(waypoints)
+
+    if len(waypoint) > 0:
+
+        print(gps_distance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
 
         reply = {
 
             "gwid":gwid,
             "robiotId" : content['robiotId'],
-            "wpLat":waypoints[0],
-            "wpLon" : waypoints[1],
-            "wpAlt" : waypoints[2],
+            "wpLat" : waypoint[0],
+            "wpLon" : waypoint[1],
+            "wpAlt" : waypoint[2],
         }
     else:
         reply = {
@@ -228,6 +232,9 @@ def get_coords():
     print(lat)
     print(lng)
     return jsonify({'lat': lat, 'lng': lng})
+
+def gps_distance(currentCoords, compareCoords):
+    return(hs.haversine(currentCoords, compareCoords, unit=Unit.METERS))
 
 #@app.route("/database")
 #def database_show():
