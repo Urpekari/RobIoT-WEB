@@ -27,7 +27,6 @@ class mapPage():
         self.bannedAreas = dbOutput.get_banned_areas(self.droneType)
         self.restrictedAreas = dbOutput.get_restricted_areas(self.droneType)
 
-
     def waypointakMarkatu(self, pastWPs, futureWPs, futureLine):
         if len(self.pastWaypoints) > 0:
             
@@ -50,14 +49,7 @@ class mapPage():
 
         if len(self.nextWaypoints) > 0:
 
-            folium.Marker(
-                location=self.nextWaypoints[0],
-                tooltip="Goal point: {}".format(self.nextWaypoints[0]),
-                popup="Goal at {} for {}".format(self.nextWaypoints[0], self.droneName),
-                icon=folium.Icon(color='darkpurple', icon_color='#FcFcFc',prefix="fa", icon="compass")
-            ).add_to(futureWPs)
-
-            if len(self.nextWaypoints) > 1:
+            if len(self.nextWaypoints) >= 1:
                 for wp in self.nextWaypoints[1:-1]:
                     folium.Marker(
                         location=wp,
@@ -67,6 +59,9 @@ class mapPage():
                     ).add_to(futureWPs)
 
                 # Etorkizuneko ibilbidea dronetik hasiko da, dronearen GPS datuak baditugu.
+                #print("Interesezko atala")
+                #print(len(self.realPath))
+                
                 if len(self.realPath) > 0:
                     remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
                 else:
@@ -75,12 +70,20 @@ class mapPage():
                 folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(futureLine)
 
             folium.Marker(
+                location=self.nextWaypoints[0],
+                tooltip="Current target point: {}".format(self.nextWaypoints[0]),
+                popup="Next waypoint for {} at {}".format(self.droneName, self.nextWaypoints[0]),
+                icon=folium.Icon(color='darkpurple', icon_color='#FcFcFc',prefix="fa", icon="compass")
+            ).add_to(futureWPs)
+
+            folium.Marker(
                 location=self.nextWaypoints[-1],
                 tooltip="Goal point: {}".format(self.nextWaypoints[-1]),
                 popup="Goal at {} for {}".format(self.nextWaypoints[-1], self.droneName),
                 icon=folium.Icon(color='black', icon_color='#DC267F',prefix="fa", icon="flag-checkered")
             ).add_to(futureWPs)
         
+
 
     def ibilbideaMarkatu(self, m, realLine):
         
@@ -97,7 +100,7 @@ class mapPage():
             icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
         ).add_to(m)
         folium.plugins.AntPath(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C', dash_array=[30, 50]).add_to(realLine)
-        
+
     def debekuakMarkatu(self, m):
 
         bans = folium.FeatureGroup("Banned areas").add_to(m)
@@ -179,40 +182,3 @@ class mapPage():
 
         return header, body_html, script
 
-def mapelectricbogaloo(self):    
-    def map_with_pointers(list):
-        coords=list[-1]
-        listfloat=[]
-        m = folium.Map((float(coords[0]),float(coords[1])), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap", 
-        for coord in list:
-            coord = [float(coord[0]),float(coord[1])]
-            folium.Marker(
-                location=coord,
-                tooltip="New waypoint: {}".format(coord),
-                popup="New waypoint at {}".format(coord),
-                icon=folium.Icon(color='orange', icon_color='#1c1c1c',prefix="fa", icon="flag")
-            ).add_to(m)
-            listfloat.append(coord)
-            if listfloat[0]==[]:
-                listfloat=listfloat[1:]
-        
-        folium.PolyLine(listfloat, tooltip="Path that will be followed", color='#FFB60C').add_to(m)
-
-        m.get_root().width = "1000vw"
-        m.get_root().height = "650vh"
-        folium.LayerControl().add_to(m)
-
-        m.add_child(
-            folium.LatLngPopup()
-        )
-
-        m.add_child(
-            folium.ClickForLatLng(format_str='lat + "," + lng', alert=False)
-        )
-
-        m.get_root().render()
-        header = m.get_root().header.render()
-        body_html = m.get_root().html.render()
-        script = m.get_root().script.render()
-
-        return header, body_html, script

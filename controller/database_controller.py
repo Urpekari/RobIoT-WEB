@@ -210,6 +210,21 @@ class output():
     def get_waypoint_future(self, droneID):
         waypoints = self.get_waypoints(droneID, "UPF")
         return waypoints
+    
+    def get_all_waypoints(self, droneID):
+        pastWaypoints = self.get_waypoint_past(droneID)
+        futureWaypoints = self.get_waypoint_future(droneID)
+
+        allWaypoints = []
+
+        for wp in pastWaypoints:
+            allWaypoints.append(wp)
+
+        for wp in futureWaypoints:
+            allWaypoints.append(wp)
+        print("ALL WAYPOINTS")
+        print(allWaypoints)
+        return(allWaypoints)
 
     def get_banned_areas(self, droneType):
         if droneType.lower() == "plane":
