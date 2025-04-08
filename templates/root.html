@@ -1,11 +1,49 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    </head>
-    <body>
-        <form action="{{url_for('hello')}}" method="post">
-            <input type="text" id="name" name="name">
-            <input type="submit" value="Go to hello">
-        </form>
-    </body>
+<html lang="en"></html>
+<head>
+    <title>Root</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+</head>
+<body>
+    <div>
+        <button onclick="traducir('es')">Español</button>
+        <button onclick="traducir('en')">Inglés</button>
+        <button onclick="traducir('eu')">Euskera</button>
+    </div>
+    <div class="zentratua">
+        <h1>RobIoT</h1>
+        <br><br><br>
+        <a href="/login">
+            <button data="login">Login</button>
+        </a>
+        <a href="/sign-up">
+            <button data="signup">Sign up</button>
+        </a>
+    </div>
+    <script>
+        const traducciones = {
+          es: {
+            login: "Iniciar sesión",
+            signup: "Registrarse"
+          },
+          en: {
+            login: "Login",
+            signup: "Sign up"
+          },
+          eu: {
+            login: "Sartu",
+            signup: "Erregistratu"
+          }
+        };
+    
+        function traducir(idioma) {
+          document.querySelectorAll("[data]").forEach(elem => {
+            const clave = elem.getAttribute("data");
+            elem.textContent = traducciones[idioma][clave] || clave;
+          });
+        }
+      </script>
+</body>
 </html>
