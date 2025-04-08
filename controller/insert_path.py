@@ -60,8 +60,6 @@ class insertPath():
                     if list[0]==[]:
                         list=list[1:]
                 
-                    print("BOT 2")
-                    print(list)
                     header, body_html, script=mapplanpage.map_with_pointers(list)
                     return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
                 

@@ -22,9 +22,7 @@ class mapPlan():
         m = folium.Map((float(coords[0]),float(coords[1])), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap", 
         
         gordetakoWPs = folium.FeatureGroup("Past Waypoints").add_to(m)
-        print("Gordetako WP-ak bilatzen!")
         gordetakoWPCoords = self.allWaypoints
-        print(gordetakoWPCoords)
         if len(gordetakoWPCoords) >= 1:
             for wp in gordetakoWPCoords:        
                     folium.Marker(
