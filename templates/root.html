@@ -26,7 +26,7 @@
         let diccionario = {};
     
         // Cargar el archivo JSON al cargar la página
-            fetch("/static/traducciones.json")
+            fetch("{{ url_for('static', filename='traducciones.json') }}")
 
           .then(res => res.json())
           .then(data => {
