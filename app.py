@@ -31,9 +31,6 @@ mysql=MySQL(app)
 dboutput=output(mysql)
 dbinput=input(mysql)
 
-def getDBOutput():
-    return dboutput
-
 @app.route("/")
 def index():
     session.pop('erabiltzailea', None)
@@ -84,7 +81,7 @@ def control():
             for pos,drone in enumerate(droneak):
                 if drone == drone_izena:
                     droneID=id[pos]
-            page = mapPage(droneID)
+            page = mapPage(dboutput,droneID)
             header, body_html, script=page.map()
             if not drone_izena[-6:] == "_ikusi":
                 ikusi=1
@@ -249,13 +246,13 @@ def get_coords():
 def gps_distance(currentCoords, compareCoords):
     return(hs.haversine(currentCoords, compareCoords, unit=Unit.METERS))
 
-#@app.route("/database")
-#def database_show():
-#    return render_template(
-#        "database.html",
-#        header=tables.Droneak_header,
-#        items=dboutput.get_info(tables.Droneak)
-#    )
+@app.route("/database")
+def database_show():
+    return render_template(
+        "database.html",
+        header=tables.Droneak_header,
+        items=dboutput.get_info(tables.Droneak)
+    )
 
 #@app.route("/database/dowload")
 #def download_csv():

@@ -5,8 +5,49 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
         <link rel="shorcut icon" href="{{url_for('static', filename='favicon.ico')}}">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .flask-container {
+                position: relative;
+                display: inline-block;
+                margin-top: 50px;
+            }
+            .flask {
+                width: 50px;
+                height: 100px;
+                background-color: #ffcc00;
+                border-radius: 25px 25px 0 0;
+                position: relative;
+            }
+            .tooltip {
+                visibility: hidden;
+                width: 200px;
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                border-radius: 5px;
+                padding: 10px;
+                position: absolute;
+                top: -60px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            .flask-container:hover .tooltip {
+                visibility: visible;
+                opacity: 1;
+            }
+        </style>
     </head>
     <body>
+        <div class="flask-container">
+            <div class="flask"></div>
+            <div class="tooltip">This is a flask tooltip!</div>
+        </div>
         <table>
             <thead>
                 {% for column in header %}
@@ -24,21 +65,6 @@
             </tbody>
             
         </table>
-        <form action="{{url_for('download_csv')}}">
-            <input type="submit" value="Download">
-        </form>
-
-        <form action="{{url_for('in_drone')}}" method="post">
-            <label for="mota">Mota:</label>
-            <input type="text" id="mota" name="mota" />
-            <br/>
-            <label for="Izena">Izena:</label>
-            <input type="text" id="izena" name="izena" />
-            <br/>
-            <label for="deskribapena">Deskribapena:</label>
-            <textarea name="deskribapena" id="deskribapena"></textarea>
-            <br/>
-            <input type="submit" value="Sartu"/>
-        </form>
+        
     </body>
 </html>

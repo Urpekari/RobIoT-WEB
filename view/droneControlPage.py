@@ -16,8 +16,8 @@ class mapPage():
     droneType = ""
     droneID = 1
 
-    def __init__(self, droneID):
-        dbOutput = app.getDBOutput()
+    def __init__(self, dboutput, droneID):
+        dbOutput=dboutput
         self.droneID = droneID
         self.realPath = dbOutput.getRealLocations(droneID)
         self.droneName = dbOutput.getDroneName(droneID)[0][0]
