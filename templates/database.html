@@ -6,20 +6,12 @@
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
         <link rel="shorcut icon" href="{{url_for('static', filename='favicon.ico')}}">
         <style>
-            body {
-                font-family: Arial, sans-serif;
-            }
             .flask-container {
                 position: relative;
                 display: inline-block;
-                margin-top: 50px;
             }
             .flask {
-                width: 50px;
-                height: 100px;
-                background-color: #ffcc00;
-                border-radius: 25px 25px 0 0;
-                position: relative;
+                cursor: pointer;
             }
             .tooltip {
                 visibility: hidden;
@@ -76,16 +68,27 @@
         </style>
     </head>
     <body>
-        <div class="flask-container">
-            <div class="flask"></div>
-            <div class="tooltip">This is a flask tooltip!</div>
+        <div class="izenburu_azalpena">
+            <h1>Aukeratu ibilbidea {{dronea}} dronearentzako</h1>
+            <div class="flask-container">
+                <div class="flask"><h1>ⓘ</h1></div>
+                <div class="tooltip">Koordenatu bat aukeratzeko mapan sakatu eta, behin nahi duzun koordenatua daukazunean "paste" botoia sakatu sure aukera itsasteko.
+                    Bestela eskuz sar dezakezu nahi dituzun koordenatuak. Hauek erregistratzeko "enter" botoia sakatu. Bide guztia duzunean "Gorde bidea" botoiarekin gorde dezakezu.</div>
+            </div>
         </div>
+        
         <div class="dropdown">
             <button>Perfil</button>
             <div class="dropdown-options">
-              <a href="#">Panel</a>
-              <a href="#">Ajustes</a>
-              <a href="#">Cerrar Sesión</a>
+                <form>
+                    <button class="link-button">Panel</button>
+                </form>
+                <form>
+                    <button class="link-button">Ajustes</button>
+                </form>
+                <form>
+                    <button class="link-button">Cerrar Sesión</button>
+                </form>
             </div>
         <table>
             <thead>
