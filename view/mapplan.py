@@ -11,8 +11,14 @@ class mapPlan():
         self.allWaypoints = self.dbOutput.get_all_waypoints(droneID)
     
     def map_with_pointers(self, list):
-        coords=list[-1]
+        
         listfloat=[]
+
+        if(len(list)>0):
+            coords=list[-1]
+        else:
+             coords=self.allWaypoints[-1]
+        
         m = folium.Map((float(coords[0]),float(coords[1])), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap", 
         
         gordetakoWPs = folium.FeatureGroup("Past Waypoints").add_to(m)
@@ -40,7 +46,15 @@ class mapPlan():
             if listfloat[0]==[]:
                 listfloat=listfloat[1:]
         
-        folium.PolyLine(listfloat, tooltip="Path that will be followed", color='#FFB60C').add_to(m)
+        if len(self.allWaypoints) > 1:
+            folium.PolyLine(self.allWaypoints, tooltip="Already set path", color='#DC267F', opacity=0.6, dash_array=10).add_to(m)
+
+            if len(listfloat) >= 1:
+                folium.PolyLine([self.allWaypoints[-1], listfloat[0]], tooltip="Already set path", color='#FFB60C').add_to(m)
+
+
+        if len(listfloat) > 1:
+            folium.PolyLine(listfloat, tooltip="Path that will be followed", color='#FFB60C').add_to(m)
 
         m.get_root().width = "1000vw"
         m.get_root().height = "650vh"

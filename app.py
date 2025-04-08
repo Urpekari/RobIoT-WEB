@@ -114,11 +114,6 @@ def insert_path(drone):
 
     droneak,id=get_erab_drone_list(session['erabiltzailea'])
 
-    print("FAKIN HELl")
-    print(droneak)
-    print(id)
-    print(drone)
-
     for pos,dronea in enumerate(droneak):
         if dronea == drone:
             droneID=id[pos]

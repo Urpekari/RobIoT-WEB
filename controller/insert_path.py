@@ -21,7 +21,7 @@ class insertPath():
 
         try:
             if request.method == 'GET':
-                header, body_html, script=mapInit.map_empty()
+                header, body_html, script=mapplanpage.map_with_pointers([])
                 return render_template("insert_path.html", header=header, body_html=body_html, script=script, dronea=drone)
             elif request.method == 'POST':
                 bot=request.form.get('botoia')
@@ -48,12 +48,7 @@ class insertPath():
                         lat=lines[0]
                         long=lines[1]
 
-                    print("BOT 1")
-                    print(list)
-                    if list:
-                        header, body_html, script=mapplanpage.map_with_pointers(list)
-                    else:
-                        header, body_html, script=mapInit.map_empty()
+                    header, body_html, script=mapplanpage.map_with_pointers(list)
                     root.destroy()
                     return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
 
@@ -67,22 +62,11 @@ class insertPath():
                 
                     print("BOT 2")
                     print(list)
-                    if list:
-                        header, body_html, script=mapplanpage.map_with_pointers(list)
-                    else:
-                        header, body_html, script=mapInit.map_empty()
+                    header, body_html, script=mapplanpage.map_with_pointers(list)
                     return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
                 
                 elif bot == '3':
-                    droneak,id=app.get_erab_drone_list(session['erabiltzailea'])
-                    
-                    print("ID")
-                    print(id)
-                    print(droneak)
-                    print("Lo que le damos")
-                    print(drone)
-
-                   
+                                                          
                     # Hau kendu behar dugu
                     for coords in list:
                         app.dbinput.insert_GPS_kokapena(droneID,coords[1],coords[0],None,datetime.now(),"UPF")
@@ -94,10 +78,7 @@ class insertPath():
                     coords = re.findall('\'(.*?)\'',rm_coords)
                     list.remove(coords)
 
-                    if list:
-                        header, body_html, script=mapplanpage.map_with_pointers(list)
-                    else:
-                        header, body_html, script=mapInit.map_empty()
+                    header, body_html, script=mapplanpage.map_with_pointers(list)
                     
                     return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
 
