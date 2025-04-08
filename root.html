@@ -1,49 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Root</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #1c1c1c;
-            margin: 0;
-        }
-        
-        h1 {
-            color: white;
-            margin-bottom: 30px; 
-        }
-
-        button {
-            width: 150px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #ffb60c;
-            color: blue;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 10px 0;
-        }
-
-        button:hover {
-            background-color: #ffa500;
-        }
-    </style>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
 <body>
-        <h1>RobIoT<br><br><br><br><br><br><br></h1>
-        <a href="login.html">
-            <button>Login</button>
+    <div>
+        <button onclick="traducir('es')">Español</button>
+        <button onclick="traducir('en')">Inglés</button>
+        <button onclick="traducir('eu')">Euskera</button>
+    </div>
+    <div class="zentratua">
+        <h1>RobIoT</h1>
+        <br><br><br>
+        <a href="/login">
+            <button data-i18n="login">Login</button>
         </a>
-        <a href="sign_up.html">
-            <button>Sign up</button>
+        <a href="/sign-up">
+            <button data-i18n="signup">Sign up</button>
         </a>
+    </div>
+    <script>
+        let diccionario = {};
+    
+        // Cargar el archivo JSON al cargar la página
+            fetch("/static/traducciones.json")
+
+          .then(res => res.json())
+          .then(data => {
+            diccionario = data;
+            traducir("en"); // Idioma por defecto
+          });
+    
+        function traducir(idioma) {
+          document.querySelectorAll("[data-i18n]").forEach(el => {
+            const clave = el.getAttribute("data-i18n");
+            el.textContent = diccionario[idioma][clave] || clave;
+          });
+        }
+      </script>
 </body>
 </html>
