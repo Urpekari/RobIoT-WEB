@@ -1,0 +1,15 @@
+{
+    "es": {
+    "login": "Iniciar sesión",
+    "signup": "Registrarse"
+  },
+  "en": {
+    "login": "Login",
+    "signup": "Sign up"
+  },
+  "eu": {
+    "login": "Sartu",
+    "signup": "Erregistratu"
+  }
+}
+//luego el archivo este tiene que ir dentro de la carpeta de static
