@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"></html>
+<html lang="en">
 <head>
     <title>Root</title>
     <meta charset="UTF-8">
@@ -16,32 +16,28 @@
         <h1>RobIoT</h1>
         <br><br><br>
         <a href="/login">
-            <button data="login">Login</button>
+            <button data-i18n="login">Login</button>
         </a>
         <a href="/sign-up">
-            <button data="signup">Sign up</button>
+            <button data-i18n="signup">Sign up</button>
         </a>
     </div>
     <script>
-        const traducciones = {
-          es: {
-            login: "Iniciar sesión",
-            signup: "Registrarse"
-          },
-          en: {
-            login: "Login",
-            signup: "Sign up"
-          },
-          eu: {
-            login: "Sartu",
-            signup: "Erregistratu"
-          }
-        };
+        let diccionario = {};
+    
+        // Cargar el archivo JSON al cargar la página
+            fetch("/static/traducciones.json")
+
+          .then(res => res.json())
+          .then(data => {
+            diccionario = data;
+            traducir("en"); // Idioma por defecto
+          });
     
         function traducir(idioma) {
-          document.querySelectorAll("[data]").forEach(elem => {
-            const clave = elem.getAttribute("data");
-            elem.textContent = traducciones[idioma][clave] || clave;
+          document.querySelectorAll("[data-i18n]").forEach(el => {
+            const clave = el.getAttribute("data-i18n");
+            el.textContent = diccionario[idioma][clave] || clave;
           });
         }
       </script>
