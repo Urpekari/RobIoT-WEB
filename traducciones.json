@@ -1,15 +1,27 @@
 {
     "es": {
     "login": "Iniciar sesión",
-    "signup": "Registrarse"
+    "signup": "Registrarse",
+    "sartu1":"Introduzca su usuario y contraseña",
+    "sartu":"Entrar",
+    "erabil":"Usuario",
+    "pasa":"Contraseña"
   },
   "en": {
     "login": "Login",
-    "signup": "Sign up"
+    "signup": "Sign up",
+    "sartu1":"Enter your user and password",
+    "sartu":"Enter",
+    "erabil":"Username",
+    "pasa":"Password"
   },
   "eu": {
     "login": "Sartu",
-    "signup": "Erregistratu"
+    "signup": "Erregistratu",
+    "sartu1":"Sartu zure erabiltzaile eta pasahitza",
+    "sartu":"Sartu",
+    "erabil":"Erabiltzailea",
+    "pasa":"Pasahitza"
   }
 }
 //luego el archivo este tiene que ir dentro de la carpeta de static
