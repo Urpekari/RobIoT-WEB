@@ -7,6 +7,9 @@ from flask_mysqldb import MySQL
 import env
 from view.droneControlPage import *
 from controller.database_controller import *
+from view.mapinit import *
+from view.mapplan import *
+
 
 import tkinter as tk
 import haversine as hs
@@ -138,7 +141,7 @@ def insert_path(drone):
                     long=lines[1]
 
                 if list:
-                    header, body_html, script=mapInit.map_with_pointers(list)
+                    header, body_html, script=mapPlan.map_with_pointers(list)
                 else:
                     header, body_html, script=mapInit.map_empty()
                 root.destroy()
@@ -153,7 +156,7 @@ def insert_path(drone):
                     list=list[1:]
             
                 if list:
-                    header, body_html, script=mapInit.map_with_pointers(list)
+                    header, body_html, script=mapPlan.map_with_pointers(list)
                 else:
                     header, body_html, script=mapInit.map_empty()
                 return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
@@ -174,7 +177,7 @@ def insert_path(drone):
                 list.remove(coords)
 
                 if list:
-                    header, body_html, script=mapInit.map_with_pointers(list)
+                    header, body_html, script=mapPlan.map_with_pointers(list)
                 else:
                     header, body_html, script=mapInit.map_empty()
                 
