@@ -140,6 +140,19 @@ class output():
         cur.close()
         return results
     
+    def getRealHeadings(self, droneID):
+        cur = self.mysql.connection.cursor()
+        query = "SELECT Heading FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s"
+        cur.execute(query,(droneID, "DOW"))
+        results = cur.fetchall()
+        cur.close()
+        
+        cleanresults = []
+        for heading in results:
+            cleanresults.append(heading[0])
+
+        return cleanresults
+    
     def getDroneType(self, droneID):
         cur = self.mysql.connection.cursor()
         query = "SELECT Mota FROM Droneak WHERE idDroneak = {}".format(droneID)
@@ -252,10 +265,10 @@ class input():
         finally:
             cursor.close()
 
-    def insert_GPS_kokapena(self,id_drone,lng,ltd,alt,timestamp,noranzkoa):
+    def insert_GPS_kokapena(self,id_drone,lng,ltd,alt,hdg,timestamp,noranzkoa):
         cur = self.mysql.connection.cursor()
-        query = "INSERT INTO GPS_kokapena (Droneak_idDroneak,Longitude,Latitude,Altitude,Timestamp,Noranzkoa) VALUES (%s,%s,%s,%s,%s,%s)"
-        cur.execute(query,(id_drone,lng,ltd,alt,timestamp,noranzkoa))
+        query = "INSERT INTO GPS_kokapena (Droneak_idDroneak,Longitude,Latitude,Altitude,Heading,Timestamp,Noranzkoa) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        cur.execute(query,(id_drone,lng,ltd,alt,hdg,timestamp,noranzkoa))
         self.mysql.connection.commit()
         cur.close()
 

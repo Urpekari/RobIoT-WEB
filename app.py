@@ -208,20 +208,19 @@ def drone_erregistratu():
 def gw_insert(gwid):
     content = request.get_json()
 
+    print("CONTENT")
+    print(content)
+
     date = datetime.now()
     print(date)
     time_parsed = date #.strftime("%y-%m-%d %H:%M:%S.%f")
 
-    dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], time_parsed, "DOW")
+    dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], content['hdg'], time_parsed, "DOW")
     waypoint = []
     waypoint = dboutput.get_next_waypoint(content['robiotId'])
-    
-
 
     if len(waypoint) > 0:
-
         print(gps_distance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
-
         reply = {
 
             "gwid":gwid,

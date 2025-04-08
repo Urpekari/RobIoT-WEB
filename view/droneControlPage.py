@@ -20,6 +20,7 @@ class mapPage():
         dbOutput = app.getDBOutput()
         self.droneID = droneID
         self.realPath = dbOutput.getRealLocations(droneID)
+        self.realHeadings = dbOutput.getRealHeadings(droneID)
         self.droneName = dbOutput.getDroneName(droneID)[0][0]
         self.droneType = dbOutput.getDroneType(droneID)[0][0]
         self.pastWaypoints = dbOutput.get_waypoint_past(droneID)
@@ -83,10 +84,12 @@ class mapPage():
         
 
     def ibilbideaMarkatu(self, m, realLine):
-        
+
+        print(self.realHeadings[-1])
+
         folium.plugins.BoatMarker(
             location=(self.realPath[-1]),
-            heading=45,
+            heading=self.realHeadings[-1],
             color="#FFB60C"
         ).add_to(m)
         
@@ -169,7 +172,7 @@ class mapPage():
         )
 
         m.add_child(
-            folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=True)
+            folium.ClickForLatLng(format_str='"[" + lat + "," + lng + "]"', alert=False)
         )
 
         m.get_root().render()
