@@ -23,6 +23,7 @@ h1 {
     font-size: 500%;
     color: white;
     margin-bottom: 30px;
+    display: inline;
 }
 
 .izenburu {
@@ -130,7 +131,7 @@ button:hover {
 }
 
 .izenburu_azalpena{
-    height: 20%;
+    height: 10%;
     width: 70%;
     left: 0;
     top: 0;
@@ -139,7 +140,7 @@ button:hover {
     padding: 10px;
 }
 .mapa_interaktiboa{
-    height: 80%;
+    height: 90%;
     width: 70%;
     left: 0;
     bottom: 0;
@@ -157,3 +158,28 @@ button:hover {
     background-color: #1c1c1c;
     padding: 10px;
 }
+
+.flask-container {
+    position: relative;
+    display: inline-block;
+}
+.tooltip {
+    visibility: hidden;
+    width: 500px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 10px;
+    position: absolute;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.flask-container:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }

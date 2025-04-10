@@ -5,8 +5,91 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
         <link rel="shorcut icon" href="{{url_for('static', filename='favicon.ico')}}">
+        <style>
+            .flask-container {
+                position: relative;
+                display: inline-block;
+            }
+            .flask {
+                cursor: pointer;
+            }
+            .tooltip {
+                visibility: hidden;
+                width: 200px;
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                border-radius: 5px;
+                padding: 10px;
+                position: absolute;
+                top: -60px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            .flask-container:hover .tooltip {
+                visibility: visible;
+                opacity: 1;
+            }
+
+            .dropdown {
+            display: inline-block;
+            position: relative;
+            }
+
+            .dropdown-options {
+            display: none;
+            position: absolute;
+            overflow: auto;
+            background-color:#fff;
+            border-radius:5px;
+            box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
+            }
+
+            .dropdown:hover .dropdown-options {
+            display: block;
+            }
+
+            .dropdown-options a {
+            display: block;
+            color: #000000;
+            padding: 5px;
+            text-decoration: none;
+            padding:20px 40px;
+            }
+
+            .dropdown-options a:hover {
+            color: #0a0a23;
+            background-color: #ddd;
+            border-radius:5px;
+            }
+        </style>
     </head>
     <body>
+        <div class="izenburu_azalpena">
+            <h1>Aukeratu ibilbidea {{dronea}} dronearentzako</h1>
+            <div class="flask-container">
+                <div class="flask"><h1>ⓘ</h1></div>
+                <div class="tooltip">Koordenatu bat aukeratzeko mapan sakatu eta, behin nahi duzun koordenatua daukazunean "paste" botoia sakatu sure aukera itsasteko.
+                    Bestela eskuz sar dezakezu nahi dituzun koordenatuak. Hauek erregistratzeko "enter" botoia sakatu. Bide guztia duzunean "Gorde bidea" botoiarekin gorde dezakezu.</div>
+            </div>
+        </div>
+        
+        <div class="dropdown">
+            <button>Perfil</button>
+            <div class="dropdown-options">
+                <form>
+                    <button class="link-button">Panel</button>
+                </form>
+                <form>
+                    <button class="link-button">Ajustes</button>
+                </form>
+                <form>
+                    <button class="link-button">Cerrar Sesión</button>
+                </form>
+            </div>
         <table>
             <thead>
                 {% for column in header %}
@@ -24,21 +107,6 @@
             </tbody>
             
         </table>
-        <form action="{{url_for('download_csv')}}">
-            <input type="submit" value="Download">
-        </form>
-
-        <form action="{{url_for('in_drone')}}" method="post">
-            <label for="mota">Mota:</label>
-            <input type="text" id="mota" name="mota" />
-            <br/>
-            <label for="Izena">Izena:</label>
-            <input type="text" id="izena" name="izena" />
-            <br/>
-            <label for="deskribapena">Deskribapena:</label>
-            <textarea name="deskribapena" id="deskribapena"></textarea>
-            <br/>
-            <input type="submit" value="Sartu"/>
-        </form>
+        
     </body>
 </html>
