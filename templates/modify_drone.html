@@ -7,6 +7,21 @@
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
     <body>
+        <h1>Dronearen informazioa:</h1>
+        <br>
+        <br>
+        <table>
+            <thead>
+                <th>ID</th><th>Izena</th><th>Mota</th><th>Deskribapena</th>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for element in drone %}
+                        <td>{{ element }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
         <form action="/control" method="post"></formaction>
             <button type="submit">Aldatu</button>
         </form>

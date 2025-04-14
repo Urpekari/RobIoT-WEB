@@ -97,7 +97,8 @@ def get_erab_drone_list(erab):
     id_drone,baimen=dboutput.get_erab_droneak(erab_id)
     droneak=[]
     for pos,id in enumerate(id_drone):
-        drone=dboutput.get_drone_info(id)
+        drone_info=dboutput.get_drone_info(id)
+        drone=drone_info[1]
         jabe_id=dboutput.get_drone_jabe(id)
         jabe_izen=dboutput.get_erab_izen(jabe_id)
         if not jabe_izen==erab:
@@ -137,6 +138,19 @@ def drone_erregistratu():
             return redirect(url_for('control'))
     except KeyError as e:
         return redirect(url_for('index'))
+
+@app.route("/modify_drone/<drone>", methods=['GET','POST'])
+def modify_drone(drone):
+    droneak,id=get_erab_drone_list(session['erabiltzailea'])
+
+    for pos,dronea in enumerate(droneak):
+        if dronea == drone:
+            droneID=id[pos]
+    
+    drone_info = dboutput.get_drone_info(droneID)
+
+    if request.method == "GET":
+        return render_template('modify_drone.html',drone=drone_info)
 
 @app.route("/gwInsert/<gwid>",methods=['POST'])
 def gw_insert(gwid):

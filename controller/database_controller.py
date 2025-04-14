@@ -93,7 +93,7 @@ class output():
         cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (id_drone,))
         drone = cur.fetchone()
         cur.close()
-        return drone[1]
+        return drone
 
     def get_drone_jabe(self,id_dron):
         cur = self.mysql.connection.cursor()
