@@ -16,22 +16,21 @@
         <h1>RobIoT</h1>
         <br><br><br>
         <a href="/login">
-            <button data-i18n="login">Login</button>
+            <button data-i18n="login">Sartu</button>
         </a>
         <a href="/sign-up">
-            <button data-i18n="signup">Sign up</button>
+            <button data-i18n="signup">Erregistratu</button>
         </a>
     </div>
     <script>
         let diccionario = {};
     
         // Cargar el archivo JSON al cargar la página
-            fetch("{{ url_for('static', filename='traducciones.json') }}")
-
+          fetch("{{ url_for('static', filename='traducciones.json') }}")
           .then(res => res.json())
           .then(data => {
             diccionario = data;
-            traducir("en"); // Idioma por defecto
+            traducir("eu"); // Idioma por defecto
           });
     
         function traducir(idioma) {
