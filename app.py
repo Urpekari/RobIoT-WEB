@@ -146,11 +146,16 @@ def modify_drone(drone):
     for pos,dronea in enumerate(droneak):
         if dronea == drone:
             droneID=id[pos]
-    
+    jabe_id = dboutput.get_drone_jabe(droneID)
+    jabe = dboutput.get_erab_izen(jabe_id)
     drone_info = dboutput.get_drone_info(droneID)
 
     if request.method == "GET":
-        return render_template('modify_drone.html',drone=drone_info)
+        return render_template('modify_drone.html',drone=drone_info, jabe=jabe)
+    elif request.method == "POST":
+        bot = request.form.get('botoia')
+        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot)
+
 
 @app.route("/gwInsert/<gwid>",methods=['POST'])
 def gw_insert(gwid):

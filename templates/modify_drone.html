@@ -6,10 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
-    <body>
+    <body style="padding: 3%;">
         <h1>Dronearen informazioa:</h1>
-        <br>
-        <br>
         <table>
             <thead>
                 <th>ID</th><th>Izena</th><th>Mota</th><th>Deskribapena</th>
@@ -22,11 +20,56 @@
                 </tr>
             </tbody>
         </table>
-        <form action="/control" method="post"></formaction>
-            <button type="submit">Aldatu</button>
-        </form>
-        <form action="/insert_sensor" method="post"></formaction>
-            <button type="submit">Sentsore gehitu</button>
-        </form>
+        <p class="izenburu">Jabea: {{jabe}}</p>
+        <h2 class="izenburu">Instalutako sentsoreak:</h2>
+        <table>
+
+        </table>
+        <table class="no_border">
+            <tr><td class="no_border">
+                <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
+                    <button type="submit" name="botoia" value="1">Aldatu</button>
+                </form>
+            </td><td class="no_border">
+                <form action="/insert_sensor" method="post"></formaction>
+                    <button type="submit" name="botoia" value="2">Sentsore gehitu</button>
+                </form>
+            </td><td class="no_border">
+                <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
+                    <button type="submit" name="botoia" value="3">Partekatu</button>
+                </form>
+            </td></tr>
+        </table>
+
+        {%if aukera == '1'%}
+
+            <table class="no_border">
+                <form>
+                    <tr><td class="no_border">Izena:</td>
+                        <td class="no_border">
+                            <input type="text" name="izen" id="izen" value="{{drone[1]}}" required>
+                        </td></tr>
+                    <tr><td class="no_border">Mota:</td>
+                        <td class="no_border">
+                            <select id="mota" name="mota" required>
+                                <option value="" disabled selected>Aukeratu bat</option>
+                                <option value="plane">Hegazkina</option>
+                                <option value="sailboat">Itsasontzia</option>
+                                <option value="fish">Submarinoa</option>
+                                <option value="helicopter">Multikopteroa</option>
+                                <option value="car-side">Kotxea</option>
+                            </select>
+                        </td></tr>
+                    <tr><td class="no_border">Deskribapena:</td>
+                        <td class="no_border">
+                            <textarea id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>{{drone[3]}}</textarea>
+                        </td></tr>
+                </form>
+                
+            </table>
+
+        {%elif aukera == '3'%}
+            Kaixo
+        {%endif%}
     </body>
 </html>
