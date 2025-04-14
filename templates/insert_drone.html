@@ -5,82 +5,45 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-        <style>
-       .nav > li {
-				float:left;
-			}
-			
-			.nav li a {
-				background-color:#000;
-				color:#fff;
-				text-decoration:none;
-				padding:10px 12px;
-				display:block;
-			}
-			
-			.nav li a:hover {
-				background-color:#434343;
-			}
-			
-			.nav li ul {
-				display:none;
-				position:absolute;
-				min-width:140px;
-			}
-			
-			.nav li:hover > ul {
-				display:block;
-			}
-			
-			.nav li ul li {
-				position:relative;
-			}
-			
-			.nav li ul li ul {
-				right:-140px;
-				top:0px;
-			}
-        </style>
     </head>
     <body>
-        <!--{% if error%}
-            <script>
-                alert("{{error}}")
-            </script>
-        {% endif %}-->
-            <h1>Droneak gehitzeko formularioa</h1>
+        <div>
+            <button onclick="traducir('es')">Español</button>
+            <button onclick="traducir('en')">Inglés</button>
+            <button onclick="traducir('eu')">Euskera</button>
+        </div>
+            <h1 data-i18n="frm">Droneak gehitzeko formularioa</h1>
             <form action="/insert-drone" method="post">
                 <input type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
-                <li><a href="">Motak</a>
-                    <ul class="nav"></ul>
-					<ul>
-						<li><a href="">Hegazkina</a></li>
-						<li><a href="">Itsasontzia</a></li>
-						<li><a href="">Submarinoa</a></li>
-						<li><a href="">Multikopteroa</a></li>
-                            <li><a href="">Kotxea</a></li>
-                    </ul>
-                </li>
+                <select id="mota" name="mota">
+                    <option value="plane" data-i18n="opt1">Hegazkina</option>
+                    <option value="sailboat" data-i18n="opt2">Itsasontzia</option>
+                    <option value="fish" data-i18n="opt3">Submarinoa</option>
+                    <option value="helicopter" data-i18n="opt4">Multikopteroa</option>
+                    <option value="car-side" data-i18n="opt5">Kotxea</option>
+                </select>
                 <input type="text" id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>
                 <!--{% if error %}
                     <p class="error"><strong>Error:</strong> {{error}}</p>
                 {%endif%} -->
-                <button type="submit">Sartu</button>
+                <button type="submit" data-i18n="sartu">Sartu</button>
+        <script>
+            let diccionario = {};
+        
+            // Cargar el archivo JSON al cargar la página
+                fetch("{{ url_for('static', filename='traducciones.json') }}")
+                .then(res => res.json())
+                .then(data => {
+                diccionario = data;
+                traducir("eu"); // Idioma por defecto
+                });
+        
+            function traducir(idioma) {
+                document.querySelectorAll("[data-i18n]").forEach(el => {
+                const clave = el.getAttribute("data-i18n");
+                el.textContent = diccionario[idioma][clave] || clave;
+                });
+            }
+            </script>
     </body>
 </html>
-<!-- Luego en el app.py hay que meter esta funcion. Tmabien hay que cambiar el insert_Droneak en el model.py
- 
-@app.route('/insert_drone', methods=['GET','POST'])
-def erregistratu2():
-    if request.method == 'GET':
-        return render_template('insert_drone.html',error=None)
-    elif request.method == 'POST':
-        izenaDrone = request.form.get('izenaDrone')
-        mota = request.form.get('mota')
-        deskribapena = request.form.get('deskribapena')
-
-
-        if dbinput.insert_Droneak(izenaDrone, mota, deskribapena):
-            return redirect(url_for('control'))
-        else:
-            return render_template('insert_drone.html',error="Jadanik existitzen da dron bat izen horrekin.")-->
