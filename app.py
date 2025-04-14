@@ -190,6 +190,17 @@ def database_show():
         items=dboutput.get_info(tables.Droneak)
     )
 
+# API FOR LIVE UPDATES
+@app.route("/getLivePos", methods=['POST'])
+def getLivePos():   
+    data = request.get_json()
+    droneID = data['droneID']
+    print(droneID)
+    dronePos = dboutput.getRealLocations(droneID)[-1]
+    print(dronePos)
+    return jsonify({'lat': dronePos[0],'lng': dronePos[1]})
+
+
 #@app.route("/database/dowload")
 #def download_csv():
 #    csv = dboutput.create_csv(tables.Droneak)

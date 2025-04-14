@@ -84,7 +84,9 @@ class mapPage():
                 icon=folium.Icon(color='black', icon_color='#DC267F',prefix="fa", icon="flag-checkered")
             ).add_to(futureWPs)
         
-
+    # Aukeratutako dronearen ID-a erakusten
+    def getDroneID(self):
+        return(self.droneID)
 
     def ibilbideaMarkatu(self, m, realLine):
 
