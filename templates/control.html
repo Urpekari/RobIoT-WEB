@@ -7,19 +7,13 @@
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     {{ header|safe }}
 
-    <script>
-        function actualizarHora() {
-            const ahora = new Date();
-            const horas = ahora.getHours().toString().padStart(2, '0');
-            const minutos = ahora.getMinutes().toString().padStart(2, '0');
-            document.getElementById("hora").innerText = horas + ":" + minutos;
-        }
-        setInterval(actualizarHora, 60000);
-        window.onload = actualizarHora; 
-    </script>
-
 </head>
 <body>
+    <div>
+        <button onclick="traducir('es')">Español</button>
+        <button onclick="traducir('en')">Inglés</button>
+        <button onclick="traducir('eu')">Euskera</button>
+    </div>
     <div class="map">
         {{ body_html|safe }}
         <script>
@@ -27,7 +21,7 @@
         </script>      
     </div>
     <div class="mezuen-taula">
-        <h2 class="izenburu">Azken mezu esanguratsuak:</h2>
+        <h2 class="izenburu" data-i18n="mezu">Azken mezu esanguratsuak:</h2>
         <table>
             <thead>
                 <th>Timestamp</th>
@@ -47,65 +41,67 @@
         </table>
     </div>
     <div class="informazioaren-taula">
-        <h1>Ikusten: M.Ship+ROV:</h1>
+        <h1 data-i18n="ver">Ikusten:</h1><h1> {{dronea}}:</h1>
         <table>
             <thead class="taula">
-            <tr>
-                <th>Xehetasunak</th>
-                <th>Timestamp</th>
-            </tr> 
-        </thead>
-        <tbody class="taula">
-            <tr>
-                <td>Position</td>
-                <td><span id="hora"></span></td>
-            </tr>
-            <tr>
-                <td>{{lat}} N</td><!--Orain dronak duen posizioa sartu-->
-                <td>{{lng}} W</td>
-            </tr>
-            <tr>
-                <td>Next Waypoint</td>
-                <td>ETA: </td>
-            </tr>
-            <tr>
-                <td>     N</td>
-                <td>     W</td>
-            </tr>
-            <tr>
-                <td>Destination</td>
-                <td>ETA: </td>
-            </tr>
-            <tr>
-                <td>     N</td>
-                <td>     W</td>
-            </tr>
-        </tbody>
+                <tr>
+                    <th>Xehetasunak</th>
+                    <th>Timestamp</th>
+                </tr> 
+            </thead>
+            <tbody class="taula">
+                <tr>
+                    <td>Position</td>
+                    <td>{{timestamp}}</td>
+                </tr>
+                <tr>
+                    <td>{{lat}} N</td><!--Orain dronak duen posizioa sartu-->
+                    <td>{{lng}} W</td>
+                </tr>
+                <tr>
+                    <td>Next Waypoint</td>
+                    <td>ETA: </td>
+                </tr>
+                <tr>
+                    <td>     N</td>
+                    <td>     W</td>
+                </tr>
+                <tr>
+                    <td>Destination</td>
+                    <td>ETA: </td>
+                </tr>
+                <tr>
+                    <td>     N</td>
+                    <td>     W</td>
+                </tr>
+            </tbody>
         </table>
     <br>
     <table>
 
         <tr>
             <td>
-                <a href="/">
-                    <button>Ibilbidearen xehetasunak</button>
-                </a>
+                {%if ikusi%}
+                    <a href="{{url_for('insert_path',drone=dronea)}}">
+                        <button data-i18n="add">Ibilbidea gehitu</button>
+                    </a>
+                {%endif%}
             </td>
             <td>
                 <a href="/">
-                    <button>Ezeztatu</button>
+                    <button data-i18n="ez">Ezeztatu</button>
                 </a>
             </td>
         </tr>
         <tr>
             <td>
                 <a href="/">
-                    <button>Bueltatu etxera</button>
+                    <button data-i18n="back">Bueltatu etxera</button>
                 </a>
             </td>
             <td>
                 <a href="/">
-                    <button>Kontrolak</button>
+                    <button data-i18n="ctr">Kontrolak</button>
                 </a>
             </td>
         </tr>
@@ -113,7 +109,7 @@
     </table>
 </div>
     <div class="dronen-taula">
-        <h1>Dronen zerrenda:</h1>
+        <h1 data-i18n="lst">Dronen zerrenda:</h1>
         <table>
             <thead class="taula">
                 <th>Dronea</th>
@@ -123,7 +119,8 @@
                 <tr>
                     <td>
                         <form action="/control" method="post">
-                            <button class="link-button" name="drone_izena" value="{{ row }}">{{ row }}</button>
+                            <input type="hidden" name="drone_izena" value="{{ row }}">
+                            <button class="link-button" name="botoia" value="1">{{ row }}</button>
                         </form>
                     </td>
                 </tr>
@@ -131,9 +128,27 @@
             </tbody>
         </table>
         <br>
-        <a href="/insert_drone">
-            <button>Gehitu dronea</button>
+        <a href="/insert-drone">
+            <button data-i18n="add2">Gehitu dronea</button>
         </a>
     </div>
+    <script>
+        let diccionario = {};
+    
+        // Cargar el archivo JSON al cargar la página
+          fetch("{{ url_for('static', filename='traducciones.json') }}")
+          .then(res => res.json())
+          .then(data => {
+            diccionario = data;
+            traducir("en"); // Idioma por defecto
+          });
+    
+        function traducir(idioma) {
+          document.querySelectorAll("[data-i18n]").forEach(el => {
+            const clave = el.getAttribute("data-i18n");
+            el.textContent = diccionario[idioma][clave] || clave;
+          });
+        }
+      </script>
 </body>
 </html>
