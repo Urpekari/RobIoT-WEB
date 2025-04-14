@@ -2,7 +2,7 @@ let diccionario = {};
 
 function cargarTraducciones(idiomaPorDefecto = "eu") {
     fetch("/static/traducciones.json")
-        .then(res => res.json())
+        .then(res => res.json()) // convierte en un objeto json
         .then(data => {
             diccionario = data;
             const idiomaGuardado = localStorage.getItem("idioma") || idiomaPorDefecto;
