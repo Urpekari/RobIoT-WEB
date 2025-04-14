@@ -7,19 +7,34 @@
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
     <body>
-        <h1>Droneak aldatzeko formularioa</h1>
-        <form action="/modify_drone" method="post">
-            <input type="text" id="izenaDrone" name="izenaDrone" placeholder="Izen berria" required>
-            <select id="mota" name="mota">
-                <option value="Hegazkina">Hegazkina</option>
-                <option value="Itsasontzia">Itsasontzia</option>
-                <option value="Submarinoa">Submarinoa</option>
-                <option value="Multikopteroa">Multikopteroa</option>
-                <option value="Kotxea">Kotxea</option>
-            </select>
-            <input type="text" id="deskribapena" name="deskribapena" placeholder="Deskribapen berria" required>
-            <button type="submit">Aldatu</button>
-            <button type="submit">Sentsore gehitu</button>
+        <div>
+            <button onclick="traducir('es')">Español</button>
+            <button onclick="traducir('en')">Inglés</button>
+            <button onclick="traducir('eu')">Euskera</button>
+        </div>
+        <form action="/control" method="post"></formaction>
+            <button type="submit" data-i18n="aldatu">Aldatu</button>
         </form>
+        <form action="/insert_sensor" method="post"></formaction>
+            <button type="submit" data-i18n="add3">Sentsore gehitu</button>
+        </form>
+        <script>
+            let diccionario = {};
+        
+            // Cargar el archivo JSON al cargar la página
+                fetch("{{ url_for('static', filename='traducciones.json') }}")
+                .then(res => res.json())
+                .then(data => {
+                diccionario = data;
+                traducir("eu"); // Idioma por defecto
+                });
+        
+            function traducir(idioma) {
+                document.querySelectorAll("[data-i18n]").forEach(el => {
+                const clave = el.getAttribute("data-i18n");
+                el.textContent = diccionario[idioma][clave] || clave;
+                });
+            }
+        </script>
     </body>
 </html>
