@@ -31,7 +31,7 @@
         </script>      
     </div>
     <div class="mezuen-taula">
-        <h2 class="izenburu">Azken mezu esanguratsuak:</h2>
+        <h2 class="izenburu" data-i18n="mezu">Azken mezu esanguratsuak:</h2>
         <table>
             <thead>
                 <th>Timestamp</th>
@@ -51,7 +51,7 @@
         </table>
     </div>
     <div class="informazioaren-taula">
-        <h1>Ikusten: {{dronea}}:</h1>
+        <h1 data-i18n="ver">Ikusten:</h1><h1> {{dronea}}:</h1>
         <table>
             <thead>
                 <tr>
@@ -92,12 +92,12 @@
         <tr>
             <td class="no_border">
                     <a href="{{url_for('insert_path',drone=dronea)}}">
-                        <button>Ibilbidea gehitu</button>
+                        <button data-i18n="add">Ibilbidea gehitu</button>
                     </a>
             </td>
             <td class="no_border">
                 <a href="{{url_for('modify_drone',drone=dronea)}}">
-                    <button>Dronearen informazioa</button>
+                    <button data-i18n="ez">Dronearen informazioa</button>
                 </a>
             </td>
         </tr>
@@ -105,12 +105,12 @@
         <tr>
             <td class="no_border">
                 <a href="/">
-                    <button>Bueltatu etxera</button>
+                    <button data-i18n="back">Bueltatu etxera</button>
                 </a>
             </td>
             <td class="no_border">
                 <a href="/">
-                    <button>Kontrolak</button>
+                    <button data-i18n="ctr">Kontrolak</button>
                 </a>
             </td>
         </tr>
