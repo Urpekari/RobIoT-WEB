@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
-    <body>
+    <body style="padding: 3%;">
         <!--{% if error%}
             <script>
                 alert("{{error}}")
@@ -14,18 +14,23 @@
         {% endif %}-->
             <h1>Droneak gehitzeko formularioa</h1>
             <form action="/insert-drone" method="post">
-                <input type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
-                <select id="mota" name="mota">
+                <input style="width: 50%;" type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
+                <br>
+                <select id="mota" name="mota" required>
+                    <option value="" disabled selected>Aukeratu bat</option>
                     <option value="plane">Hegazkina</option>
                     <option value="sailboat">Itsasontzia</option>
                     <option value="fish">Submarinoa</option>
                     <option value="helicopter">Multikopteroa</option>
                     <option value="car-side">Kotxea</option>
                 </select>
-                <input type="text" id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>
+                <br>
+                <br>
+                <textarea style="resize: vertical;overflow: hidden;width: 50%;" id="deskribapena" name="deskribapena" placeholder="Deskribapena" required></textarea>
                 <!--{% if error %}
                     <p class="error"><strong>Error:</strong> {{error}}</p>
                 {%endif%} -->
+                <br>
                 <button type="submit">Sartu</button>
     </body>
 </html>

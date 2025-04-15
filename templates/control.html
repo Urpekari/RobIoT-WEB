@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     {{ header|safe }}
+  
+    <style>
+        th,td{
+            border: 2px solid white; 
+            border-collapse: collapse;
+        }
+    </style>
+  
 </head>
 <body>
     <div class="map">
@@ -38,13 +46,13 @@
         <h1>Ikusten: {{dronea}}:</h1>
         <p hidden id="droneID">{{droneID}}</p><!-- droneID elementu ID hau ez kendu! javascriptek behar du!-->
         <table>
-            <thead class="taula">
+            <thead>
                 <tr>
                     <th>Xehetasunak</th>
                     <th>Timestamp</th>  <!-- ??? -->
                 </tr> 
             </thead>
-            <tbody class="taula">
+            <tbody>
                 <tr>
                     <td>Position</td>
                     <td>{{timestamp}}</td>
@@ -72,29 +80,28 @@
             </tbody>
         </table>
     <br>
-    <table>
-
+    <table class="no_border">
+        {%if ikusi%}
         <tr>
-            <td>
-                {%if ikusi%}
+            <td class="no_border">
                     <a href="{{url_for('insert_path',drone=dronea)}}">
                         <button>Ibilbidea gehitu</button>
                     </a>
-                {%endif%}
             </td>
-            <td>
-                <a href="/">
-                    <button>Ezeztatu</button>
+            <td class="no_border">
+                <a href="{{url_for('modify_drone',drone=dronea)}}">
+                    <button>Dronearen informazioa</button>
                 </a>
             </td>
         </tr>
+        {%endif%}
         <tr>
-            <td>
+            <td class="no_border">
                 <a href="/">
                     <button>Bueltatu etxera</button>
                 </a>
             </td>
-            <td>
+            <td class="no_border">
                 <a href="/">
                     <button>Kontrolak</button>
                 </a>
@@ -106,10 +113,10 @@
     <div class="dronen-taula">
         <h1>Dronen zerrenda:</h1>
         <table>
-            <thead class="taula">
+            <thead>
                 <th>Dronea</th>
             </thead>
-            <tbody class="taula">
+            <tbody>
                 {% for row in droneak %}
                 <tr>
                     <td>

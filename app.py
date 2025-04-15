@@ -97,7 +97,8 @@ def get_erab_drone_list(erab):
     id_drone,baimen=dboutput.get_erab_droneak(erab_id)
     droneak=[]
     for pos,id in enumerate(id_drone):
-        drone=dboutput.get_drone_info(id)
+        drone_info=dboutput.get_drone_info(id)
+        drone=drone_info[1]
         jabe_id=dboutput.get_drone_jabe(id)
         jabe_izen=dboutput.get_erab_izen(jabe_id)
         if not jabe_izen==erab:
@@ -137,6 +138,47 @@ def drone_erregistratu():
             return redirect(url_for('control'))
     except KeyError as e:
         return redirect(url_for('index'))
+
+@app.route("/modify_drone/<drone>", methods=['GET','POST'])
+def modify_drone(drone):
+    droneak,id=get_erab_drone_list(session['erabiltzailea'])
+
+    for pos,dronea in enumerate(droneak):
+        if dronea == drone:
+            droneID=id[pos]
+    jabe_id = dboutput.get_drone_jabe(droneID)
+    jabe = dboutput.get_erab_izen(jabe_id)
+    drone_info = dboutput.get_drone_info(droneID)
+
+    if request.method == "GET":
+        return render_template('modify_drone.html',drone=drone_info, jabe=jabe)
+    elif request.method == "POST":
+        bot = request.form.get('botoia')
+        baimenak=[]
+        error=None
+        if bot == '3':
+            baimen_info=dboutput.get_info(tables.Baimenak)
+            for row in baimen_info:
+                for baimen in row:
+                    if baimen not in ["Admin","Jabea"]:
+                        baimenak.append(baimen)
+        elif bot == '4':
+            izena = request.form.get('izen')
+            mota = request.form.get('mota')
+            deskribapena = request.form.get('deskribapena')
+            dbinput.update_Droneak(izena,mota,deskribapena,droneID)
+            drone_info = dboutput.get_drone_info(droneID)
+        elif bot == '5':
+            partekatu_erab = request.form.get('partekatu_erab')
+            baimena = request.form.get('baimena')
+            id_erab=dboutput.get_erab_id(partekatu_erab)
+            if id_erab:
+                dbinput.insert_Partekatzeak(id_erab,droneID,baimena)
+            else:
+                error="Ez da erabiltzaile hori existitzen"
+
+        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot, baimenak=baimenak, error=error)
+
 
 @app.route("/gwInsert/<gwid>",methods=['POST'])
 def gw_insert(gwid):

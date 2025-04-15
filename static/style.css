@@ -5,13 +5,16 @@
 
 body {
     font-family: EHUSans;
+    height: 100vh;
+    background-color: #1c1c1c;
+    margin: 0;
+}
+
+.erdiratzea {
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: 100vh;
-    background-color: #1c1c1c;
-    margin: 0;
 }
 
 .zentratua {
@@ -20,9 +23,11 @@ body {
 
 h1 {
     font-family: EHUSans;
-    font-size: 500%;
     color: white;
     margin-bottom: 30px;
+}
+
+.berezia {
     display: inline;
 }
 
@@ -86,6 +91,7 @@ button:hover {
 }
 
 .mezuen-taula{
+    font-family: EHUSans;
     height: 25%;
     width: 70%;
     left: 0;
@@ -96,6 +102,7 @@ button:hover {
 }
 
 .informazioaren-taula{
+    font-family: EHUSans;
     height: 50%;
     width: 30%;
     right: 0;
@@ -106,6 +113,7 @@ button:hover {
 }
 
 .dronen-taula{
+    font-family: EHUSans;
     height: 50%;
     width: 30%;
     right: 0;
@@ -115,13 +123,22 @@ button:hover {
     padding: 10px;
 }
 
-.taula{
+table,th,td{
     border: 2px solid white; 
+    border-collapse: collapse;
     text-align: center;
     color: white; 
 }
 
+
+.no_border{
+    border: none;
+    border-collapse: collapse;
+}
+
+
 .link-button {
+    font-family: EHUSans;
     border: 0;
     padding: 0;
     background: inherit;
@@ -135,6 +152,7 @@ button:hover {
 }
 
 .izenburu_azalpena{
+    font-family: EHUSans;
     height: 10%;
     width: 70%;
     left: 0;
@@ -144,6 +162,7 @@ button:hover {
     padding: 10px;
 }
 .mapa_interaktiboa{
+    font-family: EHUSans;
     height: 90%;
     width: 70%;
     left: 0;
@@ -154,6 +173,7 @@ button:hover {
 }
 
 .insert_bidea{
+    font-family: EHUSans;
     height: 100%;
     width: 30%;
     right: 0;
@@ -164,10 +184,12 @@ button:hover {
 }
 
 .flask-container {
+    font-family: EHUSans;
     position: relative;
     display: inline-block;
 }
 .tooltip {
+    font-family: EHUSans;
     visibility: hidden;
     width: 500px;
     background-color: #333;
@@ -184,6 +206,7 @@ button:hover {
     transition: opacity 0.3s;
 }
 .flask-container:hover .tooltip {
-        visibility: visible;
-        opacity: 1;
-    }
+        
+    visibility: visible;
+    opacity: 1;
+}

@@ -65,7 +65,7 @@ class output():
         cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
         usuario = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
-        return usuario[0]
+        return usuario[0] if usuario else None
     
     def get_erab_izen(self,id_erab):
         cur = self.mysql.connection.cursor()
@@ -93,7 +93,7 @@ class output():
         cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (id_drone,))
         drone = cur.fetchone()
         cur.close()
-        return drone[1]
+        return drone
 
     def get_drone_jabe(self,id_dron):
         cur = self.mysql.connection.cursor()
@@ -312,5 +312,12 @@ class input():
         cur = self.mysql.connection.cursor()
         query = "INSERT INTO Sentsoreak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
         cur.execute(query,(izena,mota,deskribapena))
+        self.mysql.connection.commit()
+        cur.close()
+    
+    def update_Droneak(self,izena,mota,deskribapena,id):
+        cur = self.mysql.connection.cursor()
+        query = "UPDATE Droneak SET Izena=%s, Mota=%s, Deskribapena=%s WHERE idDroneak=%s"
+        cur.execute(query,(izena,mota,deskribapena,id))
         self.mysql.connection.commit()
         cur.close()
