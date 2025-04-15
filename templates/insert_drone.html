@@ -6,44 +6,35 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
-    <body>
+    <body style="padding: 3%;">
         <div>
             <button onclick="traducir('es')">Español</button>
             <button onclick="traducir('en')">Inglés</button>
             <button onclick="traducir('eu')">Euskera</button>
-        </div>
-            <h1 data-i18n="frm">Droneak gehitzeko formularioa</h1>
+          </div>
+          <script src="{{ url_for('static', filename='itzultzaile.js') }}"></script>
+          <script>
+            cargarTraducciones(); // Se carga el idioma por defecto o guardado
+          </script>
+            <h1>Droneak gehitzeko formularioa</h1>
             <form action="/insert-drone" method="post">
-                <input type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
-                <select id="mota" name="mota">
-                    <option value="plane" data-i18n="opt1">Hegazkina</option>
-                    <option value="sailboat" data-i18n="opt2">Itsasontzia</option>
-                    <option value="fish" data-i18n="opt3">Submarinoa</option>
-                    <option value="helicopter" data-i18n="opt4">Multikopteroa</option>
-                    <option value="car-side" data-i18n="opt5">Kotxea</option>
+                <input style="width: 50%;" type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
+                <br>
+                <select id="mota" name="mota" required>
+                    <option value="" disabled selected>Aukeratu bat</option>
+                    <option value="plane">Hegazkina</option>
+                    <option value="sailboat">Itsasontzia</option>
+                    <option value="fish">Submarinoa</option>
+                    <option value="helicopter">Multikopteroa</option>
+                    <option value="car-side">Kotxea</option>
                 </select>
-                <input type="text" id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>
+                <br>
+                <br>
+                <textarea style="resize: vertical;overflow: hidden;width: 50%;" id="deskribapena" name="deskribapena" placeholder="Deskribapena" required></textarea>
                 <!--{% if error %}
                     <p class="error"><strong>Error:</strong> {{error}}</p>
                 {%endif%} -->
-                <button type="submit" data-i18n="sartu">Sartu</button>
-        <script>
-            let diccionario = {};
-        
-            // Cargar el archivo JSON al cargar la página
-                fetch("{{ url_for('static', filename='traducciones.json') }}")
-                .then(res => res.json())
-                .then(data => {
-                diccionario = data;
-                traducir("eu"); // Idioma por defecto
-                });
-        
-            function traducir(idioma) {
-                document.querySelectorAll("[data-i18n]").forEach(el => {
-                const clave = el.getAttribute("data-i18n");
-                el.textContent = diccionario[idioma][clave] || clave;
-                });
-            }
-            </script>
+                <br>
+                <button type="submit">Sartu</button>
     </body>
 </html>
