@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     {{ header|safe }}
+  
     <style>
         th,td{
             border: 2px solid white; 
             border-collapse: collapse;
         }
     </style>
-
+  
 </head>
 <body>
     <div class="map">
@@ -23,7 +24,7 @@
     </div>
     <div class="mezuen-taula">
         <h2 class="izenburu">Azken mezu esanguratsuak:</h2>
-        <table>
+        <table style="width: 100%;">
             <thead>
                 <th>Timestamp</th>
                 <th>Dronea</th>
@@ -43,11 +44,12 @@
     </div>
     <div class="informazioaren-taula">
         <h1>Ikusten: {{dronea}}:</h1>
+        <p hidden id="droneID">{{droneID}}</p><!-- droneID elementu ID hau ez kendu! javascriptek behar du!-->
         <table>
             <thead>
                 <tr>
                     <th>Xehetasunak</th>
-                    <th>Timestamp</th>
+                    <th>Timestamp</th>  <!-- ??? -->
                 </tr> 
             </thead>
             <tbody>
@@ -56,24 +58,24 @@
                     <td>{{timestamp}}</td>
                 </tr>
                 <tr>
-                    <td>{{lat}} N</td><!--Orain dronak duen posizioa sartu-->
-                    <td>{{lng}} W</td>
+                    <td><span id="liveLat">NA</span></td><!--Orain dronak duen posizioa sartu-->
+                    <td><span id="liveLng">NA</span></td>
                 </tr>
                 <tr>
                     <td>Next Waypoint</td>
-                    <td>ETA: </td>
+                    <td>ETA: <span id="nextWPETA">NA</span> </td>
                 </tr>
                 <tr>
-                    <td>     N</td>
-                    <td>     W</td>
+                    <td><span id="nextWPlat">NA</span></td>
+                    <td><span id="nextWPlng">NA</span></td>
                 </tr>
                 <tr>
                     <td>Destination</td>
-                    <td>ETA: </td>
+                    <td>ETA: <span id="goalWPETA">NA</span> </td>
                 </tr>
                 <tr>
-                    <td>     N</td>
-                    <td>     W</td>
+                    <td><span id="goalWPlat">NA</span></td>
+                    <td><span id="goalWPlng">NA</span></td>
                 </tr>
             </tbody>
         </table>
@@ -133,4 +135,7 @@
         </a>
     </div>
 </body>
+
+<script src="{{url_for('static', filename='mapUpdate.js')}}"></script>
+
 </html>
