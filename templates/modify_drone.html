@@ -21,30 +21,47 @@
             </tbody>
         </table>
         <p class="izenburu">Jabea: {{jabe}}</p>
+        <p class="izenburu">Partekatutako erabiltzaileak:</p>
+        <table>
+            <tr><th>Izena</th><th>Baimena</th></tr>
+            {%for row in partekatuak%}
+                <tr><td>{{row[0]}}</td><td>{{row[1]}}</td></tr>
+            {%endfor%}
+        </table>
         <h2 class="izenburu">Instalutako sentsoreak:</h2>
         <table>
 
         </table>
         <table class="no_border">
-            <tr><td class="no_border">
-                <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
-                    <button type="submit" name="botoia" value="1">Aldatu</button>
-                </form>
-            </td><td class="no_border">
-                <form action="/insert_sensor" method="post"></formaction>
-                    <button type="submit" name="botoia" value="2">Sentsore gehitu</button>
-                </form>
-            </td><td class="no_border">
-                <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
-                    <button type="submit" name="botoia" value="3">Partekatu</button>
-                </form>
-            </td></tr>
+            <tr>
+                {%if aukera != '1'%}
+                    <td class="no_border">
+                        <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
+                            <button type="submit" name="botoia" value="1">Aldatu</button>
+                        </form>
+                    </td>
+                {%endif%}
+                    <td class="no_border">
+                        <form action="/insert_sensor" method="post"></formaction>
+                            <button type="submit" name="botoia" value="2">Sentsore gehitu</button>
+                        </form>
+                    </td>
+                {%if aukera != '3'%}
+                    <td class="no_border">
+                        <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
+                            <button type="submit" name="botoia" value="3">Partekatu</button>
+                        </form>
+                    </td>
+                {%endif%}
+            </tr>
         </table>
-
+        {%if error%}
+        <p class="error"><strong>{{error}}</strong></p>
+        {%endif%}
         {%if aukera == '1'%}
 
             <table class="no_border">
-                <form>
+                <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post">
                     <tr><td class="no_border">Izena:</td>
                         <td class="no_border">
                             <input type="text" name="izen" id="izen" value="{{drone[1]}}" required>
@@ -64,12 +81,25 @@
                         <td class="no_border">
                             <textarea id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>{{drone[3]}}</textarea>
                         </td></tr>
+                    <tr><td class="no_border">
+                        <button type="submit" name="botoia" value="4">Sartu</button>
+                    </td></tr>
                 </form>
                 
             </table>
 
         {%elif aukera == '3'%}
-            Kaixo
+            <h3 class="izenburu">Norekin partekatu nahi duzu?</h3>
+            <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post">
+                <input type="text" name="partekatu_erab" id="partekatu_erab" placeholder="Erabiltzailea" required>
+                <select id="baimena" name="baimena" required>
+                    <option value="" disabled selected>Aukeratu baimen bat</option>
+                    {%for baimen in baimenak:%}
+                        <option value="{{baimen}}">{{baimen}}</option>
+                    {%endfor%}
+                </select>
+                <button type="submit" name="botoia" value="5">Sartu</button>
+            </form>
         {%endif%}
     </body>
 </html>

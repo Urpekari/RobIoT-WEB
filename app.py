@@ -154,7 +154,30 @@ def modify_drone(drone):
         return render_template('modify_drone.html',drone=drone_info, jabe=jabe)
     elif request.method == "POST":
         bot = request.form.get('botoia')
-        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot)
+        baimenak=[]
+        error=None
+        if bot == '3':
+            baimen_info=dboutput.get_info(tables.Baimenak)
+            for row in baimen_info:
+                for baimen in row:
+                    if baimen not in ["Admin","Jabea"]:
+                        baimenak.append(baimen)
+        elif bot == '4':
+            izena = request.form.get('izen')
+            mota = request.form.get('mota')
+            deskribapena = request.form.get('deskribapena')
+            dbinput.update_Droneak(izena,mota,deskribapena,droneID)
+            drone_info = dboutput.get_drone_info(droneID)
+        elif bot == '5':
+            partekatu_erab = request.form.get('partekatu_erab')
+            baimena = request.form.get('baimena')
+            id_erab=dboutput.get_erab_id(partekatu_erab)
+            if id_erab:
+                dbinput.insert_Partekatzeak(id_erab,droneID,baimena)
+            else:
+                error="Ez da erabiltzaile hori existitzen"
+
+        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot, baimenak=baimenak, error=error)
 
 
 @app.route("/gwInsert/<gwid>",methods=['POST'])
