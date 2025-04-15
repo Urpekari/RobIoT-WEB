@@ -20,26 +20,43 @@ if (selectedDroneID > 0){
 
 //console.log(selectedDroneID)
 
+var apiWorking = 0;
 
 function autoUpdater(droneJSON){
     //console.log(droneJSON)
-    setInterval(getEpicThing, 1000);
+    var refreshMap = setInterval(
+        function(){
+            getEpicThing();
+            console.log(apiWorking)
+            if(apiWorking < 0){
+                console.log("Cocking nora");
+                clearInterval(refreshMap);
+            }
+        }, 1000);
 }
 
 async function getEpicThing(){
     let url = 'http://localhost:5000/getLiveData';
 
     console.log(JSON.stringify({droneID : selectedDroneID}))
+    try{
+        await fetch(url, {
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({droneID : selectedDroneID})
+        })
+        .then(res => res.json())
+        .then(obj => extractCoords(JSON.stringify(obj)))
+        apiWorking = 0;
+    }
+    catch(err){
+        console.log("bonk")
+        console.log(err.message)
+        apiWorking = -1;
+    }
 
-    await fetch(url, {
-        method: 'POST',
-        headers:{
-            'Content-Type':'application/json;charset=utf-8'
-        },
-        body: JSON.stringify({droneID : selectedDroneID})
-    })
-    .then(res => res.json())
-    .then(obj => extractCoords(JSON.stringify(obj)))
 }
 
 function extractCoords(coordsJSON){
