@@ -23,14 +23,14 @@
         </script>
     {% endif %}
     <div class="login-container">
-        <h2>Sartu zure erabiltzaile eta pasahitza</h2>
+        <h2 data-i18n="sartu1">Sartu zure erabiltzaile eta pasahitza</h2>
         <form action="/login" method="post">
             <input type="text" id="erabiltzailea" name="erabiltzailea" placeholder="Erabiltzailea" required>
             <input type="password" id="pasahitza" name="pasahitza" placeholder="Pasahitza" required>
             {% if error %}
                 <p class="error"><strong>Error:</strong> {{error}}</p>
             {%endif%}
-            <button type="submit">Sartu</button>
+            <button type="submit" data-i18n="sartu">Sartu</button>
         </form>
     </div>
 </body>
