@@ -16,17 +16,17 @@
           <script>
             cargarTraducciones(); // Se carga el idioma por defecto o guardado
           </script>
-            <h1>Droneak gehitzeko formularioa</h1>
+            <h1 data-i18n="frm">Droneak gehitzeko formularioa</h1>
             <form action="/insert-drone" method="post">
                 <input style="width: 50%;" type="text" id="izenaDrone" name="izenaDrone" placeholder="Izena" required>
                 <br>
                 <select id="mota" name="mota" required>
-                    <option value="" disabled selected>Aukeratu bat</option>
-                    <option value="plane">Hegazkina</option>
-                    <option value="sailboat">Itsasontzia</option>
-                    <option value="fish">Submarinoa</option>
-                    <option value="helicopter">Multikopteroa</option>
-                    <option value="car-side">Kotxea</option>
+                    <option value="" disabled selected data-i18n="au">Aukeratu bat</option>
+                    <option value="plane" data-i18n="opt1">Hegazkina</option>
+                    <option value="sailboat" data-i18n="opt2">Itsasontzia</option>
+                    <option value="fish" data-i18n="opt3">Submarinoa</option>
+                    <option value="helicopter" data-i18n="opt4">Multikopteroa</option>
+                    <option value="car-side" data-i18n="opt5">Kotxea</option>
                 </select>
                 <br>
                 <br>
@@ -35,6 +35,6 @@
                     <p class="error"><strong>Error:</strong> {{error}}</p>
                 {%endif%} -->
                 <br>
-                <button type="submit">Sartu</button>
+                <button type="submit" data-i18n="sartu">Sartu</button>
     </body>
 </html>
