@@ -16,7 +16,7 @@
         cargarTraducciones(); // Se carga el idioma por defecto o guardado
       </script>
     <body style="padding: 3%;">
-        <h1>Dronearen informazioa:</h1>
+        <h1 data-i18n="info">Dronearen informazioa:</h1>
         <table>
             <thead>
                 <th>ID</th><th>Izena</th><th>Mota</th><th>Deskribapena</th>
@@ -29,23 +29,23 @@
                 </tr>
             </tbody>
         </table>
-        <p class="izenburu">Jabea: {{jabe}}</p>
-        <h2 class="izenburu">Instalutako sentsoreak:</h2>
+        <p class="izenburu" data-i18n="jabea">Jabea:</p><p> {{jabe}}</p>
+        <h2 class="izenburu" data-i18n="inst">Instalutako sentsoreak:</h2>
         <table>
 
         </table>
         <table class="no_border">
             <tr><td class="no_border">
                 <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
-                    <button type="submit" name="botoia" value="1">Aldatu</button>
+                    <button type="submit" name="botoia" value="1" data-i18n="aldatu">Aldatu</button>
                 </form>
             </td><td class="no_border">
                 <form action="/insert_sensor" method="post"></formaction>
-                    <button type="submit" name="botoia" value="2">Sentsore gehitu</button>
+                    <button type="submit" name="botoia" value="2" data-i18n="add3">Sentsore gehitu</button>
                 </form>
             </td><td class="no_border">
                 <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
-                    <button type="submit" name="botoia" value="3">Partekatu</button>
+                    <button type="submit" name="botoia" value="3" data-i18n="pa">Partekatu</button>
                 </form>
             </td></tr>
         </table>
@@ -61,15 +61,15 @@
                     <tr><td class="no_border">Mota:</td>
                         <td class="no_border">
                             <select id="mota" name="mota" required>
-                                <option value="" disabled selected>Aukeratu bat</option>
-                                <option value="plane">Hegazkina</option>
-                                <option value="sailboat">Itsasontzia</option>
-                                <option value="fish">Submarinoa</option>
-                                <option value="helicopter">Multikopteroa</option>
-                                <option value="car-side">Kotxea</option>
+                                <option value="" disabled selected data-i18n="au">Aukeratu bat</option>
+                                <option value="plane" data-i18n="opt1">Hegazkina</option>
+                                <option value="sailboat" data-i18n="opt2">Itsasontzia</option>
+                                <option value="fish" data-i18n="opt3">Submarinoa</option>
+                                <option value="helicopter" data-i18n="opt4">Multikopteroa</option>
+                                <option value="car-side" data-i18n="opt5">Kotxea</option>
                             </select>
                         </td></tr>
-                    <tr><td class="no_border">Deskribapena:</td>
+                    <tr><td class="no_border" data-i18n="d">Deskribapena:</td>
                         <td class="no_border">
                             <textarea id="deskribapena" name="deskribapena" placeholder="Deskribapena" required>{{drone[3]}}</textarea>
                         </td></tr>
