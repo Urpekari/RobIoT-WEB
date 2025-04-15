@@ -22,6 +22,7 @@ function traducir(idioma) {
         } else {
             el.textContent = traduccion;
         }
+        
 
         // Cambia también el título si existe
         if (el.hasAttribute("title")) {
