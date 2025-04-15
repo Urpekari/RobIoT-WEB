@@ -23,7 +23,7 @@
         </script>
     {% endif %}
     <div class="login-container">
-        <h2>Sortu kontua:</h2>
+        <h2 data-i18n="sortu">Sortu kontua:</h2>
         <form action="/sign-up" method="post">
             <input type="text" id="izena" name="izena" placeholder="Izena" required>
             <input type="text" id="abizena" name="abizena" placeholder="Abizena">
@@ -33,7 +33,7 @@
             {% if error %}
                 <p class="error"><strong>Error:</strong> {{error}}</p>
             {%endif%}
-            <button type="submit">Sartu</button>
+            <button type="submit" data-i18n="sartu">Sartu</button>
         </form>
     </div>
 </body>
