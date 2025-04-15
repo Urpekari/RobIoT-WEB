@@ -11,7 +11,11 @@
         <button onclick="traducir('es')">Español</button>
         <button onclick="traducir('en')">Inglés</button>
         <button onclick="traducir('eu')">Euskera</button>
-    </div>
+      </div>
+      <script src="{{ url_for('static', filename='itzultzaile.js') }}"></script>
+      <script>
+        cargarTraducciones(); // Se carga el idioma por defecto o guardado
+      </script>
     <div class="dronearen-informazioa"></div>
         <h1 data-i18n="info">Dronearen informazioa:</h1><h1> {{dronea}}</h1>
         <table>
@@ -33,23 +37,5 @@
             <button type="submit" data-i18n="back2">Atzera</button>
         </form>
         </div>
-        <script>
-            let diccionario = {};
-        
-            // Cargar el archivo JSON al cargar la página
-              fetch("{{ url_for('static', filename='traducciones.json') }}")
-              .then(res => res.json())
-              .then(data => {
-                diccionario = data;
-                traducir("eu"); // Idioma por defecto
-              });
-        
-            function traducir(idioma) {
-              document.querySelectorAll("[data-i18n]").forEach(el => {
-                const clave = el.getAttribute("data-i18n");
-                el.textContent = diccionario[idioma][clave] || clave;
-              });
-            }
-        </script>
 </body>
 </html>
