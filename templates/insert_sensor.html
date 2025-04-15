@@ -16,7 +16,7 @@
       <script>
         cargarTraducciones(); // Se carga el idioma por defecto o guardado
       </script>
-            <h1>Sentsorea gehitzeko formularioa</h1>
+            <h1 data-i18n="add4">Sentsorea gehitzeko formularioa</h1>
             <form action="/insert-sensor" method="post">
                 <input type="text" id="izenaSentsorea" name="izenaSentsorea" placeholder="Izena" required>
                 <input type="text" id="motaSentsorea" name="motaSentsorea" placeholder="Mota">
@@ -24,6 +24,6 @@
                 <!--{% if error %}
                     <p class="error"><strong>Error:</strong> {{error}}</p>
                 {%endif%} -->
-                <button type="submit">Sartu</button>
+                <button type="submit" data-i18n="sartu">Sartu</button>
     </body>
 </html>
