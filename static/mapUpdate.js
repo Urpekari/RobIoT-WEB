@@ -1,42 +1,62 @@
-autoUpdater(2)
+let selectedDroneID = -1;
+
+try{
+    if (typeof(document.getElementById("droneID").innerHTML)!=null){
+        selectedDroneID = document.getElementById("droneID").innerHTML;
+        
+    }
+    else{
+        selectedDroneID = -1;
+    }    
+}
+catch(err){
+    document.getElementById("droneID").innerHTML = err.message;
+    selectedDroneID = -1;
+}
+
+if (selectedDroneID > 0){
+    autoUpdater(selectedDroneID);
+}
+
+//console.log(selectedDroneID)
+
 
 function autoUpdater(droneJSON){
-    console.log(droneJSON)
+    //console.log(droneJSON)
     setInterval(getEpicThing, 1000);
 }
 
-// function getTest(){
-//     const url = 'http://localhost:5000/testApi'
-//     fetch(url)
-//     .then(response => response.json())
-//     .then(json=>{
-//         console.log(json)
-//     })
-// }
-
 async function getEpicThing(){
-    let url = 'http://localhost:5000/getLivePos';
+    let url = 'http://localhost:5000/getLiveData';
 
-    console.log(JSON.stringify({droneID : 2}))
+    console.log(JSON.stringify({droneID : selectedDroneID}))
 
     await fetch(url, {
         method: 'POST',
         headers:{
             'Content-Type':'application/json;charset=utf-8'
         },
-        body: JSON.stringify({droneID : 2})
+        body: JSON.stringify({droneID : selectedDroneID})
     })
     .then(res => res.json())
     .then(obj => extractCoords(JSON.stringify(obj)))
-    //.then(obj => console.log(obj));
-    //console.log(obj)
 }
 
 function extractCoords(coordsJSON){
-    console.log(coordsJSON)
+    //console.log(coordsJSON)
     var data = JSON.parse(coordsJSON)
-    console.log(data.lat)
-    console.log(data.lng)
+    //console.log(data.lat)
+    //console.log(data.lng)
+    document.getElementById("liveLat").innerHTML = data.GPSPos.lat
+    document.getElementById("liveLng").innerHTML = data.GPSPos.lng
+    
+    document.getElementById("nextWPlat").innerHTML = data.NextWaypoint.lat
+    document.getElementById("nextWPlng").innerHTML = data.NextWaypoint.lng
+    document.getElementById("nextWPETA").innerHTML = data.NextWaypoint.eta
+    
+    document.getElementById("goalWPlat").innerHTML = data.Destination.lat
+    document.getElementById("goalWPlng").innerHTML = data.Destination.lng
+    document.getElementById("goalWPETA").innerHTML = data.Destination.eta
 }
 
 function sleep(ms) {

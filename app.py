@@ -88,7 +88,7 @@ def control():
             header, body_html, script=page.map()
             if not drone_izena[-6:] == "_ikusi":
                 ikusi=1
-            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneak=droneak, ikusi=ikusi)
+            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneID=droneID, droneak=droneak, ikusi=ikusi)
     except KeyError as e:
         return redirect(url_for('index'))
     
@@ -191,14 +191,34 @@ def database_show():
     )
 
 # API FOR LIVE UPDATES
-@app.route("/getLivePos", methods=['POST'])
+@app.route("/getLiveData", methods=['POST'])
 def getLivePos():   
     data = request.get_json()
     droneID = data['droneID']
     print(droneID)
     dronePos = dboutput.getRealLocations(droneID)[-1]
+    nextWP = dboutput.get_waypoint_future(droneID)[0]
+    goalWP = dboutput.get_waypoint_future(droneID)[-1]
     print(dronePos)
-    return jsonify({'lat': dronePos[0],'lng': dronePos[1]})
+    return jsonify({
+        
+        'GPSPos':{
+            'lat': dronePos[0],
+            'lng': dronePos[1]
+        },
+        'NextWaypoint':{
+            'lat': nextWP[0],
+            'lng': nextWP[1],
+            'eta': 'TIME 1'
+        },
+
+        'Destination':{
+            'lat': goalWP[0],
+            'lng': goalWP[1],
+            'eta': 'TIME 2'
+        },
+
+        })
 
 
 #@app.route("/database/dowload")
