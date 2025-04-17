@@ -149,14 +149,30 @@ def modify_drone(drone):
     jabe_id = dboutput.get_drone_jabe(droneID)
     jabe = dboutput.get_erab_izen(jabe_id)
     drone_info = dboutput.get_drone_info(droneID)
-
+    partekatu_erab = dboutput.get_drone_erab(droneID)
+    partekatuak = []
+    for erab in partekatu_erab:
+        if not erab[-1] == "Jabea":
+            izen=dboutput.get_erab_izen(erab[1])
+            partekatuak.append([izen,erab[-1]])
+    sents_id = dboutput.get_drone_sentsoreak(droneID)
+    sents_in = []
+    for id in sents_id:
+        sens_info = dboutput.get_sentsore_info(id[-1])
+        sents_in.append(sens_info)
     if request.method == "GET":
-        return render_template('modify_drone.html',drone=drone_info, jabe=jabe)
+        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, partekatuak=partekatuak, sents_in=sents_in)
     elif request.method == "POST":
         bot = request.form.get('botoia')
         baimenak=[]
         error=None
-        if bot == '3':
+        sentsoreak = []
+        if bot == '2':
+            sentsore_guztiak = dboutput.get_info(tables.Sentsoreak)
+            for sents in sentsore_guztiak:
+                if sents not in sents_in:
+                    sentsoreak.append(sents)
+        elif bot == '3':
             baimen_info=dboutput.get_info(tables.Baimenak)
             for row in baimen_info:
                 for baimen in row:
@@ -169,6 +185,17 @@ def modify_drone(drone):
             dbinput.update_Droneak(izena,mota,deskribapena,droneID)
             drone_info = dboutput.get_drone_info(droneID)
         elif bot == '5':
+            sentsoreak = dboutput.get_info(tables.Sentsoreak)
+            for element in sentsoreak:
+                sens = request.form.get(str(element[0]))
+                if sens:
+                    dbinput.insert_Drone_Sentsore(None,droneID,int(sens))
+            sents_id = dboutput.get_drone_sentsoreak(droneID)
+            sents_in = []
+            for id in sents_id:
+                sens_info = dboutput.get_sentsore_info(id[-1])
+                sents_in.append(sens_info)
+        elif bot == '6':
             partekatu_erab = request.form.get('partekatu_erab')
             baimena = request.form.get('baimena')
             id_erab=dboutput.get_erab_id(partekatu_erab)
@@ -176,8 +203,13 @@ def modify_drone(drone):
                 dbinput.insert_Partekatzeak(id_erab,droneID,baimena)
             else:
                 error="Ez da erabiltzaile hori existitzen"
-
-        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot, baimenak=baimenak, error=error)
+            partekatu_erab = dboutput.get_drone_erab(droneID)
+            partekatuak = []
+            for erab in partekatu_erab:
+                if not erab[-1] == "Jabea":
+                    izen=dboutput.get_erab_izen(erab[1])
+                    partekatuak.append([izen,erab[-1]])
+        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)
 
 
 @app.route("/gwInsert/<gwid>",methods=['POST'])
@@ -224,8 +256,12 @@ def get_coords():
 def gps_distance(currentCoords, compareCoords):
     return(hs.haversine(currentCoords, compareCoords, unit=Unit.METERS))
 
-@app.route("/database")
+@app.route("/database", methods=['GET','POST'])
 def database_show():
+    a1=request.form.get('a1')
+    a2=request.form.get('a2')
+    print(a1)
+    print(a2)
     return render_template(
         "database.html",
         header=tables.Droneak_header,

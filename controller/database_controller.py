@@ -102,6 +102,13 @@ class output():
         cur.close()
         return jabe_dron
     
+    def get_drone_erab(self,id_dron):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Partekatzeak WHERE Droneak_idDroneak = %s", (id_dron,))
+        drone_erab = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return drone_erab
+    
     def get_drone_GPS(self,id_drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s", (id_drone,))
@@ -111,24 +118,38 @@ class output():
 
     def get_drone_mezuak(self,id_drone):
         cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Mezuak WHERE Droneak_idDronek = %s", (id_drone,))
+        cur.execute("SELECT * FROM Mezuak WHERE Droneak_idDroneak = %s", (id_drone,))
         mezu_drone = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
         return mezu_drone
     
-    def get_drone_sentsore(self,id_drone,id_sentsore):
+    def get_drone_sentsoreak(self,id_drone):
         cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDronek = %s AND Sentsoreak_idSentsoreak = %s", (id_drone,id_sentsore))
+        cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDroneak = %s", (id_drone,))
+        dron_sens = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return dron_sens
+
+    def get_drone_sentsore_info(self,id_drone,id_sentsore):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDroneak = %s AND Sentsoreak_idSentsoreak = %s", (id_drone,id_sentsore))
         dron_sens = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
         return dron_sens
     
-    def get_sentsore_info(self,id_dron_sens):
+    def get_sentsore_balio(self,id_dron_sens):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Sentsore_info WHERE Drone_Sentsore_idDroneSentsore = %s", (id_dron_sens,))
-        sens_info = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        sens_balio = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
         cur.close()
-        return sens_info[-1]
+        return sens_balio[-1]
+    
+    def get_sentsore_info(self,id_sentsore):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Sentsoreak WHERE idSentsoreak = %s", (id_sentsore,))
+        sens_info = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        cur.close()
+        return sens_info
 
     # Maparekin erabiltzeko atalak
 
