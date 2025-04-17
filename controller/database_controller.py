@@ -263,9 +263,13 @@ class output():
     def get_banned_areas(self, droneType):
         if droneType.lower() == "plane":
             return(bans.planeBans)
+        elif droneType.lower() == "helicopter":
+            return(bans.planeBans)
     
     def get_restricted_areas(self, droneType):
         if droneType.lower() == "plane":
+            return(bans.planeLimits)
+        elif droneType.lower() == "helicopter":
             return(bans.planeLimits)
 
 class input():
