@@ -184,11 +184,11 @@ def modify_drone(drone):
 def gw_insert(gwid):
     content = request.get_json()
 
-    print("CONTENT")
-    print(content)
+    # print("CONTENT")
+    # print(content)
 
     date = datetime.now()
-    print(date)
+    # print(date)
     time_parsed = date #.strftime("%y-%m-%d %H:%M:%S.%f")
 
     dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], content['hdg'], time_parsed, "DOW")
@@ -217,8 +217,8 @@ def get_coords():
     data = request.get_json()
     lat = data['lat']
     lng = data['lng']
-    print(lat)
-    print(lng)
+    # print(lat)
+    # print(lng)
     return jsonify({'lat': lat, 'lng': lng})
 
 def gps_distance(currentCoords, compareCoords):
@@ -237,11 +237,11 @@ def database_show():
 def getLivePos():   
     data = request.get_json()
     droneID = data['droneID']
-    print(droneID)
+    # print(droneID)
     dronePos = dboutput.getRealLocations(droneID)[-1]
     nextWP = dboutput.get_waypoint_future(droneID)[0]
     goalWP = dboutput.get_waypoint_future(droneID)[-1]
-    print(dronePos)
+    # print(dronePos)
     return jsonify({
         
         'GPSPos':{
@@ -261,6 +261,24 @@ def getLivePos():
         },
 
         })
+
+@app.route("/getAllData", methods=['POST'])
+def getAllData():   
+    data = request.get_json()
+    droneID = data['droneID']
+    # print(droneID)
+    dronePos = dboutput.getRealLocations(droneID)
+    posDict = {}
+    i = 0
+    for pos in dronePos:
+        posDict["GPSPos{0}".format(i)] = "{'lat' : {0}, 'lon' : {1}}".format(pos[0], pos[1])
+
+    # print("DATA -----------------------")
+    # print(posDict)
+
+    # print(dronePos)
+    return(0)
+
 
 
 #@app.route("/database/dowload")

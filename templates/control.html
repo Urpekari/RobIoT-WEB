@@ -2,6 +2,15 @@
 <html>
 <head>
     <title>Root</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
@@ -16,11 +25,7 @@
   
 </head>
 <body>
-    <div class="map">
-        {{ body_html|safe }}
-        <script>
-            {{ script|safe }}
-        </script>      
+    <div id="map">    
     </div>
     <div class="mezuen-taula">
         <h2 class="izenburu">Azken mezu esanguratsuak:</h2>
@@ -135,7 +140,5 @@
         </a>
     </div>
 </body>
-
 <script src="{{url_for('static', filename='mapUpdate.js')}}"></script>
-
 </html>

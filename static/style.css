@@ -210,3 +210,13 @@ table,th,td{
     visibility: visible;
     opacity: 1;
 }
+
+#map {
+    height: 75%;
+    width: 70%;
+    left: 0;
+    top: 0;
+    position: fixed;
+    background-color: #1c1c1c;
+    padding: 10px;
+}
