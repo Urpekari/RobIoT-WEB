@@ -1,27 +1,22 @@
 import re
-from datetime import datetime
+from datetime import *
 
 from flask import *
 from flask_mysqldb import MySQL
 
 import env
-from view.mapPage import *
-from controller.database_controller import *
-from view.mapinit import *
-from view.mapplan import *
-from controller.insert_path import *
-
-
-import tkinter as tk
-import haversine as hs
-from haversine import Unit
-
-
-app = Flask(__name__)
-
-
 # env.py fitxategia EZ DA GITHUBERA IGOKO.
 # .gitignore fitxategi baten bera ekidituko dugu!
+
+from controller.database_controller import *
+from controller.insert_path import *
+from controller.utils import *
+
+from view.mapPage import *
+from view.mapinit import *
+from view.mapplan import *
+
+app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = env.mysql_host_ip
 app.config['MYSQL_USER'] = env.mysql_username
@@ -228,7 +223,7 @@ def gw_insert(gwid):
     waypoint = dboutput.get_next_waypoint(content['robiotId'])
 
     if len(waypoint) > 0:
-        print(gps_distance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
+        print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
         reply = {
 
             "gwid":gwid,
@@ -253,8 +248,6 @@ def get_coords():
     print(lng)
     return jsonify({'lat': lat, 'lng': lng})
 
-def gps_distance(currentCoords, compareCoords):
-    return(hs.haversine(currentCoords, compareCoords, unit=Unit.METERS))
 
 @app.route("/database", methods=['GET','POST'])
 def database_show():
@@ -273,11 +266,19 @@ def database_show():
 def getLivePos():   
     data = request.get_json()
     droneID = data['droneID']
-    print(droneID)
+    #print(droneID)
     dronePos = dboutput.getRealLocations(droneID)[-1]
-    nextWP = dboutput.get_waypoint_future(droneID)[0]
+    dronePosTimes = dboutput.get_timestamps(droneID, "DOW")
+    futureWPs = dboutput.get_waypoint_future(droneID)
+    nextWP = futureWPs[0]
     goalWP = dboutput.get_waypoint_future(droneID)[-1]
-    print(dronePos)
+    futureWPs.insert(0, [dronePos[0], dronePos[1]])
+
+    # TODO:deltaT zehatzagoak lortu... behintzat azpiegitura hor dugu!
+    
+    deltapos = getGPSDistance(compareCoords=[nextWP[0], nextWP[1]], currentCoords=[dronePos[0], dronePos[1]])
+    deltaT = (dronePosTimes[-1][0] - dronePosTimes[-2][0]).total_seconds()
+
     return jsonify({
         
         'GPSPos':{
@@ -287,13 +288,13 @@ def getLivePos():
         'NextWaypoint':{
             'lat': nextWP[0],
             'lng': nextWP[1],
-            'eta': 'TIME 1'
+            'eta': datetime.now() + timedelta(seconds=getEta(deltapos, deltapos/deltaT))
         },
 
         'Destination':{
             'lat': goalWP[0],
             'lng': goalWP[1],
-            'eta': 'TIME 2'
+            'eta': datetime.now() + timedelta(seconds = getEta(distance=getFullPathDistance(gpsPathWPs=futureWPs), speed=(deltapos/deltaT)))
         },
 
         })

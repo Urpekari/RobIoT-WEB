@@ -210,10 +210,18 @@ class output():
         cur = self.mysql.connection.cursor()
         query = ("SELECT Altitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
         cur.execute(query,(droneID,dir))
-        lats = cur.fetchall()
+        alts = cur.fetchall()
         cur.close()
-        return lats
-
+        return alts
+    
+    def get_timestamps(self, droneID, dir):
+        cur = self.mysql.connection.cursor()
+        query = ("SELECT Timestamp FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
+        cur.execute(query,(droneID,dir))
+        times = cur.fetchall()
+        cur.close()
+        return times
+    
     def get_waypoints(self, droneID, dir):
         lats = self.get_latitudes(droneID, dir)
         lons = self.get_longitudes(droneID, dir)
@@ -227,10 +235,11 @@ class output():
         lats = self.get_latitudes(droneID, dir)
         lons = self.get_longitudes(droneID, dir)
         alts = self.get_altitudes(droneID, dir)
+        times = self.get_timestamps(droneID, dir)
         waypoints = []
         if len(lats) == len(lons):
             for i in range(len(lats)):
-                waypoints.append([lats[i][0], lons[i][0], alts[i][0]])
+                waypoints.append([lats[i][0], lons[i][0], alts[i][0], times[i][0]])
         return waypoints
 
     def get_next_waypoint(self, droneID):
