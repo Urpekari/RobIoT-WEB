@@ -30,6 +30,6 @@ def getSpeed(currentCoords, compareCoords, deltaT):
 # Estimated Time of Arrival kalkulatzeko
 def getEta(distance, speed):
     if(distance != None and speed!= None):
-        return(distance/speed + 50)
+        return(distance/speed)
     else:
         return(0)
