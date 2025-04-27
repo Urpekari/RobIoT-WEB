@@ -94,6 +94,7 @@
             </table>
 
         {%elif aukera == '2'%}
+        <table class="no_border"><tr>
             <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post">
                 <table>
                     <tr><th>Aukeratu</th><th>Sentsorea</th><th>Mota</th><th>Deskribapena</th></tr>
@@ -102,18 +103,24 @@
                         <td>{{element[1]}}</td><td>{{element[2]}}</td><td>{{element[3]}}</td></tr>
                     {%endfor%}
                 </table>
-                <button type="submit" name="botoia" value="5">Sartu</button>
+                <td class="no_border"><button type="submit" name="botoia" value="5">Sartu</button></td>
             </form>
+            <a href="/insert_sensor">
+                <td class="no_border"><button>Sentsore berria gehitu</button></td>
+            </a>
+        </tr></table>
         {%elif aukera == '3'%}
             <h3 class="izenburu">Norekin partekatu nahi duzu?</h3>
             <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post">
                 <input type="text" name="partekatu_erab" id="partekatu_erab" placeholder="Erabiltzailea" required>
+                <br>
                 <select id="baimena" name="baimena" required>
                     <option value="" disabled selected>Aukeratu baimen bat</option>
                     {%for baimen in baimenak:%}
                         <option value="{{baimen}}">{{baimen}}</option>
                     {%endfor%}
                 </select>
+                <br>
                 <button type="submit" name="botoia" value="6">Sartu</button>
             </form>
         {%endif%}

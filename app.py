@@ -206,6 +206,19 @@ def modify_drone(drone):
                     partekatuak.append([izen,erab[-1]])
         return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)
 
+@app.route('/insert_sensor', methods=['GET','POST'])
+def insert_sensor():
+    if request.method == 'GET':
+        return render_template('insert_sensor.html',error=None)
+    elif request.method == 'POST':
+        izenaSentsorea = request.form.get('izenaSentsorea')
+        motaSentsorea = request.form.get('motaSentsorea')
+        deskribapenaSentsorea = request.form.get('deskribapenaSentsorea')
+
+        if dbinput.insert_Sentsoreak(izenaSentsorea, motaSentsorea, deskribapenaSentsorea):
+            return redirect(url_for('control'))
+        else:
+            return render_template('insert_sensor.html',error="Jadanik existitzen da sentsore bat izen horrekin.")
 
 @app.route("/gwInsert/<gwid>",methods=['POST'])
 def gw_insert(gwid):

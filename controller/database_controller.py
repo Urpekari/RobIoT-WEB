@@ -343,11 +343,17 @@ class input():
         cur.close()
 
     def insert_Sentsoreak(self,izena,mota,deskribapena):
-        cur = self.mysql.connection.cursor()
-        query = "INSERT INTO Sentsoreak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
-        cur.execute(query,(izena,mota,deskribapena))
-        self.mysql.connection.commit()
-        cur.close()
+        try:
+            cur = self.mysql.connection.cursor()
+            query = "INSERT INTO Sentsoreak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
+            cur.execute(query,(izena,mota,deskribapena))
+            self.mysql.connection.commit()
+            return True
+        except Exception as e:
+            print("Error:", e)
+            return False
+        finally:
+            cur.close()
     
     def update_Droneak(self,izena,mota,deskribapena,id):
         cur = self.mysql.connection.cursor()
