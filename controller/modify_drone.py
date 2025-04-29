@@ -12,6 +12,8 @@ from controller.database_controller import *
 from controller.insert_path import *
 from controller.utils import *
 
+from app import *
+
 from view.mapPage import *
 from view.mapinit import *
 from view.mapplan import *
