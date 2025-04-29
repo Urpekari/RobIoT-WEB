@@ -26,13 +26,19 @@ app.config['MYSQL_PASSWORD'] = env.mysql_password
 app.config['MYSQL_DB'] = env.mysql_db_name
 app.secret_key = 'hackerdeminecraft'
 
-def modifyDrone(drone):
+def modify_drone(drone):
+    session = app.session
+    dboutput = app.dboutput
+    dboutput = app.dboutput
     droneak,id=get_erab_drone_list(session['erabiltzailea'])
 
     for pos,dronea in enumerate(droneak):
         if dronea == drone:
             droneID=id[pos]
     jabe_id = dboutput.get_drone_jabe(droneID)
+
+    jabe = dboutput.get_erab_full(jabe_id)
+
     jabe = dboutput.get_erab_izen(jabe_id)
     drone_info = dboutput.get_drone_info(droneID)
     partekatu_erab = dboutput.get_drone_erab(droneID)
@@ -48,7 +54,7 @@ def modifyDrone(drone):
         sents_in.append(sens_info)
 
     if request.method == "GET":
-        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, partekatuak=partekatuak, sents_in=sents_in)
+        return render_template('modify_drone.html',drone=drone_info, jabe=jabe[1], partekatuak=partekatuak, sents_in=sents_in)
     
     elif request.method == "POST":
         bot = request.form.get('botoia')

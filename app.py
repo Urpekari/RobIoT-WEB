@@ -70,13 +70,15 @@ def erregistratu():
 def control():
     try:
         if request.method == 'GET':
-            droneak,_=get_erab_drone_list(session['erabiltzailea'])
+            print("USERNAME EPIKOA:")
+            print(session['erabiltzailea'])
+            droneak,_=dboutput.get_erab_drone_list(session['erabiltzailea'])
             header, body_html, script=mapInit.map_empty()
             return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
         elif request.method == 'POST':
             drone_izena=request.form.get('drone_izena')
             ikusi=None
-            droneak,id=get_erab_drone_list(session['erabiltzailea'])
+            droneak,id=dboutput.get_erab_drone_list(session['erabiltzailea'])
             for pos,drone in enumerate(droneak):
                 if drone == drone_izena:
                     droneID=id[pos]
@@ -88,28 +90,12 @@ def control():
     except KeyError as e:
         return redirect(url_for('index'))
     
-def get_erab_drone_list(erab):
-    erab_id=dboutput.get_erab_id(erab)
-    id_drone,baimen=dboutput.get_erab_droneak(erab_id)
-    droneak=[]
-    for pos,id in enumerate(id_drone):
-        drone_info=dboutput.get_drone_info(id)
-        drone=drone_info[1]
-        jabe_id=dboutput.get_drone_jabe(id)
-        jabe_izen=dboutput.get_erab_izen(jabe_id)
-        if not jabe_izen==erab:
-            drone=drone+"_"+jabe_izen
-            if baimen[pos] == "Kontrolatu":
-                drone=drone+"_kontrolatu"
-            elif baimen[pos] == "Ikusi":
-                drone=drone+"_ikusi"
-        droneak.append(drone)
-    return droneak,id_drone
+
 
 @app.route("/insert_path/<drone>", methods=['GET','POST'])
 def insert_path(drone):
 
-    droneak,id=get_erab_drone_list(session['erabiltzailea'])
+    droneak,id=dboutput.get_erab_drone_list(session['erabiltzailea'])
 
     for pos,dronea in enumerate(droneak):
         if dronea == drone:
@@ -136,8 +122,8 @@ def drone_erregistratu():
         return redirect(url_for('index'))
 
 @app.route("/modify_drone/<drone>", methods=['GET','POST'])
-def modify_drone(drone):
-    return (modify_drone)
+def modify_drone_page(drone):
+    return (modify_drone.modify_drone(drone))
     
 @app.route('/insert_sensor', methods=['GET','POST'])
 def insert_sensor():
@@ -171,7 +157,6 @@ def gw_insert(gwid):
     if len(waypoint) > 0:
         print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
         reply = {
-
             "gwid":gwid,
             "robiotId" : content['robiotId'],
             "wpLat" : waypoint[0],
@@ -194,6 +179,9 @@ def get_coords():
     print(lng)
     return jsonify({'lat': lat, 'lng': lng})
 
+@app.route("/debug", methods=['GET', 'POST'])
+def debug_show():
+    return render_template("debugShowVar.html",var=dboutput.get_erab_full(1).erab_email)
 
 @app.route("/database", methods=['GET','POST'])
 def database_show():

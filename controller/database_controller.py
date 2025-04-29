@@ -1,4 +1,20 @@
 import other.banned_areas as bans
+from multimethod import *
+from app import *
+
+class erabiltzailea():
+    erab_id = 0
+    erab_izen = ""
+    erab_abizen = ""
+    erab_email = ""
+    erab_baimen = ""
+
+    def __init__(self, erabDatuArray):
+        self.erab_id = erabDatuArray[0]
+        self.erab_izen = erabDatuArray[1]
+        self.erab_abizen = erabDatuArray[2]
+        self.erab_email = erabDatuArray[4]
+        self.erab_baimen = erabDatuArray[5]
 
 class tables():
     Baimenak="Baimenak"
@@ -53,15 +69,58 @@ class output():
         cur.close()
         return True if usuario else False
     
+    def get_erab_drone_list(self, erab):
+        erab_id=self.get_erab_full(erab).erab_id
+        id_drone,baimen=self.get_erab_droneak(erab_id)
+        droneak=[]
+        for pos,id in enumerate(id_drone):
+            drone_info=self.get_drone_info(id)
+            drone=drone_info[1]
+            jabe_id=self.get_drone_jabe(id)
+            jabe_izen=self.get_erab_izen(jabe_id)
+            if not jabe_izen==erab:
+                drone=drone+"_"+jabe_izen
+                if baimen[pos] == "Kontrolatu":
+                    drone=drone+"_kontrolatu"
+                elif baimen[pos] == "Ikusi":
+                    drone=drone+"_ikusi"
+            droneak.append(drone)
+        return droneak,id_drone
+    
     # ===============================================================================================
     # ALDATU: get_erab egin, erabiltzaile ID, izena eta drone zerrenda itzultzen duena
-
-    def get_erab_id(self,izena):
+    @multimethod
+    def get_erab_full(self: object, izena: str):
+        print("Pew")
+        print(izena)
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
-        usuario = cur.fetchone() 
+        user = cur.fetchone()
         cur.close()
-        return usuario[0] if usuario else None
+        if user:
+            userprofile = erabiltzailea(user)
+        return userprofile if userprofile else None
+
+    @multimethod
+    def get_erab_full(self: object, id: int):
+        print("Pow")
+        print(id)
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Erabiltzaileak WHERE idErabiltzaileak = %s", (id,))
+        user = cur.fetchone() 
+        cur.close()
+        if user:
+            userprofile = erabiltzailea(user)
+        return userprofile if userprofile else None
+
+
+    def get_erab_id(self, izena):
+        print(izena)
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
+        user = cur.fetchone() 
+        cur.close()
+        return user if user else None
     
     def get_erab_izen(self,id_erab):
         cur = self.mysql.connection.cursor()
@@ -111,12 +170,12 @@ class output():
     # ===============================================================================================
     # ALDAKETAK: Erredundantea: Koordenatuak beste eratan funtzionatzea hobe
 
-    def get_drone_GPS(self,id_drone):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s", (id_drone,))
-        GPS_drone = cur.fetchall() 
-        cur.close()
-        return GPS_drone[-1]
+    # def get_drone_GPS(self,id_drone):
+    #     cur = self.mysql.connection.cursor()
+    #     cur.execute("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s", (id_drone,))
+    #     GPS_drone = cur.fetchall() 
+    #     cur.close()
+    #     return GPS_drone[-1]
 
     def get_drone_mezuak(self,id_drone):
         cur = self.mysql.connection.cursor()
