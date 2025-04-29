@@ -105,7 +105,7 @@ def get_erab_drone_list(erab):
         droneak.append(drone)
     return droneak,id_drone
 
-@app.route("/insert_path/<drone>", methods=['GET','POST'])
+@app.route("/insert-path/<drone>", methods=['GET','POST'])
 def insert_path(drone):
 
     droneak,id=get_erab_drone_list(session['erabiltzailea'])
@@ -134,7 +134,7 @@ def drone_erregistratu():
     except KeyError as e:
         return redirect(url_for('index'))
 
-@app.route("/modify_drone/<drone>", methods=['GET','POST'])
+@app.route("/modify-drone/<drone>", methods=['GET','POST'])
 def modify_drone(drone):
     droneak,id=get_erab_drone_list(session['erabiltzailea'])
 
@@ -206,7 +206,7 @@ def modify_drone(drone):
                     partekatuak.append([izen,erab[-1]])
         return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)
 
-@app.route('/insert_sensor', methods=['GET','POST'])
+@app.route('/insert-sensor', methods=['GET','POST'])
 def insert_sensor():
     if request.method == 'GET':
         return render_template('insert_sensor.html',error=None)
