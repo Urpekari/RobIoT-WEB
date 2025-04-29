@@ -3,6 +3,9 @@ import json
 from multimethod import *
 from app import *
 
+# Klase bat badago datuak gordetzen dituena, klasea bidaltzea lehenetsiko dugu
+# Adibidez, droneID edo erabiltzaile izena bidali nahi izatekotan, drone klaseko objektu bat eta erabiltzailea klaseko objektuak lehenetsiko ditugu
+
 class erabiltzailea():
     erab_id = 0
     erab_izen = ""
@@ -89,21 +92,25 @@ class output():
         return True if usuario else False
     
     def get_erab_drone_list(self, erab):
-        erab_id=self.get_erab_full(erab).erab_id
+        erab_id=erab.erab_id
         id_drone,baimen=self.get_erab_droneak(erab_id)
         droneak=[]
         for pos,id in enumerate(id_drone):
-            drone_info=self.get_drone_info(id)
-            drone=drone_info[1]
+            drone=self.get_drone_full(id)
+
             jabe_id=self.get_drone_jabe(id)
-            jabe_izen=self.get_erab_izen(jabe_id)
-            if not jabe_izen==erab:
-                drone=drone+"_"+jabe_izen
+            jabe=self.get_erab_full(jabe_id)
+
+            if not jabe.erab_izen==erab.erab_izen:
+                drone_izen_erakusgarria=drone.drone_izen+"_"+jabe.erab_izen
                 if baimen[pos] == "Kontrolatu":
-                    drone=drone+"_kontrolatu"
+                    drone_izen_erakusgarria=drone.drone_izen + "_kontrolatu"
                 elif baimen[pos] == "Ikusi":
-                    drone=drone+"_ikusi"
-            droneak.append(drone)
+                    drone_izen_erakusgarria=drone.drone_izen + "_ikusi"
+            else:
+                drone_izen_erakusgarria = drone.drone_izen
+
+            droneak.append(drone_izen_erakusgarria)
         return droneak,id_drone
     
     # ===============================================================================================
@@ -132,14 +139,13 @@ class output():
             userprofile = erabiltzailea(user)
         return userprofile if userprofile else None
 
-
-    def get_erab_id(self, izena):
-        print(izena)
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
-        user = cur.fetchone() 
-        cur.close()
-        return user if user else None
+    # def get_erab_id(self, izena):
+    #     print(izena)
+    #     cur = self.mysql.connection.cursor()
+    #     cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
+    #     user = cur.fetchone() 
+    #     cur.close()
+    #     return user if user else None
     
     def get_erab_izen(self,id_erab):
         cur = self.mysql.connection.cursor()
@@ -182,19 +188,19 @@ class output():
             droneprofile = dronea(drone)
         return droneprofile if droneprofile else None
 
-    def get_drone_info(self,id_drone):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (id_drone,))
-        drone = cur.fetchone()
-        cur.close()
-        return drone
+    # def get_drone_info(self,id_drone):
+    #     cur = self.mysql.connection.cursor()
+    #     cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (id_drone,))
+    #     drone = cur.fetchone()
+    #     cur.close()
+    #     return drone
 
-    def get_drone_id(self,izena,mota,deskribapena):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Droneak WHERE Izena = %s AND Mota = %s AND Deskribapena = %s", (izena,mota,deskribapena))
-        drone = cur.fetchall()
-        cur.close()
-        return drone[-1][0]
+    # def get_drone_id(self,izena,mota,deskribapena):
+    #     cur = self.mysql.connection.cursor()
+    #     cur.execute("SELECT * FROM Droneak WHERE Izena = %s AND Mota = %s AND Deskribapena = %s", (izena,mota,deskribapena))
+    #     drone = cur.fetchall()
+    #     cur.close()
+    #     return drone[-1][0]
 
     def get_drone_jabe(self,id_dron):
         cur = self.mysql.connection.cursor()
@@ -472,11 +478,11 @@ class input():
     def insert_Partekatzeak(self,erabiltzaile,id_drone,baimena):
         print("PARTEKATZEKO DATUAK:")
         print(erabiltzaile.erab_id)
-        print(id_drone)
+        print(id_drone.drone_id)
         print(baimena)
         cur = self.mysql.connection.cursor()
         query = "INSERT INTO Partekatzeak (Erabiltzaileak_idErabiltzaileak,Droneak_idDroneak,Baimenak_idBaimenak) VALUES (%s,%s,%s)"
-        cur.execute(query,(erabiltzaile.erab_id,id_drone,baimena))
+        cur.execute(query,(erabiltzaile.erab_id,id_drone.drone_id,baimena))
         self.mysql.connection.commit()
         cur.close()
 

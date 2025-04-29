@@ -39,8 +39,6 @@ def modify_drone(drone, dbinput, dboutput):
 
     jabe = dboutput.get_erab_full(jabe_id)
 
-    jabe = dboutput.get_erab_izen(jabe_id)
-    drone_info = dboutput.get_drone_info(drone.drone_id)
     partekatu_erab = dboutput.get_drone_erab(drone.drone_id)
     partekatuak = []
     for erab in partekatu_erab:
@@ -54,7 +52,7 @@ def modify_drone(drone, dbinput, dboutput):
         sents_in.append(sens_info)
 
     if request.method == "GET":
-        return render_template('modify_drone.html',drone=drone_info, jabe=jabe[1], partekatuak=partekatuak, sents_in=sents_in)
+        return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe.erab_izen, partekatuak=partekatuak, sents_in=sents_in)
     
     elif request.method == "POST":
         bot = request.form.get('botoia')
@@ -62,8 +60,10 @@ def modify_drone(drone, dbinput, dboutput):
         error=None
         sentsoreak = []
         if bot == '2':
+            print("Me me I'm #2")
             sentsore_guztiak = dboutput.get_info(tables.Sentsoreak)
             for sents in sentsore_guztiak:
+                print(sents)
                 if sents not in sents_in:
                     sentsoreak.append(sents)
         elif bot == '3':
@@ -77,7 +77,7 @@ def modify_drone(drone, dbinput, dboutput):
             mota = request.form.get('mota')
             deskribapena = request.form.get('deskribapena')
             dbinput.update_Droneak(izena,mota,deskribapena,drone.drone_id)
-            drone_info = dboutput.get_drone_info(drone.drone_id)
+
         elif bot == '5':
             sentsoreak = dboutput.get_info(tables.Sentsoreak)
             for element in sentsoreak:
@@ -94,7 +94,7 @@ def modify_drone(drone, dbinput, dboutput):
             baimena = request.form.get('baimena')
             id_erab=dboutput.get_erab_full(partekatu_erab)
             if id_erab:
-                dbinput.insert_Partekatzeak(id_erab,drone.drone_id,baimena)
+                dbinput.insert_Partekatzeak(id_erab,drone,baimena)
             else:
                 error="Ez da erabiltzaile hori existitzen"
             partekatu_erab = dboutput.get_drone_erab(drone.drone_id)
@@ -103,4 +103,4 @@ def modify_drone(drone, dbinput, dboutput):
                 if not erab[-1] == "Jabea":
                     izen=dboutput.get_erab_izen(erab[1])
                     partekatuak.append([izen,erab[-1]])
-        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)
+    return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)

@@ -73,13 +73,19 @@ def control():
         if request.method == 'GET':
             print("USERNAME EPIKOA:")
             print(session['erabiltzailea'])
-            droneak,_=dboutput.get_erab_drone_list(session['erabiltzailea'])
+
+            erab = dboutput.get_erab_full(session['erabiltzailea'])
+            droneak,id=dboutput.get_erab_drone_list(erab)
+
             header, body_html, script=mapInit.map_empty()
             return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
         elif request.method == 'POST':
             drone_izena=request.form.get('drone_izena')
             ikusi=None
-            droneak,id=dboutput.get_erab_drone_list(session['erabiltzailea'])
+
+            erab = dboutput.get_erab_full(session['erabiltzailea'])
+            droneak,id=dboutput.get_erab_drone_list(erab)
+            
             for pos,drone in enumerate(droneak):
                 if drone == drone_izena:
                     droneID=id[pos]
@@ -95,8 +101,8 @@ def control():
 
 @app.route("/insert_path/<drone>", methods=['GET','POST'])
 def insert_path(drone):
-
-    droneak,id=dboutput.get_erab_drone_list(session['erabiltzailea'])
+    erab = dboutput.get_erab_full(session['erabiltzailea'])
+    droneak,id=dboutput.get_erab_drone_list(erab)
 
     for pos,dronea in enumerate(droneak):
         if dronea == drone:
@@ -113,11 +119,13 @@ def drone_erregistratu():
             izenaDrone = request.form.get('izenaDrone')
             mota = request.form.get('mota')
             deskribapena = request.form.get('deskribapena')
-
+            
             dbinput.insert_Droneak(izenaDrone, mota, deskribapena)
-            erab_id=dboutput.get_erab_id(session['erabiltzailea'])
-            drone_id=dboutput.get_drone_id(izenaDrone, mota, deskribapena)
-            dbinput.insert_Partekatzeak(erab_id,drone_id,"Jabea")
+            
+            erab = dboutput.get_erab_full(session['erabiltzailea'])
+            drone = dboutput.get_drone_full(izenaDrone)
+
+            dbinput.insert_Partekatzeak(erab,drone,"Jabea")
             return redirect(url_for('control'))
     except KeyError as e:
         return redirect(url_for('index'))
