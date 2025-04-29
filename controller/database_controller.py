@@ -49,45 +49,37 @@ class output():
     def erabiltzailea_egiaztatu(self,username, password):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s AND Pasahitza = %s", (username, password))
-        usuario = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        usuario = cur.fetchone() 
         cur.close()
         return True if usuario else False
     
-    def get_drone_id(self,izena,mota,deskribapena):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Droneak WHERE Izena = %s AND Mota = %s AND Deskribapena = %s", (izena,mota,deskribapena))
-        drone = cur.fetchall()
-        cur.close()
-        return drone[-1][0]
-    
+    # ===============================================================================================
+    # ALDATU: get_erab egin, erabiltzaile ID, izena eta drone zerrenda itzultzen duena
+
     def get_erab_id(self,izena):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
-        usuario = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        usuario = cur.fetchone() 
         cur.close()
         return usuario[0] if usuario else None
     
     def get_erab_izen(self,id_erab):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT Izen FROM Erabiltzaileak WHERE idErabiltzaileak = %s", (id_erab,))
-        erab_izen = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        erab_izen = cur.fetchone() 
         cur.close()
         return erab_izen[0]
-    
-    def get_sentsore_id(self,izena):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Sentsoreak WHERE Izen = %s", (izena,))
-        sents = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
-        cur.close()
-        return sents[0]
     
     def get_erab_droneak(self,id_erab):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (id_erab,))
-        erab_dron = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        erab_dron = cur.fetchall() 
         cur.close()
         return [sublist[2] for sublist in erab_dron], [sublist[3] for sublist in erab_dron]
     
+    # ===============================================================================================
+    # ALDAKETAK: Get drone info hurrengoa itzuli behar du: ID, izena, jabea, erabiltzaileak
+
     def get_drone_info(self,id_drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (id_drone,))
@@ -95,65 +87,149 @@ class output():
         cur.close()
         return drone
 
+    def get_drone_id(self,izena,mota,deskribapena):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Droneak WHERE Izena = %s AND Mota = %s AND Deskribapena = %s", (izena,mota,deskribapena))
+        drone = cur.fetchall()
+        cur.close()
+        return drone[-1][0]
+
     def get_drone_jabe(self,id_dron):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
-        jabe_dron = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        jabe_dron = cur.fetchone() 
         cur.close()
         return jabe_dron
     
     def get_drone_erab(self,id_dron):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Partekatzeak WHERE Droneak_idDroneak = %s", (id_dron,))
-        drone_erab = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        drone_erab = cur.fetchall() 
         cur.close()
         return drone_erab
     
+    # ===============================================================================================
+    # ALDAKETAK: Erredundantea: Koordenatuak beste eratan funtzionatzea hobe
+
     def get_drone_GPS(self,id_drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s", (id_drone,))
-        GPS_drone = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        GPS_drone = cur.fetchall() 
         cur.close()
         return GPS_drone[-1]
 
     def get_drone_mezuak(self,id_drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Mezuak WHERE Droneak_idDroneak = %s", (id_drone,))
-        mezu_drone = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        mezu_drone = cur.fetchall() 
         cur.close()
         return mezu_drone
     
     def get_drone_sentsoreak(self,id_drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDroneak = %s", (id_drone,))
-        dron_sens = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        dron_sens = cur.fetchall() 
         cur.close()
         return dron_sens
+    
+    # ===============================================================================================
+    # ALDAKETAK: get_drone_sentsore_info hurrengoa itzuliko du: Drone bateko sentsore ID, izena eta azkeneko balio irakurketa
+
+    def get_sentsore_id(self,izena):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Sentsoreak WHERE Izen = %s", (izena,))
+        sents = cur.fetchone() 
+        cur.close()
+        return sents[0]
 
     def get_drone_sentsore_info(self,id_drone,id_sentsore):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDroneak = %s AND Sentsoreak_idSentsoreak = %s", (id_drone,id_sentsore))
-        dron_sens = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        dron_sens = cur.fetchone() 
         cur.close()
         return dron_sens
     
     def get_sentsore_balio(self,id_dron_sens):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Sentsore_info WHERE Drone_Sentsore_idDroneSentsore = %s", (id_dron_sens,))
-        sens_balio = cur.fetchall() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        sens_balio = cur.fetchall() 
         cur.close()
         return sens_balio[-1]
     
     def get_sentsore_info(self,id_sentsore):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Sentsoreak WHERE idSentsoreak = %s", (id_sentsore,))
-        sens_info = cur.fetchone() #Obtiene el primer resultado de la consulta y lo guarda en usuario.
+        sens_info = cur.fetchone() 
         cur.close()
         return sens_info
 
-    # Maparekin erabiltzeko atalak
+    # ===============================================================================================
+    # ALDAKETAK: DRONEEN INFORMAZIO GUZTIA BATERA EMAN BEHAR DA
+    
+    def getDroneType(self, droneID):
+        # Returns an array where the first element is a string that carries the drone type
+        cur = self.mysql.connection.cursor()
+        query = "SELECT Mota FROM Droneak WHERE idDroneak = {}".format(droneID)
+        cur.execute(query)
+        results = cur.fetchall()
+        cur.close()
+        return results
+    
+    def getDroneName(self, droneID):
+        # Returns an array where the first element is a string that carries the drone name
+        cur = self.mysql.connection.cursor()
+        query = "SELECT izena FROM Droneak WHERE idDroneak = {}".format(droneID)
+        cur.execute(query)
+        results = cur.fetchall()
+        cur.close()
+        return results
+    
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
+    def get_latitudes(self, droneID, dir):
+        cur = self.mysql.connection.cursor()
+        query = ("SELECT Latitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
+        cur.execute(query,(droneID,dir))
+        lats = cur.fetchall()
+        cur.close()
+        return lats
+    
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
+    def get_longitudes(self, droneID, dir):
+        cur = self.mysql.connection.cursor()
+        query = ("SELECT Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s ")
+        cur.execute(query,(droneID,dir))
+        lons = cur.fetchall()
+        cur.close()
+        return lons
+    
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
+    def get_altitudes(self, droneID, dir):
+        cur = self.mysql.connection.cursor()
+        query = ("SELECT Altitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
+        cur.execute(query,(droneID,dir))
+        alts = cur.fetchall()
+        cur.close()
+        return alts
+    
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
+    def get_timestamps(self, droneID, dir):
+        cur = self.mysql.connection.cursor()
+        query = ("SELECT Timestamp FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
+        cur.execute(query,(droneID,dir))
+        times = cur.fetchall()
+        cur.close()
+        return times
+    
+    # ===============================================================================================
+    # ALDAKETAK: POSIZIOEN INFORMAZIO GUZTIA BATERA EMAN BEHAR DA
+    # - Bi funtzio sortuko dira:
+    #   - Benetako GPS informazioaren berri ematen duena (Lat, Lng, Alt, Hdg)
+    #   - Waypointen berri ematen duena (Lat, Lng, Alt)
 
+
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
     def getRealLocations(self, droneID):
+        # Returns an array of coordinates
         cur = self.mysql.connection.cursor()
         query = "SELECT Latitude, Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s"
         cur.execute(query,(droneID, "DOW"))
@@ -161,7 +237,9 @@ class output():
         cur.close()
         return results
     
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
     def getRealHeadings(self, droneID):
+        # Returns an array of floats
         cur = self.mysql.connection.cursor()
         query = "SELECT Heading FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s"
         cur.execute(query,(droneID, "DOW"))
@@ -173,55 +251,8 @@ class output():
             cleanresults.append(heading[0])
 
         return cleanresults
-    
-    def getDroneType(self, droneID):
-        cur = self.mysql.connection.cursor()
-        query = "SELECT Mota FROM Droneak WHERE idDroneak = {}".format(droneID)
-        cur.execute(query)
-        results = cur.fetchall()
-        cur.close()
-        return results
-    
-    def getDroneName(self, droneID):
-        cur = self.mysql.connection.cursor()
-        query = "SELECT izena FROM Droneak WHERE idDroneak = {}".format(droneID)
-        cur.execute(query)
-        results = cur.fetchall()
-        cur.close()
-        return results
-    
-    def get_latitudes(self, droneID, dir):
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT Latitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
-        cur.execute(query,(droneID,dir))
-        lats = cur.fetchall()
-        cur.close()
-        return lats
 
-    def get_longitudes(self, droneID, dir):
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s ")
-        cur.execute(query,(droneID,dir))
-        lons = cur.fetchall()
-        cur.close()
-        return lons
-    
-    def get_altitudes(self, droneID, dir):
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT Altitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
-        cur.execute(query,(droneID,dir))
-        alts = cur.fetchall()
-        cur.close()
-        return alts
-    
-    def get_timestamps(self, droneID, dir):
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT Timestamp FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
-        cur.execute(query,(droneID,dir))
-        times = cur.fetchall()
-        cur.close()
-        return times
-    
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
     def get_waypoints(self, droneID, dir):
         lats = self.get_latitudes(droneID, dir)
         lons = self.get_longitudes(droneID, dir)
@@ -231,6 +262,7 @@ class output():
                 waypoints.append([lats[i][0], lons[i][0]])
         return waypoints
     
+    # ABSOLUTE DOGSHIT - THIS SHOULD BE THE ONLY FUNCTION HERE
     def get_waypoints_full(self, droneID, dir):
         lats = self.get_latitudes(droneID, dir)
         lons = self.get_longitudes(droneID, dir)
@@ -242,18 +274,22 @@ class output():
                 waypoints.append([lats[i][0], lons[i][0], alts[i][0], times[i][0]])
         return waypoints
 
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
     def get_next_waypoint(self, droneID):
         waypoints = self.get_waypoints_full(droneID, "UPF")
         return(waypoints[0])
         
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
     def get_waypoint_past(self, droneID):
         waypoints = self.get_waypoints(droneID, "UPP")
         return waypoints
 
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
     def get_waypoint_future(self, droneID):
         waypoints = self.get_waypoints(droneID, "UPF")
         return waypoints
     
+    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
     def get_all_waypoints(self, droneID):
         pastWaypoints = self.get_waypoint_past(droneID)
         futureWaypoints = self.get_waypoint_future(droneID)
@@ -268,6 +304,9 @@ class output():
         print("ALL WAYPOINTS")
         print(allWaypoints)
         return(allWaypoints)
+
+    # ===============================================================================================
+    # Ez da datu basea baina hemen ondo dagoela esango nuke. Mota hobe kudeatzeko erarik ote dago?
 
     def get_banned_areas(self, droneType):
         if droneType.lower() == "plane":
@@ -361,3 +400,4 @@ class input():
         cur.execute(query,(izena,mota,deskribapena,id))
         self.mysql.connection.commit()
         cur.close()
+        
