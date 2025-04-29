@@ -1,4 +1,5 @@
 import other.banned_areas as bans
+import json
 from multimethod import *
 from app import *
 
@@ -15,6 +16,24 @@ class erabiltzailea():
         self.erab_abizen = erabDatuArray[2]
         self.erab_email = erabDatuArray[4]
         self.erab_baimen = erabDatuArray[5]
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
+    
+class dronea():
+    drone_id = 0
+    drone_izen = ""
+    drone_mota = ""
+    drone_desk = ""
+
+    def __init__(self, droneDatuArray):
+        self.drone_id = droneDatuArray[0]
+        self.drone_izen = droneDatuArray[1]
+        self.drone_mota = droneDatuArray[2]
+        self.drone_desk = droneDatuArray[3]
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
 
 class tables():
     Baimenak="Baimenak"
@@ -139,6 +158,30 @@ class output():
     # ===============================================================================================
     # ALDAKETAK: Get drone info hurrengoa itzuli behar du: ID, izena, jabea, erabiltzaileak
 
+    @multimethod
+    def get_drone_full(self: object, izena: str):
+        print("Fiom")
+        print(izena)
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Droneak WHERE Izena = %s", (izena,))
+        drone = cur.fetchone()
+        cur.close()
+        if drone:
+            droneprofile = dronea(drone)
+        return droneprofile if droneprofile else None
+
+    @multimethod
+    def get_drone_full(self: object, droneID: int):
+        print("Niom")
+        print(droneID)
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (droneID,))
+        drone = cur.fetchone()
+        cur.close()
+        if drone:
+            droneprofile = dronea(drone)
+        return droneprofile if droneprofile else None
+
     def get_drone_info(self,id_drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (id_drone,))
@@ -158,7 +201,7 @@ class output():
         cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
         jabe_dron = cur.fetchone() 
         cur.close()
-        return jabe_dron
+        return jabe_dron[0]
     
     def get_drone_erab(self,id_dron):
         cur = self.mysql.connection.cursor()
@@ -426,10 +469,14 @@ class input():
         self.mysql.connection.commit()
         cur.close()
 
-    def insert_Partekatzeak(self,id_erabiltzaile,id_drone,baimena):
+    def insert_Partekatzeak(self,erabiltzaile,id_drone,baimena):
+        print("PARTEKATZEKO DATUAK:")
+        print(erabiltzaile.erab_id)
+        print(id_drone)
+        print(baimena)
         cur = self.mysql.connection.cursor()
         query = "INSERT INTO Partekatzeak (Erabiltzaileak_idErabiltzaileak,Droneak_idDroneak,Baimenak_idBaimenak) VALUES (%s,%s,%s)"
-        cur.execute(query,(id_erabiltzaile,id_drone,baimena))
+        cur.execute(query,(erabiltzaile.erab_id,id_drone,baimena))
         self.mysql.connection.commit()
         cur.close()
 

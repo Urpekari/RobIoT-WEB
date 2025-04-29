@@ -26,28 +26,28 @@ app.config['MYSQL_PASSWORD'] = env.mysql_password
 app.config['MYSQL_DB'] = env.mysql_db_name
 app.secret_key = 'hackerdeminecraft'
 
-def modify_drone(drone):
-    session = app.session
-    dboutput = app.dboutput
-    dboutput = app.dboutput
-    droneak,id=get_erab_drone_list(session['erabiltzailea'])
+def modify_drone(drone, dbinput, dboutput):
+    print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
+    #print(app.session)
+    #session = app.session['erabiltzailea']
+    # droneak,id=get_erab_drone_list(session)
 
-    for pos,dronea in enumerate(droneak):
-        if dronea == drone:
-            droneID=id[pos]
-    jabe_id = dboutput.get_drone_jabe(droneID)
+    # for pos,dronea in enumerate(droneak):
+    #     if dronea == drone:
+    #         drone.drone_id=id[pos]
+    jabe_id = dboutput.get_drone_jabe(drone.drone_id)
 
     jabe = dboutput.get_erab_full(jabe_id)
 
     jabe = dboutput.get_erab_izen(jabe_id)
-    drone_info = dboutput.get_drone_info(droneID)
-    partekatu_erab = dboutput.get_drone_erab(droneID)
+    drone_info = dboutput.get_drone_info(drone.drone_id)
+    partekatu_erab = dboutput.get_drone_erab(drone.drone_id)
     partekatuak = []
     for erab in partekatu_erab:
         if not erab[-1] == "Jabea":
             izen=dboutput.get_erab_izen(erab[1])
             partekatuak.append([izen,erab[-1]])
-    sents_id = dboutput.get_drone_sentsoreak(droneID)
+    sents_id = dboutput.get_drone_sentsoreak(drone.drone_id)
     sents_in = []
     for id in sents_id:
         sens_info = dboutput.get_sentsore_info(id[-1])
@@ -76,15 +76,15 @@ def modify_drone(drone):
             izena = request.form.get('izen')
             mota = request.form.get('mota')
             deskribapena = request.form.get('deskribapena')
-            dbinput.update_Droneak(izena,mota,deskribapena,droneID)
-            drone_info = dboutput.get_drone_info(droneID)
+            dbinput.update_Droneak(izena,mota,deskribapena,drone.drone_id)
+            drone_info = dboutput.get_drone_info(drone.drone_id)
         elif bot == '5':
             sentsoreak = dboutput.get_info(tables.Sentsoreak)
             for element in sentsoreak:
                 sens = request.form.get(str(element[0]))
                 if sens:
-                    dbinput.insert_Drone_Sentsore(None,droneID,int(sens))
-            sents_id = dboutput.get_drone_sentsoreak(droneID)
+                    dbinput.insert_Drone_Sentsore(None,drone.drone_id,int(sens))
+            sents_id = dboutput.get_drone_sentsoreak(drone.drone_id)
             sents_in = []
             for id in sents_id:
                 sens_info = dboutput.get_sentsore_info(id[-1])
@@ -92,12 +92,12 @@ def modify_drone(drone):
         elif bot == '6':
             partekatu_erab = request.form.get('partekatu_erab')
             baimena = request.form.get('baimena')
-            id_erab=dboutput.get_erab_id(partekatu_erab)
+            id_erab=dboutput.get_erab_full(partekatu_erab)
             if id_erab:
-                dbinput.insert_Partekatzeak(id_erab,droneID,baimena)
+                dbinput.insert_Partekatzeak(id_erab,drone.drone_id,baimena)
             else:
                 error="Ez da erabiltzaile hori existitzen"
-            partekatu_erab = dboutput.get_drone_erab(droneID)
+            partekatu_erab = dboutput.get_drone_erab(drone.drone_id)
             partekatuak = []
             for erab in partekatu_erab:
                 if not erab[-1] == "Jabea":

@@ -44,7 +44,7 @@ def login():
         password = request.form['pasahitza']
         
         if dboutput.erabiltzailea_egiaztatu(username, password):    # Goiko datu-base funtzioa deitzen du
-            session['erabiltzailea'] = username                     # Erabiltzailea "session" baten gordetzen du, flask-ek kudeatzen du
+            session['erabiltzailea'] = dboutput.get_erab_full(username).erab_izen                   # Erabiltzailea "session" baten gordetzen du, flask-ek kudeatzen du
             return redirect(url_for('control'))                     # Hurrengo orrira bidaltzen du erabiltzailea
         else:
             return render_template('login.html',error = "Erabiltzaile edo pasahitz ezegokia")
@@ -61,9 +61,10 @@ def erregistratu():
         dokumentuak = request.form.get('dokumentuak')
 
         if dbinput.insert_Erabiltzaileak(izena, abizena, pasahitza, email, dokumentuak):
-            session['erabiltzailea'] = izena
+            session['erabiltzailea'] = dboutput.get_erab_full(izena).erab_izen
             return redirect(url_for('control'))
         else:
+            print("Oh cock")
             return render_template('sign_up.html',error="Jadanik existitzen da erabiltzaile bat izen horrekin.")
 
 @app.route("/control", methods=['GET','POST'])
@@ -123,7 +124,8 @@ def drone_erregistratu():
 
 @app.route("/modify_drone/<drone>", methods=['GET','POST'])
 def modify_drone_page(drone):
-    return (modify_drone.modify_drone(drone))
+    droneData = dboutput.get_drone_full(drone)
+    return (modify_drone(droneData, dbinput, dboutput))
     
 @app.route('/insert_sensor', methods=['GET','POST'])
 def insert_sensor():
@@ -181,7 +183,7 @@ def get_coords():
 
 @app.route("/debug", methods=['GET', 'POST'])
 def debug_show():
-    return render_template("debugShowVar.html",var=dboutput.get_erab_full(1).erab_email)
+    return render_template("debugShowVar.html",var=dboutput.get_drone_jabe(1))
 
 @app.route("/database", methods=['GET','POST'])
 def database_show():
