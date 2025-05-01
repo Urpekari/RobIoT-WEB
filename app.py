@@ -75,40 +75,48 @@ def control():
             print(session['erabiltzailea'])
 
             erab = dboutput.get_erab_full(session['erabiltzailea'])
-            droneak,id=dboutput.get_erab_drone_list(erab)
+            droneak=dboutput.get_erab_drone_list(erab)
+
+            droneen_izenak = []
+            for dronea in droneak:
+                droneen_izenak.append(dronea.drone_izen)
 
             header, body_html, script=mapInit.map_empty()
-            return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
+            return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneen_izenak)
         elif request.method == 'POST':
             drone_izena=request.form.get('drone_izena')
+            print("DRONE IZENA: ",end="")
+            print(drone_izena)
+            selected_drone = dboutput.get_drone_full(drone_izena)
             ikusi=None
 
             erab = dboutput.get_erab_full(session['erabiltzailea'])
-            droneak,id=dboutput.get_erab_drone_list(erab)
+            droneak=dboutput.get_erab_drone_list(erab)
+            droneen_izenak = []
+            for dronea in droneak:
+                droneen_izenak.append(dronea.drone_izen)
             
-            for pos,drone in enumerate(droneak):
-                if drone == drone_izena:
-                    droneID=id[pos]
+            droneID=selected_drone.drone_id
+
+            # for drone in enumerate(droneak):
+            #     if drone == drone_izena:
+                    
             page = mapPage(dboutput,droneID)
             header, body_html, script=page.map()
             if not drone_izena[-6:] == "_ikusi":
                 ikusi=1
-            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneID=droneID, droneak=droneak, ikusi=ikusi)
+            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneID=droneID, droneak=droneen_izenak, ikusi=ikusi)
     except KeyError as e:
         return redirect(url_for('index'))
     
 
 
-@app.route("/insert_path/<drone>", methods=['GET','POST'])
-def insert_path(drone):
-    erab = dboutput.get_erab_full(session['erabiltzailea'])
-    droneak,id=dboutput.get_erab_drone_list(erab)
+@app.route("/insert_path/<droneIzen>", methods=['GET','POST'])
+def insert_path(droneIzen):
+    #erab = dboutput.get_erab_full(session['erabiltzailea'])
+    drone = dboutput.get_drone_full(droneIzen)
 
-    for pos,dronea in enumerate(droneak):
-        if dronea == drone:
-            droneID=id[pos]
-
-    return(insertPath.insertWaypoints(drone, droneID))
+    return(insertPath.insertWaypoints(drone))
 
 @app.route('/insert-drone', methods=['GET','POST'])
 def drone_erregistratu():
@@ -191,7 +199,9 @@ def get_coords():
 
 @app.route("/debug", methods=['GET', 'POST'])
 def debug_show():
-    return render_template("debugShowVar.html",var=dboutput.get_drone_jabe(1))
+    erab = dboutput.get_erab_full(2)
+    print(erab.erab_id)
+    return render_template("debugShowVar.html",var=dboutput.get_erab_baimen(erab))
 
 @app.route("/database", methods=['GET','POST'])
 def database_show():

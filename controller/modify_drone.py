@@ -35,9 +35,11 @@ def modify_drone(drone, dbinput, dboutput):
     # for pos,dronea in enumerate(droneak):
     #     if dronea == drone:
     #         drone.drone_id=id[pos]
-    jabe_id = dboutput.get_drone_jabe(drone.drone_id)
-
-    jabe = dboutput.get_erab_full(jabe_id)
+    jabe = dboutput.get_drone_jabe(drone.drone_id)
+    print("DRONE HONEN:", end="")
+    print(drone.drone_id, end="")
+    print(" JABEA HAU DA:", end="")
+    print(jabe.erab_id)
 
     partekatu_erab = dboutput.get_drone_erab(drone.drone_id)
     partekatuak = []
@@ -103,4 +105,4 @@ def modify_drone(drone, dbinput, dboutput):
                 if not erab[-1] == "Jabea":
                     izen=dboutput.get_erab_izen(erab[1])
                     partekatuak.append([izen,erab[-1]])
-    return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)
+    return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe.erab_izen, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)

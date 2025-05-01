@@ -15,14 +15,14 @@ from controller.database_controller import *
 import app
 
 class insertPath():
-    def insertWaypoints(drone, droneID):
+    def insertWaypoints(drone):
 
-        mapplanpage = mapPlan(droneID)
+        mapplanpage = mapPlan(drone.drone_id)
 
         try:
             if request.method == 'GET':
                 header, body_html, script=mapplanpage.map_with_pointers([])
-                return render_template("insert_path.html", header=header, body_html=body_html, script=script, dronea=drone)
+                return render_template("insert_path.html", header=header, body_html=body_html, script=script, dronea=drone.drone_izen)
             elif request.method == 'POST':
                 bot=request.form.get('botoia')
                 lat=""
@@ -50,7 +50,7 @@ class insertPath():
 
                     header, body_html, script=mapplanpage.map_with_pointers(list)
                     root.destroy()
-                    return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
+                    return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone.drone_izen)
 
                 elif bot == '2':
                     latin = request.form.get('lat')
@@ -61,13 +61,13 @@ class insertPath():
                         list=list[1:]
                 
                     header, body_html, script=mapplanpage.map_with_pointers(list)
-                    return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
+                    return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone.drone_izen)
                 
                 elif bot == '3':
                                                           
                     # Hau kendu behar dugu
                     for coords in list:
-                        app.dbinput.insert_GPS_kokapena(droneID,coords[1],coords[0],None,None,datetime.now(),"UPF")
+                        app.dbinput.insert_GPS_kokapena(drone.drone_id,coords[1],coords[0],None,None,datetime.now(),"UPF")
                     
                     return redirect(url_for('control'))
                 
@@ -78,7 +78,7 @@ class insertPath():
 
                     header, body_html, script=mapplanpage.map_with_pointers(list)
                     
-                    return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone)
+                    return render_template("insert_path.html", header=header, body_html=body_html, script=script, lat=lat, long=long, list=list, error=error, dronea=drone.drone_izen)
 
         except KeyError as e:
             return redirect(url_for('index'))

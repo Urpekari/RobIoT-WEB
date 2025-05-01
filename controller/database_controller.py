@@ -28,12 +28,16 @@ class dronea():
     drone_izen = ""
     drone_mota = ""
     drone_desk = ""
+    drone_sentsoreak = ""
+    drone_jabea = ""
 
-    def __init__(self, droneDatuArray):
+    def __init__(self, droneDatuArray, droneSentsoreArray, jabea):
         self.drone_id = droneDatuArray[0]
         self.drone_izen = droneDatuArray[1]
         self.drone_mota = droneDatuArray[2]
         self.drone_desk = droneDatuArray[3]
+        self.drone_sentsoreak = droneSentsoreArray
+        self.drone_jabea = jabea
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__)
@@ -92,26 +96,32 @@ class output():
         return True if usuario else False
     
     def get_erab_drone_list(self, erab):
-        erab_id=erab.erab_id
-        id_drone,baimen=self.get_erab_droneak(erab_id)
-        droneak=[]
-        for pos,id in enumerate(id_drone):
-            drone=self.get_drone_full(id)
+        baimenak=self.get_erab_baimen(erab)
+        #baimen_drone_id = []
+        droneak = []
+        for baimena in baimenak:
+            print("Drone zenbakia:",end="")
+            print(baimena[2])
+            #baimen_drone_id.append(baimena[2])
+            droneak.append(self.get_drone_full(baimena[2]))
+       
 
-            jabe_id=self.get_drone_jabe(id)
-            jabe=self.get_erab_full(jabe_id)
+        # for pos,id in enumerate(id_drone):
+        #     print(type(id))
+        #     drone=self.get_drone_full(id)
 
-            if not jabe.erab_izen==erab.erab_izen:
-                drone_izen_erakusgarria=drone.drone_izen+"_"+jabe.erab_izen
-                if baimen[pos] == "Kontrolatu":
-                    drone_izen_erakusgarria=drone.drone_izen + "_kontrolatu"
-                elif baimen[pos] == "Ikusi":
-                    drone_izen_erakusgarria=drone.drone_izen + "_ikusi"
-            else:
-                drone_izen_erakusgarria = drone.drone_izen
+        #     if not drone.drone_jabe.erab_id==erab.erab_id:
+        #         drone_izen_erakusgarria=drone.drone_izen+"_"+drone.drone_jabe.erab_izen
+        #         if baimen[pos] == "Kontrolatu":
+        #             drone_izen_erakusgarria=drone.drone_izen + " Kontrolatu"
+        #         elif baimen[pos] == "Ikusi":
+        #             drone_izen_erakusgarria=drone.drone_izen + " Ikusi"
+        #     else:
+        #         drone_izen_erakusgarria = drone.drone_izen
 
-            droneak.append(drone_izen_erakusgarria)
-        return droneak,id_drone
+        #     droneak.append(drone_izen_erakusgarria)
+        
+        return droneak
     
     # ===============================================================================================
     # ALDATU: get_erab egin, erabiltzaile ID, izena eta drone zerrenda itzultzen duena
@@ -147,6 +157,22 @@ class output():
     #     cur.close()
     #     return user if user else None
     
+    def get_erab_baimen(self, erab):
+        cur = self.mysql.connection.cursor()
+        print(erab.erab_izen)
+        print(erab.erab_id)
+        cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (erab.erab_id, ))
+        baimenak = cur.fetchall() 
+        cur.close()
+        return baimenak
+    
+    def get_drone_baimen(self, drone):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Partekatzeak WHERE idDroneak = %s", (drone.drone_id, ))
+        baimenak = cur.fetchall() 
+        cur.close()
+        return baimenak
+
     def get_erab_izen(self,id_erab):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT Izen FROM Erabiltzaileak WHERE idErabiltzaileak = %s", (id_erab,))
@@ -173,7 +199,11 @@ class output():
         drone = cur.fetchone()
         cur.close()
         if drone:
-            droneprofile = dronea(drone)
+            sentsoreArray = self.get_drone_sentsoreak(drone[0])
+            jabea = self.get_drone_jabe(drone[0])
+            print("JABEA:", end="")
+            print(jabea)
+            droneprofile = dronea(drone, sentsoreArray, jabea)
         return droneprofile if droneprofile else None
 
     @multimethod
@@ -185,7 +215,9 @@ class output():
         drone = cur.fetchone()
         cur.close()
         if drone:
-            droneprofile = dronea(drone)
+            sentsoreArray = self.get_drone_sentsoreak(drone[0])
+            jabea = self.get_drone_jabe(drone[0])
+            droneprofile = dronea(drone, sentsoreArray, jabea)
         return droneprofile if droneprofile else None
 
     # def get_drone_info(self,id_drone):
@@ -205,9 +237,9 @@ class output():
     def get_drone_jabe(self,id_dron):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
-        jabe_dron = cur.fetchone() 
+        jabe_dron = cur.fetchone()
         cur.close()
-        return jabe_dron[0]
+        return self.get_erab_full(jabe_dron[0])
     
     def get_drone_erab(self,id_dron):
         cur = self.mysql.connection.cursor()
@@ -333,6 +365,14 @@ class output():
     # - Bi funtzio sortuko dira:
     #   - Benetako GPS informazioaren berri ematen duena (Lat, Lng, Alt, Hdg)
     #   - Waypointen berri ematen duena (Lat, Lng, Alt)
+
+    def get_locations_full(self, drone):
+        cur = self.mysql.connection.cursor()
+        query = "SELECT Latitude, Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s"
+        cur.execute(query,(drone.drone_id))
+        results = cur.fetchall()
+        cur.close()
+        return results
 
 
     # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
