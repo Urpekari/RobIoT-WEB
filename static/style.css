@@ -210,14 +210,14 @@ table,th,td{
     opacity: 1;
 }
 
-.footer {
+.footer{
     position: absolute;
-    bottom: 5px;
+    bottom: 10px;
+    padding: 5%;
     width: 90%;
-    padding-left:50px;
-    padding-right:50px;
+    height: 15%;
     text-align: right;
-    align-content: right;
-    max-height: 15vh;
-    overflow:hidden;
+    vertical-align: middle;
+    table-layout: fixed;
+    align-content: center;
 }

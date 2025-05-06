@@ -88,20 +88,20 @@
         </table>
     <br>
     <table class="no_border">
-        {%if ikusi%}
         <tr>
-            <td class="no_border">
-                    <a href="{{url_for('insert_path',droneIzen=dronea)}}">
-                        <button>Ibilbidea gehitu</button>
-                    </a>
-            </td>
             <td class="no_border">
                 <a href="{{url_for('modify_drone_page',drone=dronea)}}">
                     <button>Dronearen informazioa</button>
                 </a>
             </td>
+            {%if ikusi%}
+            <td class="no_border">
+                    <a href="{{url_for('insert_path',droneIzen=dronea)}}">
+                        <button>Ibilbidea gehitu</button>
+                    </a>
+            </td>
+            {%endif%}
         </tr>
-        {%endif%}
         <tr>
             <td class="no_border">
                 <a href="/">

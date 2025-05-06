@@ -106,18 +106,19 @@ def control():
                     
             page = mapPage(dboutput,droneID)
             header, body_html, script=page.map()
-            # TODO: ikusi modua ber-egin, baimenak datu basetik lortuz!
-            #if not droneReq[-6:] == "_ikusi":
-            #    ikusi=1
+
+            if erab.erab_id in selected_drone.drone_kontroladoreak:
+                print(erab.erab_id)
+                print(selected_drone.drone_kontroladoreak)
+                ikusi=1
+            else:
+                ikusi=0
             return render_template("control.html", header=header, body_html=body_html, script=script, dronea=dronea.drone_izen, droneID=droneID, droneak=droneak, ikusi=ikusi)
     except KeyError as e:
         return redirect(url_for('index'))
     
-
-
 @app.route("/insert_path/<droneIzen>", methods=['GET','POST'])
 def insert_path(droneIzen):
-    #erab = dboutput.get_erab_full(session['erabiltzailea'])
     drone = dboutput.get_drone_full(droneIzen)
 
     return(insertPath.insertWaypoints(drone))
@@ -205,19 +206,9 @@ def get_coords():
 @app.route("/debug", methods=['GET', 'POST'])
 def debug_show():
     erab = dboutput.get_erab_full(2)
-    return render_template("debugShowVar.html",var=dboutput.get_drone_full(3).drone_jabea.erab_izen)
+    return render_template("debugShowVar.html",var=dboutput.get_drone_full(7).drone_kontroladoreak)
 
-@app.route("/database", methods=['GET','POST'])
-def database_show():
-    a1=request.form.get('a1')
-    a2=request.form.get('a2')
-    print(a1)
-    print(a2)
-    return render_template(
-        "database.html",
-        header=tables.Droneak_header,
-        items=dboutput.get_info(tables.Droneak)
-    )
+
 
 # API FOR LIVE UPDATES
 @app.route("/getLiveData", methods=['POST'])
@@ -257,6 +248,16 @@ def getLivePos():
 
         })
 
+## PROBAK EGITEKO ETA MISZELANEOAK ========================================================
+@app.route("/database", methods=['GET','POST'])
+def database_show():
+    a1=request.form.get('a1')
+    a2=request.form.get('a2')
+    print(a1)
+    print(a2)
+    return render_template(
+        "database.html",
+    )
 
 #@app.route("/database/dowload")
 #def download_csv():

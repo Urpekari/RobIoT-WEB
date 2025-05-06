@@ -14,6 +14,7 @@ class erabiltzailea():
         self.erab_izen = erabDatuArray[1]
         self.erab_abizen = erabDatuArray[2]
         self.erab_email = erabDatuArray[4]
+        
         self.erab_baimen = erabDatuArray[5]
 
     def toJSON(self):

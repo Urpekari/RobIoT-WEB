@@ -152,7 +152,8 @@ class output():
         if drone:
             sentsoreArray = self.__get_drone_sentsoreak(drone[0])
             jabea = self.get_drone_jabe(drone[0])
-            droneprofile = dronea(drone, sentsoreArray, jabea)
+            kontroladoreak = self.__get_drone_kontrol(drone[0])
+            droneprofile = dronea(drone, sentsoreArray, jabea, kontroladoreak)
         return droneprofile if droneprofile else None
 
     @multimethod
@@ -169,7 +170,8 @@ class output():
         if drone:
             sentsoreArray = self.__get_drone_sentsoreak(drone[0])
             jabea = self.get_drone_jabe(drone[0])
-            droneprofile = dronea(drone, sentsoreArray, jabea)
+            kontroladoreak = self.__get_drone_kontrol(drone[0])
+            droneprofile = dronea(drone, sentsoreArray, jabea, kontroladoreak)
         return droneprofile if droneprofile else None
 
     @multimethod
@@ -200,12 +202,15 @@ class output():
     
     # Oraindik ez dugu erabili hau...?
 
-    def get_drone_erab(self,id_dron):
+    def __get_drone_kontrol(self,id_dron):
         cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Droneak_idDroneak = %s", (id_dron,))
-        drone_erab = cur.fetchall() 
+        cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND (Baimenak_idBaimenak = %s OR Baimenak_idBaimenak = %s)", (id_dron, "Jabea", "Kontrolatu"))
+        drone_kontrol = cur.fetchall()
+        drone_kontroladoreak = []
+        for kontroladoreId in drone_kontrol:
+            drone_kontroladoreak.append(kontroladoreId[0])
         cur.close()
-        return drone_erab
+        return drone_kontroladoreak
     
     # ===============================================================================================
     # ALDAKETAK: Erredundantea: Koordenatuak beste eratan funtzionatzea hobe
