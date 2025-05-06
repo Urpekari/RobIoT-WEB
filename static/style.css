@@ -140,10 +140,10 @@ table,th,td{
     padding: 0;
     background: inherit;
     font: inherit;
-
+    width: 100%;
+    
     cursor: pointer;
-    text-decoration: underline;
-    color: blue;
+    color: white;
 
     overflow: visible;
 }

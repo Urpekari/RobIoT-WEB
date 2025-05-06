@@ -56,30 +56,30 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Xehetasunak</th>
+                        <th colspan="2">Xehetasunak</th>
                         <th>Timestamp</th>  <!-- ??? -->
                     </tr> 
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Position</td>
-                        <td>{{timestamp}}</td>
+                        <td colspan="2">Position</td>
+                        <td rowspan="2"><span id="livetime">NA</span></td>
                     </tr>
                     <tr>
                         <td><span id="liveLat">NA</span></td><!--Orain dronak duen posizioa sartu-->
                         <td><span id="liveLng">NA</span></td>
                     </tr>
                     <tr>
-                        <td>Next Waypoint</td>
-                        <td>ETA: <span id="nextWPETA">NA</span> </td>
+                        <td colspan="2">Next Waypoint</td>
+                        <td rowspan="2">ETA: <span id="nextWPETA">NA</span> </td>
                     </tr>
                     <tr>
                         <td><span id="nextWPlat">NA</span></td>
                         <td><span id="nextWPlng">NA</span></td>
                     </tr>
                     <tr>
-                        <td>Destination</td>
-                        <td>ETA: <span id="goalWPETA">NA</span> </td>
+                        <td colspan="2">Destination</td>
+                        <td rowspan="2">ETA: <span id="goalWPETA">NA</span> </td>
                     </tr>
                     <tr>
                         <td><span id="goalWPlat">NA</span></td>
@@ -120,23 +120,25 @@
 </div>
     <div class="dronen-taula">
         <h1>Dronen zerrenda:</h1>
-        <table class="no_border" style="height: 50%;">
-            <thead>
-                <th>Dronea</th>
-            </thead>
-            <tbody  class="no_border" style="height: 100%; display: grid; place-items: center; overflow-y: auto;">
-                {% for row in droneak %}
-                <tr>
-                    <td style="border-left: 0px; border-right: 0px;">
-                        <form action="/control" method="post">
-                            <input type="hidden" name="drone_izena" value="{{ row }}">
-                            <button class="link-button" name="botoia" value="1">{{ row }}</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div style="height: 50%;overflow: auto">
+            <table style="width: 100%;">
+                <thead style="position: sticky; top: 0;">
+                    <th style="background-color: #1c1c1c;border-collapse: separate;">Dronea</th>
+                </thead>
+                <tbody>
+                    {% for row in droneak %}
+                    <tr>
+                        <td>
+                            <form action="/control" method="post">
+                                <input type="hidden" name="drone_izena" value="{{ row }}">
+                                <button class="link-button" name="botoia" value="1">{{ row }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <br>
         <a href="/insert-drone">
             <button>Gehitu dronea</button>

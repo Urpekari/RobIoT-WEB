@@ -236,7 +236,7 @@ def gw_insert(gwid):
     waypoint = dboutput.get_next_waypoint(content['robiotId'])
 
     if len(waypoint) > 0:
-        print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
+        #print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
         reply = {
 
             "gwid":gwid,
@@ -296,7 +296,8 @@ def getLivePos():
         
         'GPSPos':{
             'lat': dronePos[0],
-            'lng': dronePos[1]
+            'lng': dronePos[1],
+            'cur': datetime.now()
         },
         'NextWaypoint':{
             'lat': nextWP[0],
