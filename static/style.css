@@ -212,9 +212,10 @@ table,th,td{
 
 .footer {
     position: absolute;
-    bottom: 0;
+    bottom: 5px;
     width: 90%;
-    padding:50px;
+    padding-left:50px;
+    padding-right:50px;
     text-align: right;
     align-content: right;
     max-height: 15vh;

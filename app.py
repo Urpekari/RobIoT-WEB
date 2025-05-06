@@ -13,6 +13,8 @@ from controller.insert_path import *
 from controller.utils import *
 from controller.modify_drone import *
 
+from model import *
+
 from view.mapPage import *
 from view.mapinit import *
 from view.mapplan import *
@@ -79,15 +81,19 @@ def control():
 
             droneen_izenak = []
             for dronea in droneak:
-                droneen_izenak.append(dronea.drone_izen)
+                
+                if(dronea.drone_jabea.erab_id != erab.erab_id):
+                    droneen_izenak.append("{0}_{1}".format(dronea.drone_izen, dronea.drone_jabea.erab_izen))
+                else:
+                    droneen_izenak.append(dronea.drone_izen)
 
             header, body_html, script=mapInit.map_empty()
-            return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneen_izenak)
+            return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
         elif request.method == 'POST':
-            drone_izena=request.form.get('drone_izena')
-            print("DRONE IZENA: ",end="")
-            print(drone_izena)
-            selected_drone = dboutput.get_drone_full(drone_izena)
+            droneReq=int(request.form.get('droneReq'))
+            print("REQUESTED DRONE:",end="")
+            print(droneReq)
+            selected_drone = dboutput.get_drone_full(droneReq)
             ikusi=None
 
             erab = dboutput.get_erab_full(session['erabiltzailea'])
@@ -97,15 +103,13 @@ def control():
                 droneen_izenak.append(dronea.drone_izen)
             
             droneID=selected_drone.drone_id
-
-            # for drone in enumerate(droneak):
-            #     if drone == drone_izena:
                     
             page = mapPage(dboutput,droneID)
             header, body_html, script=page.map()
-            if not drone_izena[-6:] == "_ikusi":
-                ikusi=1
-            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneID=droneID, droneak=droneen_izenak, ikusi=ikusi)
+            # TODO: ikusi modua ber-egin, baimenak datu basetik lortuz!
+            #if not droneReq[-6:] == "_ikusi":
+            #    ikusi=1
+            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=dronea.drone_izen, droneID=droneID, droneak=droneak, ikusi=ikusi)
     except KeyError as e:
         return redirect(url_for('index'))
     
@@ -201,8 +205,7 @@ def get_coords():
 @app.route("/debug", methods=['GET', 'POST'])
 def debug_show():
     erab = dboutput.get_erab_full(2)
-    print(erab.erab_id)
-    return render_template("debugShowVar.html",var=dboutput.get_erab_baimen(erab))
+    return render_template("debugShowVar.html",var=dboutput.get_drone_full(3).drone_jabea.erab_izen)
 
 @app.route("/database", methods=['GET','POST'])
 def database_show():

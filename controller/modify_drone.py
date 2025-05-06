@@ -8,6 +8,8 @@ import env
 # env.py fitxategia EZ DA GITHUBERA IGOKO.
 # .gitignore fitxategi baten bera ekidituko dugu!
 
+# Hau agian view-ean egon behar du
+
 from controller.database_controller import *
 from controller.insert_path import *
 from controller.utils import *
@@ -47,11 +49,7 @@ def modify_drone(drone, dbinput, dboutput):
         if not erab[-1] == "Jabea":
             izen=dboutput.get_erab_izen(erab[1])
             partekatuak.append([izen,erab[-1]])
-    sents_id = dboutput.get_drone_sentsoreak(drone.drone_id)
-    sents_in = []
-    for id in sents_id:
-        sens_info = dboutput.get_sentsore_info(id[-1])
-        sents_in.append(sens_info)
+    sents_in = drone.drone_sentsoreak
 
     if request.method == "GET":
         return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe.erab_izen, partekatuak=partekatuak, sents_in=sents_in)
@@ -62,12 +60,7 @@ def modify_drone(drone, dbinput, dboutput):
         error=None
         sentsoreak = []
         if bot == '2':
-            print("Me me I'm #2")
-            sentsore_guztiak = dboutput.get_info(tables.Sentsoreak)
-            for sents in sentsore_guztiak:
-                print(sents)
-                if sents not in sents_in:
-                    sentsoreak.append(sents)
+            sentsoreak = sents_in
         elif bot == '3':
             baimen_info=dboutput.get_info(tables.Baimenak)
             for row in baimen_info:
@@ -86,7 +79,7 @@ def modify_drone(drone, dbinput, dboutput):
                 sens = request.form.get(str(element[0]))
                 if sens:
                     dbinput.insert_Drone_Sentsore(None,drone.drone_id,int(sens))
-            sents_id = dboutput.get_drone_sentsoreak(drone.drone_id)
+            sents_id = drone.drone_sentsoreak
             sents_in = []
             for id in sents_id:
                 sens_info = dboutput.get_sentsore_info(id[-1])

@@ -1,67 +1,13 @@
 import other.banned_areas as bans
-import json
 from multimethod import *
 from app import *
 
+from model.erabiltzailea import erabiltzailea
+from model.sentsorea import sentsorea
+from model.dronea import dronea
+
 # Klase bat badago datuak gordetzen dituena, klasea bidaltzea lehenetsiko dugu
 # Adibidez, droneID edo erabiltzaile izena bidali nahi izatekotan, drone klaseko objektu bat eta erabiltzailea klaseko objektuak lehenetsiko ditugu
-
-class erabiltzailea():
-    erab_id = 0
-    erab_izen = ""
-    erab_abizen = ""
-    erab_email = ""
-    erab_baimen = ""
-
-    def __init__(self, erabDatuArray):
-        self.erab_id = erabDatuArray[0]
-        self.erab_izen = erabDatuArray[1]
-        self.erab_abizen = erabDatuArray[2]
-        self.erab_email = erabDatuArray[4]
-        self.erab_baimen = erabDatuArray[5]
-
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
-    
-class dronea():
-    drone_id = 0
-    drone_izen = ""
-    drone_mota = ""
-    drone_desk = ""
-    drone_sentsoreak = ""
-    drone_jabea = ""
-
-    def __init__(self, droneDatuArray, droneSentsoreArray, jabea):
-        self.drone_id = droneDatuArray[0]
-        self.drone_izen = droneDatuArray[1]
-        self.drone_mota = droneDatuArray[2]
-        self.drone_desk = droneDatuArray[3]
-        self.drone_sentsoreak = droneSentsoreArray
-        self.drone_jabea = jabea
-
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
-
-class tables():
-    Baimenak="Baimenak"
-    Droneak="Droneak"
-    Drone_Sentsore="Drone_Sentsore"
-    Erabiltzaileak="Erabiltzaileak"
-    Mezuak="Mezuak"
-    Partekatzeak="Partekatzeak"
-    GPS_kokapena="GPS_kokapena"
-    Sentsoreak="Sentsoreak"
-    Sentsore_info="Sentsore_info"
-
-    Baimenak_header=["ID"]
-    Droneak_header=["ID","Izena","Mota","Deskribapena"]
-    Drone_Sentsore_header=["ID","Ezizena","Drone","Sentsore"]
-    Erabiltzaileak_header=["ID","Izena","Abizenak","Pasahitza","email","Dokumentuak"]
-    Mezuak_header=["ID","Drone","Edukia","Timestamp"]
-    Partekatzeak_header=["ID","Erabiltzailea","Drone","Baimen mota"]
-    GPS_kokapena_header=["ID","Drone","Longitude","Latitude","Timestamp"]
-    Sentsoreak_header=["ID","Izena","Mota","Deskribapena"]
-    Sentsore_info_header=["ID","Drone","Sentsore","Balioa","Timestamp"]
 
 class output():
     _instance = None
@@ -158,14 +104,6 @@ class output():
         if user:
             userprofile = erabiltzailea(user)
         return userprofile if userprofile else None
-
-    # def get_erab_id(self, izena):
-    #     print(izena)
-    #     cur = self.mysql.connection.cursor()
-    #     cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
-    #     user = cur.fetchone() 
-    #     cur.close()
-    #     return user if user else None
     
     def get_erab_baimen(self, erab):
         cur = self.mysql.connection.cursor()
@@ -212,7 +150,7 @@ class output():
         drone = cur.fetchone()
         cur.close()
         if drone:
-            sentsoreArray = self.get_drone_sentsoreak(drone[0])
+            sentsoreArray = self.__get_drone_sentsoreak(drone[0])
             jabea = self.get_drone_jabe(drone[0])
             droneprofile = dronea(drone, sentsoreArray, jabea)
         return droneprofile if droneprofile else None
@@ -229,7 +167,7 @@ class output():
         drone = cur.fetchone()
         cur.close()
         if drone:
-            sentsoreArray = self.get_drone_sentsoreak(drone[0])
+            sentsoreArray = self.__get_drone_sentsoreak(drone[0])
             jabea = self.get_drone_jabe(drone[0])
             droneprofile = dronea(drone, sentsoreArray, jabea)
         return droneprofile if droneprofile else None
@@ -272,13 +210,6 @@ class output():
     # ===============================================================================================
     # ALDAKETAK: Erredundantea: Koordenatuak beste eratan funtzionatzea hobe
 
-    # def get_drone_GPS(self,id_drone):
-    #     cur = self.mysql.connection.cursor()
-    #     cur.execute("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s", (id_drone,))
-    #     GPS_drone = cur.fetchall() 
-    #     cur.close()
-    #     return GPS_drone[-1]
-
     def get_drone_mezuak(self,id_drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Mezuak WHERE Droneak_idDroneak = %s", (id_drone,))
@@ -286,13 +217,26 @@ class output():
         cur.close()
         return mezu_drone
     
-    def get_drone_sentsoreak(self,id_drone):
+    # Sentsore array bat itzultzen du, drone ID bat hartuz.
+    # PRIBATUA
+    def __get_drone_sentsoreak(self,id_drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDroneak = %s", (id_drone,))
-        dron_sens = cur.fetchall() 
+        drone_sentsore_raw = cur.fetchall()
         cur.close()
-        return dron_sens
+        drone_sentsore = []
+        for sens in drone_sentsore_raw:
+            drone_sentsore.append(sentsorea(self.__get_sentsore_info(sens[3])))
+        return drone_sentsore
     
+    def __get_sentsore_info(self,id_sentsore):
+        cur = self.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Sentsoreak WHERE idSentsoreak = %s", (id_sentsore,))
+        sens_info = cur.fetchone() 
+        cur.close()
+        return sens_info
+
+
     # ===============================================================================================
     # ALDAKETAK: get_drone_sentsore_info hurrengoa itzuliko du: Drone bateko sentsore ID, izena eta azkeneko balio irakurketa
 
@@ -317,17 +261,12 @@ class output():
         cur.close()
         return sens_balio[-1]
     
-    def get_sentsore_info(self,id_sentsore):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Sentsoreak WHERE idSentsoreak = %s", (id_sentsore,))
-        sens_info = cur.fetchone() 
-        cur.close()
-        return sens_info
+
 
     # ===============================================================================================
     # ALDAKETAK: DRONEEN INFORMAZIO GUZTIA BATERA EMAN BEHAR DA
     
-    def getDroneType(self, droneID):
+    def __getDroneType(self, droneID):
         # Returns an array where the first element is a string that carries the drone type
         cur = self.mysql.connection.cursor()
         query = "SELECT Mota FROM Droneak WHERE idDroneak = {}".format(droneID)
@@ -336,7 +275,7 @@ class output():
         cur.close()
         return results
     
-    def getDroneName(self, droneID):
+    def __getDroneName(self, droneID):
         # Returns an array where the first element is a string that carries the drone name
         cur = self.mysql.connection.cursor()
         query = "SELECT izena FROM Droneak WHERE idDroneak = {}".format(droneID)

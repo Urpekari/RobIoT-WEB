@@ -32,7 +32,7 @@
         <table>
             <tr><th>Izena</th><th>Mota</th><th>Deskribapena</th></tr>
             {%for row in sents_in%}
-                <tr><td>{{row[1]}}</td><td>{{row[2]}}</td><td>{{row[3]}}</td></tr>
+                <tr><td>{{row.sents_izen}}</td><td>{{row.sents_mota}}</td><td>{{row.sents_desk}}</td></tr>
             {%endfor%}
         </table>
         <table class="no_border">
@@ -100,7 +100,7 @@
                     <tr><th>Aukeratu</th><th>Sentsorea</th><th>Mota</th><th>Deskribapena</th></tr>
                     {%for element in sentsoreak%}
                         <tr><td><input type="checkbox" id="{{element[0]}}" name="{{element[0]}}" value="{{element[0]}}"></td>
-                        <td>{{element[1]}}</td><td>{{element[2]}}</td><td>{{element[3]}}</td></tr>
+                        <td>{{element.sents_izen}}</td><td>{{element.sents_mota}}</td><td>{{element.sents_desk}}</td></tr>
                     {%endfor%}
                 </table>
                 <td class="no_border"><button type="submit" name="botoia" value="5">Sartu</button></td>

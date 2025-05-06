@@ -12,17 +12,16 @@ class mapPage():
 
     realPath = []
     pastWaypoints = []
-    droneName = ""
-    droneType = ""
-    droneID = 1
+    drone = None
 
     def __init__(self, dboutput, droneID):
         dbOutput=dboutput
+        self.drone = dbOutput.get_drone_full(droneID)
         self.droneID = droneID
         self.realPath = dbOutput.getRealLocations(droneID)
         self.realHeadings = dbOutput.getRealHeadings(droneID)
-        self.droneName = dbOutput.getDroneName(droneID)[0][0]
-        self.droneType = dbOutput.getDroneType(droneID)[0][0]
+        self.droneName = self.drone.drone_izen
+        self.droneType = self.drone.drone_mota
         self.pastWaypoints = dbOutput.get_waypoint_past(droneID)
         self.nextWaypoints = dbOutput.get_waypoint_future(droneID)
         self.bannedAreas = dbOutput.get_banned_areas(self.droneType)
