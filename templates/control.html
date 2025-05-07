@@ -127,10 +127,10 @@
         <table style="width: 100%;">
             <tr>
                 <th>Dronea</th>
+                <th>Jabea</th>
               
 <!--
 33-enh---apppy-garbitu BRANCH-ETIK ZETORRENA. EZ DAKIT ZER NAHIAGO DUGUN!
-                <th>Jabea</th>
             </thead>
             <tbody>
                 {% for row in droneak %}
@@ -158,9 +158,12 @@
                     <tr>
                         <td>
                             <form action="/control" method="post">
-                                <input type="hidden" name="drone_izena" value="{{ row }}">
-                                <button class="link-button" name="botoia" value="1">{{ row }}</button>
+                                <input type="hidden" name="droneReq" value="{{ row.drone_id }}">
+                                <button class="link-button" name="botoia" value="1">{{ row.drone_izen }}</button>
                             </form>
+                        </td>
+                        <td>
+                            {{row.drone_jabea.erab_izen}}
                         </td>
                     </tr>
                     {% endfor %}
