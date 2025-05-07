@@ -240,7 +240,7 @@ def getLivePos():
         
         'GPSPos':{
             'lat': dronePos[-1].get_gps_lat(),
-            'lng': dronePos[-1].get_gps_lng()
+            'lng': dronePos[-1].get_gps_lng(),
             'cur': dronePos[-1].get_gps_timestamp()
         },
         'NextWaypoint':{
