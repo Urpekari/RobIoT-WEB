@@ -88,55 +88,15 @@ class output():
         return userprofile if userprofile else None
     
     def __get_erab_baimen(self, erab):
+        ## PARTEKATZEAK LORTZEKO FUNTZIOA
+        # INPUT: erabiltzaile objektua
+        # OUTPUT: erabiltzaile horren partekatzeak/baimenak, array baten
         cur = self.mysql.connection.cursor()
-        print(erab.erab_izen)
-        print(erab.erab_id)
         cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (erab.erab_id, ))
         baimenak = cur.fetchall() 
         cur.close()
         return baimenak
-    
-    def __get_drone_baimen(self, drone):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE idDroneak = %s", (drone.drone_id, ))
-        baimenak = cur.fetchall() 
-        cur.close()
-        return baimenak
-    
-    # Hau non erabiltzen den bilatu eta kendu
-    def get_erab_droneak(self,id_erab):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (id_erab,))
-        erab_dron = cur.fetchall() 
-        cur.close()
-        return [sublist[2] for sublist in erab_dron], [sublist[3] for sublist in erab_dron]
-    
-    @multimethod
-    def get_partekatze_full_erabiltzaileArabera(self: object, erab:object):
-        print("GET PARTEKATZE FULL ERABILTZAILEAREN ARABERA:!")
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (erab.erab_id,))
-        erab_dron = cur.fetchall()
-        print(erab_dron)
-        cur.close()
-        partekatzeak = []
-        for partek in erab_dron:
-            partekatzeak.append(partekatzea(partek, self.get_erab_full(partek[1]), self.get_drone_full(partek[2])))
-        return(partekatzeak)
 
-    @multimethod
-    def get_partekatze_full_erabiltzaileArabera(self: object, id_erab:int):
-        print("GET PARTEKATZE FULL ERABILTZAILEAREN ARABERA:!")
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (id_erab,))
-        erab_dron = cur.fetchall()
-        print(erab_dron)
-        cur.close()
-        partekatzeak = []
-        for partek in erab_dron:
-            partekatzeak.append(partekatzea(partek, self.get_erab_full(partek[1]), self.get_drone_full(partek[2])))
-        return(partekatzeak)
-    
     @multimethod
     def get_partekatze_full_droneArabera(self: object, id_drone: int):
         cur = self.mysql.connection.cursor()
@@ -159,28 +119,24 @@ class output():
             partekatzeak.append(partekatzea(partek, self.get_erab_full(partek[1]), self.get_drone_full(partek[2])))
         return(partekatzeak)
     
-    ## Baimen onargarri guztien zerrenda
-    # INPUT: Ezer
-    # OUTPIT: Baimen array bat
     def get_baimen_posible_zerrenda(self):
+        ## Baimen onargarri guztien zerrenda
+        # INPUT: Ezer
+        # OUTPIT: Baimen array bat
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Baimenak")
         baimenak = cur.fetchall()
         cur.close()
         return(baimenak)
 
-
-
     # ===============================================================================================
     # ALDAKETAK: Get drone info hurrengoa itzuli behar du: ID, izena, jabea, erabiltzaileak
 
     @multimethod
     def get_drone_full(self: object, izena: str):
-
         ## Drone informazioa lortzeko
         #  INPUT:  Dronearen izena
         #  OUTPUT: Drone objektu bat, guztiarekin
-
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Droneak WHERE Izena = %s", (izena,))
         drone = cur.fetchone()
@@ -195,11 +151,9 @@ class output():
 
     @multimethod
     def get_drone_full(self: object, droneID: int):
-
         ## Drone informazioa lortzeko
         #  INPUT:  Dronearen IDa
         #  OUTPUT: Drone objektu bat, guztiarekin
-
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (droneID,))
         drone = cur.fetchone()
@@ -212,31 +166,11 @@ class output():
             droneprofile = dronea(drone, sentsoreArray, jabea, kontroladoreak, ikusleak)
         return droneprofile if droneprofile else None
 
-    def __getDroneType(self, droneID):
-        # Returns an array where the first element is a string that carries the drone type
-        cur = self.mysql.connection.cursor()
-        query = "SELECT Mota FROM Droneak WHERE idDroneak = {}".format(droneID)
-        cur.execute(query)
-        results = cur.fetchall()
-        cur.close()
-        return results
-    
-    def __getDroneName(self, droneID):
-        # Returns an array where the first element is a string that carries the drone name
-        cur = self.mysql.connection.cursor()
-        query = "SELECT izena FROM Droneak WHERE idDroneak = {}".format(droneID)
-        cur.execute(query)
-        results = cur.fetchall()
-        cur.close()
-        return results
-
     @multimethod
     def get_drone_jabe(self:object, id_dron: int):
-
         ## Drone baten jabea lortzeko
         #  INPUT:  Dronearen ID-a
         #  OUTPUT: Erabiltzaile objektu bat, jabearen informazioarekin
-
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
         jabe_dron = cur.fetchone()
@@ -248,21 +182,19 @@ class output():
 
     @multimethod
     def get_drone_jabe(self:object, drone: object):
-
         ## Drone baten jabea lortzekoQ
         #  INPUT:  Drone objektu bat
         #  OUTPUT: Erabiltzaile objektu bat, jabearen informazioarekin
-
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (drone.drone_id,"Jabea"))
         jabe_dron = cur.fetchone()
         cur.close()
         return self.get_erab_full(jabe_dron[0])
-    
-    ## Drone baten kontrola duten erabiltzaileen ID-ak lortzeko
-    # INPUT:  Drone id bat
-    # OUTPUT: Erabiltzaile id array bat    
+     
     def __get_drone_kontrol(self,id_dron):
+        ## Drone baten kontrola duten erabiltzaileen ID-ak lortzeko
+        # INPUT:  Drone id bat
+        # OUTPUT: Erabiltzaile id array bat   
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND (Baimenak_idBaimenak = %s OR Baimenak_idBaimenak = %s)", (id_dron, "Jabea", "Kontrolatu"))
         drone_kontrol = cur.fetchall()
@@ -271,11 +203,11 @@ class output():
             drone_kontroladoreak.append(kontroladoreId[0])
         cur.close()
         return drone_kontroladoreak
-    
-    ## Drone baten kontrola EZ duten baina ikus dezaketeen erabiltzaileen ID-ak lortzeko
-    # INPUT:  Drone id bat
-    # OUTPUT: Erabiltzaile id array bat    
+      
     def __get_drone_ikusle(self,id_dron):
+        ## Drone baten kontrola EZ duten baina ikus dezaketeen erabiltzaileen ID-ak lortzeko
+        # INPUT:  Drone id bat
+        # OUTPUT: Erabiltzaile id array bat  
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron, "Ikusi"))
         drone_ikusle = cur.fetchall()
@@ -285,20 +217,11 @@ class output():
         cur.close()
         return drone_ikusleak
     
-    # ===============================================================================================
-    # ALDAKETAK: Erredundantea: Koordenatuak beste eratan funtzionatzea hobe
 
-    def get_drone_mezuak(self,id_drone):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Mezuak WHERE Droneak_idDroneak = %s", (id_drone,))
-        mezu_drone = cur.fetchall() 
-        cur.close()
-        return mezu_drone
-    
-    ## Sentsoreen informaziioa lortzeko
-    # Input:  Drone id bat
-    # Output: Sentsore objektu array bat
     def __get_drone_sentsoreak(self,id_drone):
+        ## Sentsoreen informaziioa lortzeko
+        # Input:  Drone id bat
+        # Output: Sentsore objektu array bat
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDroneak = %s", (id_drone,))
         drone_sentsore_raw = cur.fetchall()
@@ -315,19 +238,10 @@ class output():
         cur.close()
         return sens_info
 
-    # Sentsore ID bat erabiliz sentsore objektua lortzeko
-    # INPUT: Sentsore ID
-    # OUTPUT: Sentsore Objektua
-
-    def get_sentsore_full(self, sens_id):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Sentsoreak WHERE idSentsore_info = %s", (sens_id,))
-        sens_info = cur.fetchone()
-        cur.close()
-        sentsore_osoa = (sentsorea(sens_info))
-        return sentsore_osoa
-
     def get_sentsore_guztiak(self):
+        # Sentsore ID bat erabiliz sentsore objektua lortzeko
+        # INPUT: Ezer
+        # OUTPUT: Sentsore guztien objektuen array bat
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Sentsoreak")
         sens_info = cur.fetchall()
@@ -337,41 +251,11 @@ class output():
             sentsore_osoak.append(sentsorea(sens))
         return sentsore_osoak
 
-    # ===============================================================================================
-    # ALDAKETAK: get_drone_sentsore_info hurrengoa itzuliko du: Drone bateko sentsore ID, izena eta azkeneko balio irakurketa
-
-    def __get_sentsore_id(self,izena):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Sentsoreak WHERE Izen = %s", (izena,))
-        sents = cur.fetchone() 
-        cur.close()
-        return sents[0]
-
-    def get_drone_sentsore_info(self,id_drone,id_sentsore):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDroneak = %s AND Sentsoreak_idSentsoreak = %s", (id_drone,id_sentsore))
-        dron_sens = cur.fetchone() 
-        cur.close()
-        return dron_sens
-    
-    def get_sentsore_balio(self,id_dron_sens):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Sentsore_info WHERE Drone_Sentsore_idDroneSentsore = %s", (id_dron_sens,))
-        sens_balio = cur.fetchall() 
-        cur.close()
-        return sens_balio[-1]
-    
-
-
-    # ===============================================================================================
-    # ALDAKETAK: DRONEEN INFORMAZIO GUZTIA BATERA EMAN BEHAR DA
     
     def get_gps_full(self, drone):
-
         ## GPS datuak osotasunean lortzeko, drone baterako
         # INPUT: Drone objektu bat
         # OUTPUT: gpspoint objektuen array bat
-
         cur = self.mysql.connection.cursor()
         query = ("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s")
         cur.execute(query,(drone.drone_id,))
@@ -381,37 +265,6 @@ class output():
         for gps_raw_point in gps_raw:
             gpsProfiles.append(gpspoint(gps_raw_point))
         return(gpsProfiles)
-
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_next_waypoint(self, droneID):
-        waypoints = self.get_waypoints_full(droneID, "UPF")
-        return(waypoints[0])
-        
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_waypoint_past(self, droneID):
-        waypoints = self.get_waypoints(droneID, "UPP")
-        return waypoints
-
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_waypoint_future(self, droneID):
-        waypoints = self.get_waypoints(droneID, "UPF")
-        return waypoints
-    
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_all_waypoints(self, droneID):
-        pastWaypoints = self.get_waypoint_past(droneID)
-        futureWaypoints = self.get_waypoint_future(droneID)
-
-        allWaypoints = []
-
-        for wp in pastWaypoints:
-            allWaypoints.append(wp)
-
-        for wp in futureWaypoints:
-            allWaypoints.append(wp)
-        print("ALL WAYPOINTS")
-        print(allWaypoints)
-        return(allWaypoints)
 
     # ===============================================================================================
     # Ez da datu basea baina hemen ondo dagoela esango nuke. Mota hobe kudeatzeko erarik ote dago?
@@ -475,8 +328,6 @@ class input():
         self.mysql.connection.commit()
         cur.close()
 
-
-    # # TODO: KONPONDU
     def insert_Partekatzeak(self, erabiltzailea, dronea, baimena):
         print("Erabiltzailea:")
         print(erabiltzailea.erab_izen)
@@ -489,7 +340,6 @@ class input():
         self.mysql.connection.commit()
         cur.close()
         return("Done!")
-
 
     def insert_Sentsore_info(self,id_drone_sents,balioa,timestamp):
         cur = self.mysql.connection.cursor()
@@ -517,4 +367,3 @@ class input():
         cur.execute(query,(izena,mota,deskribapena,id))
         self.mysql.connection.commit()
         cur.close()
-        
