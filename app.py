@@ -213,42 +213,44 @@ def debug_show():
     drone = dboutput.get_drone_full(4)
     return render_template("debugShowVar.html",var=dboutput.get_gps_full(drone))
 
-
-
 # API FOR LIVE UPDATES
 @app.route("/getLiveData", methods=['POST'])
 def getLivePos():   
     data = request.get_json()
     droneID = data['droneID']
-    #print(droneID)
-    dronePos = dboutput.getRealLocations(droneID)[-1]
-    dronePosTimes = dboutput.get_timestamps(droneID, "DOW")
-    futureWPs = dboutput.get_waypoint_future(droneID)
+
+    drone = dboutput.get_drone_full(int(droneID))
+    gpsData = dboutput.get_gps_full(drone)
+    dronePos = __filterPositionLogs(gpsData)
+    futureWPs = __filterWaypoints(gpsData, False)
+
     nextWP = futureWPs[0]
-    goalWP = dboutput.get_waypoint_future(droneID)[-1]
-    futureWPs.insert(0, [dronePos[0], dronePos[1]])
+    goalWP = futureWPs[-1]
+
+    fullSimpleRemainingPath = __filterSimplePath(futureWPs)
+    fullSimpleRemainingPath.insert(0, dronePos[-1].get_gps_coords())
 
     # TODO:deltaT zehatzagoak lortu... behintzat azpiegitura hor dugu!
     
-    deltapos = getGPSDistance(compareCoords=[nextWP[0], nextWP[1]], currentCoords=[dronePos[0], dronePos[1]])
-    deltaT = (dronePosTimes[-1][0] - dronePosTimes[-2][0]).total_seconds()
+    deltapos = getGPSDistance(compareCoords=nextWP.get_gps_coords(), currentCoords=dronePos[-1].get_gps_coords())
+    deltaT = (dronePos[-1].get_gps_timestamp() - dronePos[-2].get_gps_timestamp()).total_seconds()
 
     return jsonify({
         
         'GPSPos':{
-            'lat': dronePos[0],
-            'lng': dronePos[1]
+            'lat': dronePos[-1].get_gps_lat(),
+            'lng': dronePos[-1].get_gps_lng()
         },
         'NextWaypoint':{
-            'lat': nextWP[0],
-            'lng': nextWP[1],
+            'lat': nextWP.get_gps_lat(),
+            'lng': nextWP.get_gps_lng(),
             'eta': datetime.now() + timedelta(seconds=getEta(deltapos, deltapos/deltaT))
         },
 
         'Destination':{
-            'lat': goalWP[0],
-            'lng': goalWP[1],
-            'eta': datetime.now() + timedelta(seconds = getEta(distance=getFullPathDistance(gpsPathWPs=futureWPs), speed=(deltapos/deltaT)))
+            'lat': goalWP.get_gps_lat(),
+            'lng': goalWP.get_gps_lng(),
+            'eta': datetime.now() + timedelta(seconds = getEta(distance=getFullPathDistance(gpsPathWPs=fullSimpleRemainingPath), speed=(deltapos/deltaT)))
         },
 
         })
@@ -263,6 +265,35 @@ def database_show():
     return render_template(
         "database.html",
     )
+
+## HEMENDIK KENDU BEHARREKOAK ==============================================================
+## HAUEK EZ DIRA OBJEKTUETAN JOATEKOAK!! BEGIRATU MAPPLAN!! ================================
+
+# TODO: CONTROLLER-EAN SARTU
+# GPS balio guztien artean waypoint-ak soilik hartzeko
+def __filterWaypoints(rawGpsData:list, isPastWP:bool):
+    waypoints = []
+    for gpsPoint in rawGpsData:
+        if gpsPoint.gps_way == True and gpsPoint.gps_past == isPastWP:
+            waypoints.append(gpsPoint)
+    return waypoints
+
+# TODO: CONTROLLER-EAN SARTU
+# GPS balioetatik koordenatuak lortzeko, zerrenda luze baten
+def __filterSimplePath(rawGpsData):
+    waypoints = []
+    for gpsPoint in rawGpsData:
+        waypoints.append(gpsPoint.get_gps_coords())
+    return waypoints
+
+# TODO: CONTROLLER-EAN SARTU
+# GPS balio guztien artean dronearen benetako posizioak soilik hartzeko
+def __filterPositionLogs(rawGpsData):
+    posLog = []
+    for gpsPoint in rawGpsData:
+        if gpsPoint.gps_way == False:
+            posLog.append(gpsPoint)
+    return posLog
 
 #@app.route("/database/dowload")
 #def download_csv():

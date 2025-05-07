@@ -35,8 +35,17 @@ class gpspoint():
     def get_gps_coords(self):
         return[self.gps_lat, self.gps_lng]
     
+    def get_gps_lat(self):
+        return self.gps_lat
+    
+    def get_gps_lng(self):
+        return self.gps_lng
+    
     def get_gps_heading(self):
         if self.gps_hdg:
             return self.gps_hdg
         else:
             return -1
+        
+    def get_gps_timestamp(self):
+        return(self.gps_timestamp)

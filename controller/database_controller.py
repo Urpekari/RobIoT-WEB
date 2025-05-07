@@ -378,8 +378,6 @@ class output():
         gps_raw = cur.fetchall()
         cur.close()
         gpsProfiles = []
-        print("GPS RAW POINT:")
-        print(gps_raw)
         for gps_raw_point in gps_raw:
             gpsProfiles.append(gpspoint(gps_raw_point))
         return(gpsProfiles)
