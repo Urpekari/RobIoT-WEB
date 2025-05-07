@@ -88,6 +88,7 @@
                 </tbody>
             </table>
         {%endif%}
+    <br>
     <table class="no_border" style="position: relative;bottom: 0;">
         {%if ikusi%}
         <tr>
@@ -120,11 +121,13 @@
 </div>
     <div class="dronen-taula">
         <h1>Dronen zerrenda:</h1>
-        <div style="height: 50%;overflow: auto">
+        <table style="width: 100%;">
+            <tr>
+                <th>Dronea</th>
+            </tr>
+        </table>
+        <div style="height: 45%;overflow: auto">
             <table style="width: 100%;">
-                <thead style="position: sticky; top: 0;">
-                    <th style="background-color: #1c1c1c;border-collapse: separate;">Dronea</th>
-                </thead>
                 <tbody>
                     {% for row in droneak %}
                     <tr>
