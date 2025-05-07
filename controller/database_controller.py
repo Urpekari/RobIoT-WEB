@@ -5,6 +5,7 @@ from app import *
 from model.erabiltzailea import erabiltzailea
 from model.partekatzea import partekatzea
 from model.sentsorea import sentsorea
+from model.gpspoint import gpspoint
 from model.dronea import dronea
 
 # Klase bat badago datuak gordetzen dituena, klasea bidaltzea lehenetsiko dugu
@@ -211,6 +212,24 @@ class output():
             droneprofile = dronea(drone, sentsoreArray, jabea, kontroladoreak, ikusleak)
         return droneprofile if droneprofile else None
 
+    def __getDroneType(self, droneID):
+        # Returns an array where the first element is a string that carries the drone type
+        cur = self.mysql.connection.cursor()
+        query = "SELECT Mota FROM Droneak WHERE idDroneak = {}".format(droneID)
+        cur.execute(query)
+        results = cur.fetchall()
+        cur.close()
+        return results
+    
+    def __getDroneName(self, droneID):
+        # Returns an array where the first element is a string that carries the drone name
+        cur = self.mysql.connection.cursor()
+        query = "SELECT izena FROM Droneak WHERE idDroneak = {}".format(droneID)
+        cur.execute(query)
+        results = cur.fetchall()
+        cur.close()
+        return results
+
     @multimethod
     def get_drone_jabe(self:object, id_dron: int):
 
@@ -347,121 +366,23 @@ class output():
     # ===============================================================================================
     # ALDAKETAK: DRONEEN INFORMAZIO GUZTIA BATERA EMAN BEHAR DA
     
-    def __getDroneType(self, droneID):
-        # Returns an array where the first element is a string that carries the drone type
-        cur = self.mysql.connection.cursor()
-        query = "SELECT Mota FROM Droneak WHERE idDroneak = {}".format(droneID)
-        cur.execute(query)
-        results = cur.fetchall()
-        cur.close()
-        return results
-    
-    def __getDroneName(self, droneID):
-        # Returns an array where the first element is a string that carries the drone name
-        cur = self.mysql.connection.cursor()
-        query = "SELECT izena FROM Droneak WHERE idDroneak = {}".format(droneID)
-        cur.execute(query)
-        results = cur.fetchall()
-        cur.close()
-        return results
-    
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_latitudes(self, droneID, dir):
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT Latitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
-        cur.execute(query,(droneID,dir))
-        lats = cur.fetchall()
-        cur.close()
-        return lats
-    
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_longitudes(self, droneID, dir):
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s ")
-        cur.execute(query,(droneID,dir))
-        lons = cur.fetchall()
-        cur.close()
-        return lons
-    
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_altitudes(self, droneID, dir):
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT Altitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
-        cur.execute(query,(droneID,dir))
-        alts = cur.fetchall()
-        cur.close()
-        return alts
-    
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_timestamps(self, droneID, dir):
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT Timestamp FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s " )
-        cur.execute(query,(droneID,dir))
-        times = cur.fetchall()
-        cur.close()
-        return times
-    
-    # ===============================================================================================
-    # ALDAKETAK: POSIZIOEN INFORMAZIO GUZTIA BATERA EMAN BEHAR DA
-    # - Bi funtzio sortuko dira:
-    #   - Benetako GPS informazioaren berri ematen duena (Lat, Lng, Alt, Hdg)
-    #   - Waypointen berri ematen duena (Lat, Lng, Alt)
+    def get_gps_full(self, drone):
 
-    def get_locations_full(self, drone):
+        ## GPS datuak osotasunean lortzeko, drone baterako
+        # INPUT: Drone objektu bat
+        # OUTPUT: gpspoint objektuen array bat
+
         cur = self.mysql.connection.cursor()
-        query = "SELECT Latitude, Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s"
-        cur.execute(query,(drone.drone_id))
-        results = cur.fetchall()
+        query = ("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s")
+        cur.execute(query,(drone.drone_id,))
+        gps_raw = cur.fetchall()
         cur.close()
-        return results
-
-
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def getRealLocations(self, droneID):
-        # Returns an array of coordinates
-        cur = self.mysql.connection.cursor()
-        query = "SELECT Latitude, Longitude FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s"
-        cur.execute(query,(droneID, "DOW"))
-        results = cur.fetchall()
-        cur.close()
-        return results
-    
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def getRealHeadings(self, droneID):
-        # Returns an array of floats
-        cur = self.mysql.connection.cursor()
-        query = "SELECT Heading FROM GPS_kokapena WHERE Droneak_idDroneak = %s AND Noranzkoa = %s"
-        cur.execute(query,(droneID, "DOW"))
-        results = cur.fetchall()
-        cur.close()
-        
-        cleanresults = []
-        for heading in results:
-            cleanresults.append(heading[0])
-
-        return cleanresults
-
-    # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
-    def get_waypoints(self, droneID, dir):
-        lats = self.get_latitudes(droneID, dir)
-        lons = self.get_longitudes(droneID, dir)
-        waypoints = []
-        if len(lats) == len(lons):
-            for i in range(len(lats)):
-                waypoints.append([lats[i][0], lons[i][0]])
-        return waypoints
-    
-    # ABSOLUTE DOGSHIT - THIS SHOULD BE THE ONLY FUNCTION HERE
-    def get_waypoints_full(self, droneID, dir):
-        lats = self.get_latitudes(droneID, dir)
-        lons = self.get_longitudes(droneID, dir)
-        alts = self.get_altitudes(droneID, dir)
-        times = self.get_timestamps(droneID, dir)
-        waypoints = []
-        if len(lats) == len(lons):
-            for i in range(len(lats)):
-                waypoints.append([lats[i][0], lons[i][0], alts[i][0], times[i][0]])
-        return waypoints
+        gpsProfiles = []
+        print("GPS RAW POINT:")
+        print(gps_raw)
+        for gps_raw_point in gps_raw:
+            gpsProfiles.append(gpspoint(gps_raw_point))
+        return(gpsProfiles)
 
     # ABSOLUTE DOGSHIT - SHOULD BE MANAGED IN CONTROLLER
     def get_next_waypoint(self, droneID):

@@ -211,7 +211,7 @@ def get_coords():
 def debug_show():
     erab = dboutput.get_erab_full(5)
     drone = dboutput.get_drone_full(4)
-    return render_template("debugShowVar.html",var=dboutput.get_partekatze_full_erabiltzaileArabera(erab))
+    return render_template("debugShowVar.html",var=dboutput.get_gps_full(drone))
 
 
 

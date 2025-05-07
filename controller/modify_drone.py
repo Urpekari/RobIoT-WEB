@@ -54,8 +54,6 @@ def modify_drone(drone, dbinput, dboutput):
     print(partekatu_erab)
     partekatuak = []
     for erabId in partekatu_erab:
-            print("Erabiltzaile IDa")
-            print(erabId)
             partekatuak = (dboutput.get_partekatze_full_droneArabera(drone))
     sents_in = drone.drone_sentsoreak
 
@@ -67,26 +65,31 @@ def modify_drone(drone, dbinput, dboutput):
         baimenak=[]
         error=None
         sentsoreak = []
+
+        # "Sentsore gehitu" botoia
         if bot == '2':
             sentsoreak = dboutput.get_sentsore_guztiak()
+
+        # "Partekatu" botoia
         elif bot == '3':
             baimen_info=dboutput.get_baimen_posible_zerrenda()
             for row in baimen_info:
                 for baimen in row:
                     if baimen not in ["Admin","Jabea"]:
                         baimenak.append(baimen)
+
+        
         elif bot == '4':
             izena = request.form.get('izen')
             mota = request.form.get('mota')
             deskribapena = request.form.get('deskribapena')
             dbinput.update_Droneak(izena,mota,deskribapena,drone.drone_id)
 
+        # Sentsore berriak sartzeko "Sartu" botoia
         elif bot == '5':
             sens = request.form.getlist("sentsorea")
             print("SENS: SENS:")
             print(sens)
-            #sentsoreak = dboutput.get_sentsore_guztiak()
-            #for element in sentsoreak:
 
             for sentsore in sens:
                 dbinput.insert_Drone_Sentsore(None,drone.drone_id, int(sentsore))
