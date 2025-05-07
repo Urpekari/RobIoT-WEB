@@ -25,7 +25,7 @@
         <table>
             <tr><th>Izena</th><th>Baimena</th></tr>
             {%for row in partekatuak%}
-                <tr><td>{{row[0]}}</td><td>{{row[1]}}</td></tr>
+                <tr><td>{{row.partekatze_erab.erab_izen}}</td><td>{{row.partekatze_mota}}</td></tr>
             {%endfor%}
         </table>
         <h2 class="izenburu">Instalutako sentsoreak:</h2>
@@ -99,7 +99,7 @@
                 <table>
                     <tr><th>Aukeratu</th><th>Sentsorea</th><th>Mota</th><th>Deskribapena</th></tr>
                     {%for element in sentsoreak%}
-                        <tr><td><input type="checkbox" id="{{element[0]}}" name="{{element[0]}}" value="{{element[0]}}"></td>
+                        <tr><td><input type="checkbox" id="{{element.sents_id}}" name="sentsorea" value="{{element.sents_id}}"></td>
                         <td>{{element.sents_izen}}</td><td>{{element.sents_mota}}</td><td>{{element.sents_desk}}</td></tr>
                     {%endfor%}
                 </table>

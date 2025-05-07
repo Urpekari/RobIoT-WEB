@@ -1,5 +1,6 @@
 import re
 from datetime import *
+import numpy as np
 
 from flask import *
 from flask_mysqldb import MySQL
@@ -43,12 +44,19 @@ def modify_drone(drone, dbinput, dboutput):
     print(" JABEA HAU DA:", end="")
     print(jabe.erab_id)
 
-    partekatu_erab = dboutput.get_drone_erab(drone.drone_id)
+    partekatu_erab = []
+    for kontrol in drone.drone_kontroladoreak:
+        partekatu_erab.append(kontrol)
+        
+    for ikus in drone.drone_ikusleak:
+        partekatu_erab.append(ikus)
+
+    print(partekatu_erab)
     partekatuak = []
-    for erab in partekatu_erab:
-        if not erab[-1] == "Jabea":
-            izen=dboutput.get_erab_izen(erab[1])
-            partekatuak.append([izen,erab[-1]])
+    for erabId in partekatu_erab:
+            print("Erabiltzaile IDa")
+            print(erabId)
+            partekatuak = (dboutput.get_partekatze_full_droneArabera(drone))
     sents_in = drone.drone_sentsoreak
 
     if request.method == "GET":
@@ -60,9 +68,9 @@ def modify_drone(drone, dbinput, dboutput):
         error=None
         sentsoreak = []
         if bot == '2':
-            sentsoreak = sents_in
+            sentsoreak = dboutput.get_sentsore_guztiak()
         elif bot == '3':
-            baimen_info=dboutput.get_info(tables.Baimenak)
+            baimen_info=dboutput.get_baimen_posible_zerrenda()
             for row in baimen_info:
                 for baimen in row:
                     if baimen not in ["Admin","Jabea"]:
@@ -74,28 +82,26 @@ def modify_drone(drone, dbinput, dboutput):
             dbinput.update_Droneak(izena,mota,deskribapena,drone.drone_id)
 
         elif bot == '5':
-            sentsoreak = dboutput.get_info(tables.Sentsoreak)
-            for element in sentsoreak:
-                sens = request.form.get(str(element[0]))
-                if sens:
-                    dbinput.insert_Drone_Sentsore(None,drone.drone_id,int(sens))
-            sents_id = drone.drone_sentsoreak
-            sents_in = []
-            for id in sents_id:
-                sens_info = dboutput.get_sentsore_info(id[-1])
-                sents_in.append(sens_info)
+            sens = request.form.getlist("sentsorea")
+            print("SENS: SENS:")
+            print(sens)
+            #sentsoreak = dboutput.get_sentsore_guztiak()
+            #for element in sentsoreak:
+
+            for sentsore in sens:
+                dbinput.insert_Drone_Sentsore(None,drone.drone_id, int(sentsore))
+            sents_in = drone.drone_sentsoreak
+        
         elif bot == '6':
             partekatu_erab = request.form.get('partekatu_erab')
             baimena = request.form.get('baimena')
-            id_erab=dboutput.get_erab_full(partekatu_erab)
-            if id_erab:
-                dbinput.insert_Partekatzeak(id_erab,drone,baimena)
+            erab=dboutput.get_erab_full(partekatu_erab)
+            if erab:
+                dbinput.insert_Partekatzeak(erab,drone,baimena)
+                partekatuak = (dboutput.get_partekatze_full_droneArabera(drone))
             else:
                 error="Ez da erabiltzaile hori existitzen"
-            partekatu_erab = dboutput.get_drone_erab(drone.drone_id)
-            partekatuak = []
-            for erab in partekatu_erab:
-                if not erab[-1] == "Jabea":
-                    izen=dboutput.get_erab_izen(erab[1])
-                    partekatuak.append([izen,erab[-1]])
-    return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe.erab_izen, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)
+            
+        drone = dboutput.get_drone_full(drone.drone_id)
+
+    return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe.erab_izen, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=drone.drone_sentsoreak)

@@ -13,6 +13,8 @@ from controller.insert_path import *
 from controller.utils import *
 from controller.modify_drone import *
 
+from model.dronea import dronea
+
 from model import *
 
 from view.mapPage import *
@@ -99,8 +101,8 @@ def control():
             erab = dboutput.get_erab_full(session['erabiltzailea'])
             droneak=dboutput.get_erab_drone_list(erab)
             droneen_izenak = []
-            for dronea in droneak:
-                droneen_izenak.append(dronea.drone_izen)
+            for drone in droneak:
+                droneen_izenak.append(drone.drone_izen)
             
             droneID=selected_drone.drone_id
                     
@@ -113,7 +115,7 @@ def control():
                 ikusi=1
             else:
                 ikusi=0
-            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=dronea.drone_izen, droneID=droneID, droneak=droneak, ikusi=ikusi)
+            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=selected_drone.drone_izen, droneID=droneID, droneak=droneak, ikusi=ikusi)
     except KeyError as e:
         return redirect(url_for('index'))
     
@@ -136,6 +138,7 @@ def drone_erregistratu():
             
             dbinput.insert_Droneak(izenaDrone, mota, deskribapena)
             erab = dboutput.get_erab_full(session['erabiltzailea'])
+            drone = dronea([None, izenaDrone, mota, deskribapena], [], erab, [], [])
             dbinput.insert_Partekatzeak(erab,drone,"Jabea")
             drone = dboutput.get_drone_full(izenaDrone[0])
             
@@ -205,8 +208,9 @@ def get_coords():
 
 @app.route("/debug", methods=['GET', 'POST'])
 def debug_show():
-    erab = dboutput.get_erab_full(2)
-    return render_template("debugShowVar.html",var=dboutput.get_drone_full(7).drone_kontroladoreak)
+    erab = dboutput.get_erab_full(5)
+    drone = dboutput.get_drone_full(4)
+    return render_template("debugShowVar.html",var=dboutput.get_partekatze_full_erabiltzaileArabera(erab))
 
 
 

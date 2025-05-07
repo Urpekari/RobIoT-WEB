@@ -10,8 +10,9 @@ class dronea():
     drone_sentsoreak = []
     drone_jabea = None
     drone_kontroladoreak = []
+    drone_ikusleak = []
 
-    def __init__(self, droneDatuArray, droneSentsoreArray, jabea, kontroladoreak):
+    def __init__(self, droneDatuArray, droneSentsoreArray, jabea, kontroladoreak, ikusleak):
         self.drone_id = droneDatuArray[0]
         self.drone_izen = droneDatuArray[1]
         self.drone_mota = droneDatuArray[2]
@@ -19,6 +20,7 @@ class dronea():
         self.drone_sentsoreak = droneSentsoreArray
         self.drone_jabea = jabea
         self.drone_kontroladoreak = kontroladoreak
+        self.drone_ikusleak = ikusleak
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__)
