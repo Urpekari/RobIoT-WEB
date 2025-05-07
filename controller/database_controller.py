@@ -2,7 +2,6 @@ import other.banned_areas as bans
 from multimethod import *
 from app import *
 
-
 from model.erabiltzailea import erabiltzailea
 from model.partekatzea import partekatzea
 from model.sentsorea import sentsorea
@@ -44,7 +43,7 @@ class output():
         return True if usuario else False
     
     def get_erab_drone_list(self, erab):
-        baimenak=self.get_erab_baimen(erab)
+        baimenak=self.__get_erab_baimen(erab)
         #baimen_drone_id = []
         droneak = []
         for baimena in baimenak:
@@ -52,22 +51,6 @@ class output():
             print(baimena[2])
             #baimen_drone_id.append(baimena[2])
             droneak.append(self.get_drone_full(baimena[2]))
-       
-
-        # for pos,id in enumerate(id_drone):
-        #     print(type(id))
-        #     drone=self.get_drone_full(id)
-
-        #     if not drone.drone_jabe.erab_id==erab.erab_id:
-        #         drone_izen_erakusgarria=drone.drone_izen+"_"+drone.drone_jabe.erab_izen
-        #         if baimen[pos] == "Kontrolatu":
-        #             drone_izen_erakusgarria=drone.drone_izen + " Kontrolatu"
-        #         elif baimen[pos] == "Ikusi":
-        #             drone_izen_erakusgarria=drone.drone_izen + " Ikusi"
-        #     else:
-        #         drone_izen_erakusgarria = drone.drone_izen
-
-        #     droneak.append(drone_izen_erakusgarria)
         
         return droneak
     
@@ -103,7 +86,7 @@ class output():
             userprofile = erabiltzailea(user)
         return userprofile if userprofile else None
     
-    def get_erab_baimen(self, erab):
+    def __get_erab_baimen(self, erab):
         cur = self.mysql.connection.cursor()
         print(erab.erab_izen)
         print(erab.erab_id)
@@ -112,20 +95,12 @@ class output():
         cur.close()
         return baimenak
     
-    def get_drone_baimen(self, drone):
+    def __get_drone_baimen(self, drone):
         cur = self.mysql.connection.cursor()
         cur.execute("SELECT * FROM Partekatzeak WHERE idDroneak = %s", (drone.drone_id, ))
         baimenak = cur.fetchall() 
         cur.close()
         return baimenak
-
-    # Hau non erabiltzen den bilatu eta kendu
-    # def get_erab_izen(self,id_erab):
-    #     cur = self.mysql.connection.cursor()
-    #     cur.execute("SELECT Izen FROM Erabiltzaileak WHERE idErabiltzaileak = %s", (id_erab,))
-    #     erab_izen = cur.fetchone() 
-    #     cur.close()
-    #     return erab_izen[0]
     
     # Hau non erabiltzen den bilatu eta kendu
     def get_erab_droneak(self,id_erab):
@@ -239,7 +214,7 @@ class output():
     @multimethod
     def get_drone_jabe(self:object, id_dron: int):
 
-        ## Drone baten jabea lortzekoQ
+        ## Drone baten jabea lortzeko
         #  INPUT:  Dronearen ID-a
         #  OUTPUT: Erabiltzaile objektu bat, jabearen informazioarekin
 
@@ -247,8 +222,11 @@ class output():
         cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
         jabe_dron = cur.fetchone()
         cur.close()
-        return self.get_erab_full(jabe_dron[0])
-    
+        if jabe_dron:
+            return self.get_erab_full(jabe_dron[0])
+        else:
+            return None
+
     @multimethod
     def get_drone_jabe(self:object, drone: object):
 
@@ -586,7 +564,7 @@ class input():
         print("Dronea:")
         print(dronea.drone_izen)
         cur = self.mysql.connection.cursor()
-        query = "INSERT INTO `Partekatzeak` (Erabiltzaileak_idErabiltzaileak,Droneak_idDroneak, Baimenak_idBaimenak) VALUES(%s, %s, %s);"
+        query = "INSERT INTO Partekatzeak (Erabiltzaileak_idErabiltzaileak,Droneak_idDroneak,Baimenak_idBaimenak) VALUES (%s,%s,%s)"
         print(query)
         cur.execute(query,(erabiltzailea.erab_id, dronea.drone_id, baimena))
         self.mysql.connection.commit()

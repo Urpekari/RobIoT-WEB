@@ -132,15 +132,16 @@ def drone_erregistratu():
             return render_template('insert_drone.html')
         elif request.method == 'POST':
             izenaDrone = request.form.get('izenaDrone')
-            print(izenaDrone)
             mota = request.form.get('mota')
             deskribapena = request.form.get('deskribapena')
             
             dbinput.insert_Droneak(izenaDrone, mota, deskribapena)
             erab = dboutput.get_erab_full(session['erabiltzailea'])
-            drone = dronea([None, izenaDrone, mota, deskribapena], [], erab, [], [])
+            print("IZENADRONE")
+            print(izenaDrone)
+            drone = dboutput.get_drone_full(izenaDrone)
             dbinput.insert_Partekatzeak(erab,drone,"Jabea")
-            drone = dboutput.get_drone_full(izenaDrone[0])
+            
             
             
             return redirect(url_for('control'))
