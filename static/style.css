@@ -102,24 +102,27 @@ button:hover {
 
 .informazioaren-taula{
     font-family: EHUSans;
-    height: 50%;
+    height: 57%;
     width: 30%;
     right: 0;
     top: 0;
     position: fixed;
     background-color: #1c1c1c;
     padding: 10px;
+    padding-top: 0px;
+    overflow: auto;
 }
 
 .dronen-taula{
     font-family: EHUSans;
-    height: 50%;
+    height: 43%;
     width: 30%;
     right: 0;
     bottom: 0;
     position: fixed;
     background-color: #1c1c1c;
     padding: 10px;
+    padding-top: 0px;
 }
 
 table,th,td{
@@ -142,10 +145,10 @@ table,th,td{
     padding: 0;
     background: inherit;
     font: inherit;
-
+    width: 100%;
+    
     cursor: pointer;
-    text-decoration: underline;
-    color: blue;
+    color: white;
 
     overflow: visible;
 }

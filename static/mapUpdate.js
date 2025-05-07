@@ -66,6 +66,7 @@ function extractCoords(coordsJSON){
     //console.log(data.lng)
     document.getElementById("liveLat").innerHTML = data.GPSPos.lat
     document.getElementById("liveLng").innerHTML = data.GPSPos.lng
+    document.getElementById("livetime").innerHTML = data.GPSPos.cur
     
     document.getElementById("nextWPlat").innerHTML = data.NextWaypoint.lat
     document.getElementById("nextWPlng").innerHTML = data.NextWaypoint.lng

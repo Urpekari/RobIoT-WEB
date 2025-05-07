@@ -119,11 +119,12 @@ def control():
     except KeyError as e:
         return redirect(url_for('index'))
     
+
 @app.route("/insert_path/<droneIzen>", methods=['GET','POST'])
 def insert_path(droneIzen):
     drone = dboutput.get_drone_full(droneIzen)
-
     return(insertPath.insertWaypoints(drone))
+
 
 @app.route('/insert-drone', methods=['GET','POST'])
 def drone_erregistratu():
@@ -183,7 +184,7 @@ def gw_insert(gwid):
     waypoint = dboutput.get_next_waypoint(content['robiotId'])
 
     if len(waypoint) > 0:
-        print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
+        #print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
         reply = {
             "gwid":gwid,
             "robiotId" : content['robiotId'],
@@ -240,6 +241,7 @@ def getLivePos():
         'GPSPos':{
             'lat': dronePos[-1].get_gps_lat(),
             'lng': dronePos[-1].get_gps_lng()
+            'cur': dronePos[-1].get_gps_timestamp()
         },
         'NextWaypoint':{
             'lat': nextWP.get_gps_lat(),
