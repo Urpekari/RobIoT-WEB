@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>Root</title>
+
+    <p hidden id="droneID">{{droneID}}</p><!-- droneID elementu ID hau ez kendu! javascriptek behar du!-->
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -32,14 +34,17 @@
   
 </head>
 <body>
-    <div id="map">    
+    <div>
+      <div id="map" style="z-index: 0;">
+
+      </div> 
     </div>
     <div class="mezuen-taula">
         <h2 class="izenburu">Azken mezu esanguratsuak:</h2>
         <table style="width: 100%;">
             <thead>
                 <th>Timestamp</th>
-                <th>Dronea</th>
+                <th id="JSTEST">Dronea</th>
                 <th>Noranzkoa</th>
                 <th>Mezua</th>
             </thead>
@@ -57,7 +62,6 @@
     <div class="informazioaren-taula">
         {%if ikusi%}
             <h1>Ikusten: {{dronea}}:</h1>
-            <p hidden id="droneID">{{droneID}}</p><!-- droneID elementu ID hau ez kendu! javascriptek behar du!-->
             <table>
                 <thead>
                     <tr>

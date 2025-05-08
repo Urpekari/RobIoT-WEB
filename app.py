@@ -118,7 +118,6 @@ def control():
             return render_template("control.html", header=header, body_html=body_html, script=script, dronea=selected_drone.drone_izen, droneID=droneID, droneak=droneak, ikusi=ikusi)
     except KeyError as e:
         return redirect(url_for('index'))
-    
 
 @app.route("/insert_path/<droneIzen>", methods=['GET','POST'])
 def insert_path(droneIzen):
@@ -214,9 +213,18 @@ def debug_show():
     drone = dboutput.get_drone_full(4)
     return render_template("debugShowVar.html",var=dboutput.get_gps_full(drone))
 
+@app.route("/getPastData", methods=['POST'])
+def get_past_pos():
+    data = request.get_json()
+    droneID = data['droneID']
+    drone = dboutput.get_drone_full(int(droneID))
+    gpsData = dboutput.get_gps_full(drone)
+    dronePos = __filterPositionLogs(gpsData)
+    print(dronePos.toJSON())
+
 # API FOR LIVE UPDATES
 @app.route("/getLiveData", methods=['POST'])
-def getLivePos():   
+def get_live_pos():   
     data = request.get_json()
     droneID = data['droneID']
 

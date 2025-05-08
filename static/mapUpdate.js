@@ -22,8 +22,6 @@ catch(err){
     selectedDroneID = -1;
 }
 
-//getAllPastData()
-
 if (selectedDroneID > 0){
     autoUpdater(selectedDroneID);
 }
@@ -31,7 +29,7 @@ if (selectedDroneID > 0){
 //console.log(selectedDroneID)
 
 
-var map = L.map('map').setView([43.262361, -2.949067], 15);
+var map = L.map('map').setView([parseFloat("43.262361"), parseFloat("-2.949067")], 15);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -44,7 +42,6 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 var apiWorking = 0;
 function autoUpdater(droneJSON){
-    //console.log(droneJSON)
     var refreshMap = setInterval(
         function(){
             getEpicThing();
@@ -59,7 +56,7 @@ function autoUpdater(droneJSON){
 async function getEpicThing(){
     let url = 'http://localhost:5000/getLiveData';
 
-    console.log(JSON.stringify({droneID : selectedDroneID}))
+    //console.log(JSON.stringify({droneID : selectedDroneID}))
     try{
         await fetch(url, {
             method: 'POST',
@@ -84,37 +81,28 @@ function extractLiveCoords(coordsJSON){
     //console.log(coordsJSON)
     var data = JSON.parse(coordsJSON)
     
-    //console.log(data.lat)
-    //console.log(data.lng)
+    //map.removeLayer(marker)
 
-    //console.log(parseFloat(liveLat))
     var marker;
-    if(pastPositions[pastPositions.length] !=  [data.GPSPos.lat, data.GPSPos.lng]){
-        pastPositions.push([data.GPSPos.lat, data.GPSPos.lng])
-        if (prevPosition != null){
-            
-            prevPosition = [parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)];
-            console.log(prevPosition)
-            console.log([parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)])
-        }
-        else{
-            console.log(prevPosition)
-            console.log([parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)])
-            var line = map.polyline([prevPosition, [parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)]]).addTo(map);
-           
-            if(marker != null){
-                marker.setLatLng(new map.LatLng(arseFloat(data.GPSPos.lat), arseFloat(data.GPSPos.lng))).addTo(map); 
-            }
-            else{
-                marker = map.marker([parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)]).addTo(map);
-            }
-            
-            
-            prevPosition = [parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)];
-        }
+    if(pastPositions[pastPositions.length -1] !=  [parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)]){
+
+        console.log("These are definitely different:")
+        console.log(pastPositions[pastPositions.length - 1])
+        console.log([parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)])
+        document.getElementById("JSTEST").innerHTML = pastPositions
+
+        currentPosition = [parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)]
+        pastPositions.push(currentPosition)
+
+        prevPosition = pastPositions[-2]
+        console.log("Previous Position:")
+        console.log(prevPosition)
+        console.log("Current Position:")
+        console.log(currentPosition)
         
-        
-        map.panTo([parseFloat(data.GPSPos.lat), parseFloat(data.GPSPos.lng)], 10);
+        L.marker(currentPosition).addTo(map)
+
+        map.panTo(currentPosition, 10);
     }
 
     document.getElementById("liveLat").innerHTML = data.GPSPos.lat
@@ -134,38 +122,6 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-
-/*async function getAllPastData(){
-    let url = 'http://localhost:5000/getAllData';
-
-    console.log(JSON.stringify({droneID : selectedDroneID}))
-    try{
-        await fetch(url, {
-            method: 'POST',
-            headers:{
-                'Content-Type':'application/json;charset=utf-8'
-            },
-            body: JSON.stringify({droneID : selectedDroneID})
-        })
-        .then(res => res.json())
-        .then(obj => extractAllCoords(JSON.stringify(obj)))
-        apiWorking = 0;
-    }
-    catch(err){
-        console.log("pum")
-        console.log(err.message)
-        apiWorking = -1;
-    }
-}
-
- function extractAllCoords(coordsJSON){
-    //console.log(coordsJSON)
-    var data = JSON.parse(coordsJSON)
-    
-    console.log(data);
-
-    //console.log(parseFloat(liveLat))
-
+function getAllPastData(droneID){
 
 }
-    */
