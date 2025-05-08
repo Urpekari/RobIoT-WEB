@@ -172,11 +172,11 @@ def insert_sensor():
 def gw_insert(gwid):
     content = request.get_json()
 
-    print("CONTENT")
-    print(content)
+    # print("CONTENT")
+    # print(content)
 
     date = datetime.now()
-    print(date)
+    # print(date)
     time_parsed = date #.strftime("%y-%m-%d %H:%M:%S.%f")
 
     dbinput.insert_GPS_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], content['hdg'], time_parsed, "DOW")
@@ -204,8 +204,8 @@ def get_coords():
     data = request.get_json()
     lat = data['lat']
     lng = data['lng']
-    print(lat)
-    print(lng)
+    # print(lat)
+    # print(lng)
     return jsonify({'lat': lat, 'lng': lng})
 
 @app.route("/debug", methods=['GET', 'POST'])
@@ -257,6 +257,7 @@ def getLivePos():
 
         })
 
+
 ## PROBAK EGITEKO ETA MISZELANEOAK ========================================================
 @app.route("/database", methods=['GET','POST'])
 def database_show():
@@ -296,6 +297,7 @@ def __filterPositionLogs(rawGpsData):
         if gpsPoint.gps_way == False:
             posLog.append(gpsPoint)
     return posLog
+
 
 #@app.route("/database/dowload")
 #def download_csv():
