@@ -13,7 +13,7 @@
             alert("{{error}}")
         </script>
     {% endif %}
-    <div class="login-container">
+    <div class="login-container" style=" z-index: 5;">
         <h2>Sortu kontua:</h2>
         <form action="/sign-up" method="post">
             <input type="text" id="izena" name="izena" placeholder="Izena" required>
@@ -29,7 +29,7 @@
     </div>
 
     <!-- HAU TEMPLATEEKIN EGITEA KOMENIGARRIA LITEKE!-->
-    <div class="footer">
+    <div class="footer" style=" z-index: 1;">
         <table class="footer" style="table-layout: fixed; border:none;" >
             <tr>
                 <td style="text-align:left;  border:none; margin-left: 10px;">

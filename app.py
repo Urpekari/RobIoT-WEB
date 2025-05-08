@@ -154,7 +154,7 @@ def modify_drone_page(drone):
     droneData = dboutput.get_drone_full(drone)
     return (modify_drone(droneData, dbinput, dboutput))
     
-@app.route('/insert_sensor', methods=['GET','POST'])
+@app.route('/insert-sensor', methods=['GET','POST'])
 def insert_sensor():
     if request.method == 'GET':
         return render_template('insert_sensor.html',error=None)
