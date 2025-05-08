@@ -4,6 +4,8 @@ from folium import plugins
 from folium import JsCode
 from folium.plugins import Realtime
 
+import multimethod
+
 #from view.droneViewer import *
 from controller.database_controller import *
 import app
@@ -12,19 +14,53 @@ class mapPage():
 
     realPath = []
     pastWaypoints = []
-    droneName = ""
-    droneType = ""
-    droneID = 1
+    drone = None
+
+    # TODO: CONTROLLER-EAN SARTU
+    # GPS balio guztien artean waypoint-ak soilik hartzeko
+    def __filterWaypoints(self:object, rawGpsData:list, isPastWP:bool):
+        waypoints = []
+        for gpsPoint in rawGpsData:
+            if gpsPoint.gps_way == True and gpsPoint.gps_past == isPastWP:
+                waypoints.append(gpsPoint)
+        return waypoints
+    
+    # TODO: CONTROLLER-EAN SARTU
+    # GPS balioetatik koordenatuak lortzeko, zerrenda luze baten
+    def __filterSimplePath(self, rawGpsData):
+        waypoints = []
+        for gpsPoint in rawGpsData:
+            waypoints.append(gpsPoint.get_gps_coords())
+        print(waypoints)
+        return waypoints
+
+    # TODO: CONTROLLER-EAN SARTU
+    # GPS balio guztien artean dronearen benetako posizioak soilik hartzeko
+    def __filterPositionLogs(self, rawGpsData):
+        posLog = []
+        for gpsPoint in rawGpsData:
+            if gpsPoint.gps_way == False:
+                posLog.append(gpsPoint)
+        return posLog
 
     def __init__(self, dboutput, droneID):
         dbOutput=dboutput
-        self.droneID = droneID
-        self.realPath = dbOutput.getRealLocations(droneID)
-        self.realHeadings = dbOutput.getRealHeadings(droneID)
-        self.droneName = dbOutput.getDroneName(droneID)[0][0]
-        self.droneType = dbOutput.getDroneType(droneID)[0][0]
-        self.pastWaypoints = dbOutput.get_waypoint_past(droneID)
-        self.nextWaypoints = dbOutput.get_waypoint_future(droneID)
+        self.drone = dbOutput.get_drone_full(droneID)
+        self.droneID = self.drone.drone_id
+        self.droneName = self.drone.drone_izen
+        self.droneType = self.drone.drone_mota
+        
+        self.gpsData = dbOutput.get_gps_full(self.drone)
+
+        self.realPath = self.__filterPositionLogs(self.gpsData)
+        self.simplePath = self.__filterSimplePath(self.realPath)
+
+        self.pastWaypoints = self.__filterWaypoints(self.gpsData, isPastWP=True)
+        self.simplePastWaypoints = self.__filterSimplePath(self.pastWaypoints)
+
+        self.nextWaypoints = self.__filterWaypoints(self.gpsData, isPastWP=False)
+        self.simpleNextWaypoints = self.__filterSimplePath(self.nextWaypoints)
+
         self.bannedAreas = dbOutput.get_banned_areas(self.droneType)
         self.restrictedAreas = dbOutput.get_restricted_areas(self.droneType)
 
@@ -34,17 +70,17 @@ class mapPage():
             # Hasierako waypoint-a
             folium.Marker(
                 location=self.pastWaypoints[0],
-                tooltip="Home point: {}".format(self.pastWaypoints[0]),
-                popup="Home at {} for {}".format(self.pastWaypoints[0], self.droneName),
+                tooltip="Home point: {}".format(self.pastWaypoints[0].get_gps_coords()),
+                popup="Home at {} for {}".format(self.pastWaypoints[0].get_gps_coords(), self.droneName),
                 icon=folium.Icon(color='black', icon_color='#FFB60C',prefix="fa", icon="house")
             ).add_to(pastWPs)
             
             # Pasatutako tarteko waypointak
             for wp in self.pastWaypoints[1:]:
                 folium.Marker(
-                    location=wp,
-                    tooltip="Past waypoint: {}".format(wp),
-                    popup="Waypoint at {} past by {}".format(wp, self.droneName),
+                    location=wp.get_gps_coords(),
+                    tooltip="Past waypoint: {}".format(wp.get_gps_coords()),
+                    popup="Waypoint at {} past by {}".format(wp.get_gps_coords(), self.droneName),
                     icon=folium.Icon(color='orange', icon_color='#1c1c1c',prefix="fa", icon="flag")
                 ).add_to(pastWPs)
 
@@ -53,9 +89,9 @@ class mapPage():
             if len(self.nextWaypoints) >= 1:
                 for wp in self.nextWaypoints[1:-1]:
                     folium.Marker(
-                        location=wp,
-                        tooltip="Waypoint: {}".format(wp),
-                        popup="Waypoint at {} for {}".format(wp, self.droneName),
+                        location=wp.get_gps_coords(),
+                        tooltip="Waypoint: {}".format(wp.get_gps_coords()),
+                        popup="Waypoint at {} for {}".format(wp.get_gps_coords(), self.droneName),
                         icon=folium.Icon(color='purple', icon_color='#1c1c1c',prefix="fa", icon="compass")
                     ).add_to(futureWPs)
 
@@ -64,23 +100,23 @@ class mapPage():
                 #print(len(self.realPath))
                 
                 if len(self.realPath) > 0:
-                    remainingPath = [self.realPath[-1]] + self.nextWaypoints[:]
+                    remainingPath = [self.simplePath[-1]] + self.simpleNextWaypoints[:]
                 else:
-                    remainingPath = self.nextWaypoints[:]
+                    remainingPath = self.simpleNextWaypoints[:]
 
                 folium.PolyLine(remainingPath, tooltip="Path to be followed {}".format(self.droneName), color='#DC267F', opacity=0.6, dash_array=10).add_to(futureLine)
 
             folium.Marker(
-                location=self.nextWaypoints[0],
-                tooltip="Current target point: {}".format(self.nextWaypoints[0]),
-                popup="Next waypoint for {} at {}".format(self.droneName, self.nextWaypoints[0]),
+                location=self.nextWaypoints[0].get_gps_coords(),
+                tooltip="Current target point: {}".format(self.nextWaypoints[0].get_gps_coords()),
+                popup="Next waypoint for {} at {}".format(self.droneName, self.nextWaypoints[0].get_gps_coords()),
                 icon=folium.Icon(color='darkpurple', icon_color='#FcFcFc',prefix="fa", icon="compass")
             ).add_to(futureWPs)
 
             folium.Marker(
-                location=self.nextWaypoints[-1],
-                tooltip="Goal point: {}".format(self.nextWaypoints[-1]),
-                popup="Goal at {} for {}".format(self.nextWaypoints[-1], self.droneName),
+                location=self.nextWaypoints[-1].get_gps_coords(),
+                tooltip="Goal point: {}".format(self.nextWaypoints[-1].get_gps_coords()),
+                popup="Goal at {} for {}".format(self.nextWaypoints[-1].get_gps_coords(), self.droneName),
                 icon=folium.Icon(color='black', icon_color='#DC267F',prefix="fa", icon="flag-checkered")
             ).add_to(futureWPs)
         
@@ -90,21 +126,21 @@ class mapPage():
 
     def ibilbideaMarkatu(self, m, realLine):
 
-        print(self.realHeadings[-1])
+        print(self.realPath[-1].get_gps_heading())
 
         folium.plugins.BoatMarker(
-            location=(self.realPath[-1]),
-            heading=self.realHeadings[-1],
+            location=(self.realPath[-1].get_gps_coords()),
+            heading=self.realPath[-1].get_gps_heading(),
             color="#FFB60C"
         ).add_to(m)
         
         folium.Marker(
-            location=self.realPath[-1],
+            location=self.realPath[-1].get_gps_coords(),
             tooltip="Latest",
-            popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1]),
+            popup="Latest known position for {} - {}".format(self.droneName, self.realPath[-1].get_gps_coords()),
             icon=folium.Icon(color='black', icon_color='#FFB60C', prefix="fa", icon=self.droneType.lower()),
         ).add_to(m)
-        folium.plugins.AntPath(self.realPath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C', dash_array=[30, 50]).add_to(realLine)
+        folium.plugins.AntPath(self.simplePath, tooltip="Path followed by {}".format(self.droneName), color='#FFB60C', dash_array=[30, 50]).add_to(realLine)
 
     def debekuakMarkatu(self, m):
 
@@ -154,7 +190,7 @@ class mapPage():
     def map(self):
 
         if len(self.realPath) > 0:
-            m = folium.Map((self.realPath[-1]), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap",
+            m = folium.Map((self.realPath[-1].get_gps_coords()), zoom_start=16) # "cartodb positron", "cartodb darkmatter", "openstreetmap",
             realLine = folium.FeatureGroup("Real followed path").add_to(m)
             self.ibilbideaMarkatu(m, realLine)
         else:

@@ -13,7 +13,7 @@
             alert("{{error}}")
         </script>
     {% endif %}
-    <div class="login-container">
+    <div class="login-container" style=" z-index: 5;">
         <h2>Sartu zure erabiltzaile eta pasahitza</h2>
         <form action="/login" method="post">
             <input type="text" id="erabiltzailea" name="erabiltzailea" placeholder="Erabiltzailea" required>
@@ -24,5 +24,30 @@
             <button type="submit">Sartu</button>
         </form>
     </div>
+
+    <!-- HAU TEMPLATEEKIN EGITEA KOMENIGARRIA LITEKE!-->
+     <div class="footer" style=" z-index: 1;">
+        <table class="footer" style="table-layout: fixed; border:none;" >
+            <tr>
+                <td style="text-align:left;  border:none; margin-left: 10px;">
+                    <a href="https://www.ehu.eus/">
+                        <img style="max-height: 6vh;" src="/static/media/EHU/EIB-EHU-Darkmode.png" alt="EHU-ko logotipoa">
+                    </a>
+                </td>
+                <td style="text-align: center;  border:none;">
+                    <a href="https://www.urpekari.eus/">
+                        <img style="max-height: 6vh;" src="/static/media/Urpekari/LogoBig-Darkmode.png" alt="Urpekari Proiektuko logotipoa">
+                    </a>
+                </td>
+                <td style="text-align: right;  border:none; margin-right: 10px;">
+                    0.7.5-beta rc-1
+                </td>
+            </tr>
+        </table>
+    </div>
+    </p>
+
+
+
 </body>
 </html>

@@ -11,6 +11,11 @@ import env
 from controller.database_controller import *
 from controller.insert_path import *
 from controller.utils import *
+from controller.modify_drone import *
+
+from model.dronea import dronea
+
+from model import *
 
 from view.mapPage import *
 from view.mapinit import *
@@ -43,7 +48,7 @@ def login():
         password = request.form['pasahitza']
         
         if dboutput.erabiltzailea_egiaztatu(username, password):    # Goiko datu-base funtzioa deitzen du
-            session['erabiltzailea'] = username                     # Erabiltzailea "session" baten gordetzen du, flask-ek kudeatzen du
+            session['erabiltzailea'] = dboutput.get_erab_full(username).erab_izen                   # Erabiltzailea "session" baten gordetzen du, flask-ek kudeatzen du
             return redirect(url_for('control'))                     # Hurrengo orrira bidaltzen du erabiltzailea
         else:
             return render_template('login.html',error = "Erabiltzaile edo pasahitz ezegokia")
@@ -60,61 +65,66 @@ def erregistratu():
         dokumentuak = request.form.get('dokumentuak')
 
         if dbinput.insert_Erabiltzaileak(izena, abizena, pasahitza, email, dokumentuak):
-            session['erabiltzailea'] = izena
+            session['erabiltzailea'] = dboutput.get_erab_full(izena).erab_izen
             return redirect(url_for('control'))
         else:
+            print("Oh cock")
             return render_template('sign_up.html',error="Jadanik existitzen da erabiltzaile bat izen horrekin.")
 
 @app.route("/control", methods=['GET','POST'])
 def control():
     try:
         if request.method == 'GET':
-            droneak,_=get_erab_drone_list(session['erabiltzailea'])
+            print("USERNAME EPIKOA:")
+            print(session['erabiltzailea'])
+
+            erab = dboutput.get_erab_full(session['erabiltzailea'])
+            droneak=dboutput.get_erab_drone_list(erab)
+
+            droneen_izenak = []
+            for dronea in droneak:
+                
+                if(dronea.drone_jabea.erab_id != erab.erab_id):
+                    droneen_izenak.append("{0}_{1}".format(dronea.drone_izen, dronea.drone_jabea.erab_izen))
+                else:
+                    droneen_izenak.append(dronea.drone_izen)
+
             header, body_html, script=mapInit.map_empty()
             return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
         elif request.method == 'POST':
-            drone_izena=request.form.get('drone_izena')
+            droneReq=int(request.form.get('droneReq'))
+            print("REQUESTED DRONE:",end="")
+            print(droneReq)
+            selected_drone = dboutput.get_drone_full(droneReq)
             ikusi=None
-            droneak,id=get_erab_drone_list(session['erabiltzailea'])
-            for pos,drone in enumerate(droneak):
-                if drone == drone_izena:
-                    droneID=id[pos]
+
+            erab = dboutput.get_erab_full(session['erabiltzailea'])
+            droneak=dboutput.get_erab_drone_list(erab)
+            droneen_izenak = []
+            for drone in droneak:
+                droneen_izenak.append(drone.drone_izen)
+            
+            droneID=selected_drone.drone_id
+                    
             page = mapPage(dboutput,droneID)
             header, body_html, script=page.map()
-            if not drone_izena[-6:] == "_ikusi":
+
+            if erab.erab_id in selected_drone.drone_kontroladoreak:
+                print(erab.erab_id)
+                print(selected_drone.drone_kontroladoreak)
                 ikusi=1
-            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=drone_izena, droneID=droneID, droneak=droneak, ikusi=ikusi)
+            else:
+                ikusi=0
+            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=selected_drone.drone_izen, droneID=droneID, droneak=droneak, ikusi=ikusi)
     except KeyError as e:
         return redirect(url_for('index'))
     
-def get_erab_drone_list(erab):
-    erab_id=dboutput.get_erab_id(erab)
-    id_drone,baimen=dboutput.get_erab_droneak(erab_id)
-    droneak=[]
-    for pos,id in enumerate(id_drone):
-        drone_info=dboutput.get_drone_info(id)
-        drone=drone_info[1]
-        jabe_id=dboutput.get_drone_jabe(id)
-        jabe_izen=dboutput.get_erab_izen(jabe_id)
-        if not jabe_izen==erab:
-            drone=drone+"_"+jabe_izen
-            if baimen[pos] == "Kontrolatu":
-                drone=drone+"_kontrolatu"
-            elif baimen[pos] == "Ikusi":
-                drone=drone+"_ikusi"
-        droneak.append(drone)
-    return droneak,id_drone
 
-@app.route("/insert-path/<drone>", methods=['GET','POST'])
-def insert_path(drone):
+@app.route("/insert_path/<droneIzen>", methods=['GET','POST'])
+def insert_path(droneIzen):
+    drone = dboutput.get_drone_full(droneIzen)
+    return(insertPath.insertWaypoints(drone))
 
-    droneak,id=get_erab_drone_list(session['erabiltzailea'])
-
-    for pos,dronea in enumerate(droneak):
-        if dronea == drone:
-            droneID=id[pos]
-
-    return(insertPath.insertWaypoints(drone, droneID))
 
 @app.route('/insert-drone', methods=['GET','POST'])
 def drone_erregistratu():
@@ -125,87 +135,25 @@ def drone_erregistratu():
             izenaDrone = request.form.get('izenaDrone')
             mota = request.form.get('mota')
             deskribapena = request.form.get('deskribapena')
-
+            
             dbinput.insert_Droneak(izenaDrone, mota, deskribapena)
-            erab_id=dboutput.get_erab_id(session['erabiltzailea'])
-            drone_id=dboutput.get_drone_id(izenaDrone, mota, deskribapena)
-            dbinput.insert_Partekatzeak(erab_id,drone_id,"Jabea")
+            erab = dboutput.get_erab_full(session['erabiltzailea'])
+            print("IZENADRONE")
+            print(izenaDrone)
+            drone = dboutput.get_drone_full(izenaDrone)
+            dbinput.insert_Partekatzeak(erab,drone,"Jabea")
+            
+            
+            
             return redirect(url_for('control'))
     except KeyError as e:
         return redirect(url_for('index'))
 
-@app.route("/modify-drone/<drone>", methods=['GET','POST'])
-def modify_drone(drone):
-    droneak,id=get_erab_drone_list(session['erabiltzailea'])
-
-    for pos,dronea in enumerate(droneak):
-        if dronea == drone:
-            droneID=id[pos]
-    jabe_id = dboutput.get_drone_jabe(droneID)
-    jabe = dboutput.get_erab_izen(jabe_id)
-    drone_info = dboutput.get_drone_info(droneID)
-    partekatu_erab = dboutput.get_drone_erab(droneID)
-    partekatuak = []
-    for erab in partekatu_erab:
-        if not erab[-1] == "Jabea":
-            izen=dboutput.get_erab_izen(erab[1])
-            partekatuak.append([izen,erab[-1]])
-    sents_id = dboutput.get_drone_sentsoreak(droneID)
-    sents_in = []
-    for id in sents_id:
-        sens_info = dboutput.get_sentsore_info(id[-1])
-        sents_in.append(sens_info)
-    if request.method == "GET":
-        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, partekatuak=partekatuak, sents_in=sents_in)
-    elif request.method == "POST":
-        bot = request.form.get('botoia')
-        baimenak=[]
-        error=None
-        sentsoreak = []
-        if bot == '2':
-            sentsore_guztiak = dboutput.get_info(tables.Sentsoreak)
-            for sents in sentsore_guztiak:
-                if sents not in sents_in:
-                    sentsoreak.append(sents)
-        elif bot == '3':
-            baimen_info=dboutput.get_info(tables.Baimenak)
-            for row in baimen_info:
-                for baimen in row:
-                    if baimen not in ["Admin","Jabea"]:
-                        baimenak.append(baimen)
-        elif bot == '4':
-            izena = request.form.get('izen')
-            mota = request.form.get('mota')
-            deskribapena = request.form.get('deskribapena')
-            dbinput.update_Droneak(izena,mota,deskribapena,droneID)
-            drone_info = dboutput.get_drone_info(droneID)
-        elif bot == '5':
-            sentsoreak = dboutput.get_info(tables.Sentsoreak)
-            for element in sentsoreak:
-                sens = request.form.get(str(element[0]))
-                if sens:
-                    dbinput.insert_Drone_Sentsore(None,droneID,int(sens))
-            sents_id = dboutput.get_drone_sentsoreak(droneID)
-            sents_in = []
-            for id in sents_id:
-                sens_info = dboutput.get_sentsore_info(id[-1])
-                sents_in.append(sens_info)
-        elif bot == '6':
-            partekatu_erab = request.form.get('partekatu_erab')
-            baimena = request.form.get('baimena')
-            id_erab=dboutput.get_erab_id(partekatu_erab)
-            if id_erab:
-                dbinput.insert_Partekatzeak(id_erab,droneID,baimena)
-            else:
-                error="Ez da erabiltzaile hori existitzen"
-            partekatu_erab = dboutput.get_drone_erab(droneID)
-            partekatuak = []
-            for erab in partekatu_erab:
-                if not erab[-1] == "Jabea":
-                    izen=dboutput.get_erab_izen(erab[1])
-                    partekatuak.append([izen,erab[-1]])
-        return render_template('modify_drone.html',drone=drone_info, jabe=jabe, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=sents_in)
-
+@app.route("/modify_drone/<drone>", methods=['GET','POST'])
+def modify_drone_page(drone):
+    droneData = dboutput.get_drone_full(drone)
+    return (modify_drone(droneData, dbinput, dboutput))
+    
 @app.route('/insert-sensor', methods=['GET','POST'])
 def insert_sensor():
     if request.method == 'GET':
@@ -238,7 +186,6 @@ def gw_insert(gwid):
     if len(waypoint) > 0:
         #print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
         reply = {
-
             "gwid":gwid,
             "robiotId" : content['robiotId'],
             "wpLat" : waypoint[0],
@@ -261,7 +208,56 @@ def get_coords():
     print(lng)
     return jsonify({'lat': lat, 'lng': lng})
 
+@app.route("/debug", methods=['GET', 'POST'])
+def debug_show():
+    erab = dboutput.get_erab_full(5)
+    drone = dboutput.get_drone_full(4)
+    return render_template("debugShowVar.html",var=dboutput.get_gps_full(drone))
 
+# API FOR LIVE UPDATES
+@app.route("/getLiveData", methods=['POST'])
+def getLivePos():   
+    data = request.get_json()
+    droneID = data['droneID']
+
+    drone = dboutput.get_drone_full(int(droneID))
+    gpsData = dboutput.get_gps_full(drone)
+    dronePos = __filterPositionLogs(gpsData)
+    futureWPs = __filterWaypoints(gpsData, False)
+
+    nextWP = futureWPs[0]
+    goalWP = futureWPs[-1]
+
+    fullSimpleRemainingPath = __filterSimplePath(futureWPs)
+    fullSimpleRemainingPath.insert(0, dronePos[-1].get_gps_coords())
+
+    # TODO:deltaT zehatzagoak lortu... behintzat azpiegitura hor dugu!
+    
+    deltapos = getGPSDistance(compareCoords=nextWP.get_gps_coords(), currentCoords=dronePos[-1].get_gps_coords())
+    deltaT = (dronePos[-1].get_gps_timestamp() - dronePos[-2].get_gps_timestamp()).total_seconds()
+
+    return jsonify({
+        
+        'GPSPos':{
+            'lat': dronePos[-1].get_gps_lat(),
+            'lng': dronePos[-1].get_gps_lng(),
+            'cur': dronePos[-1].get_gps_timestamp()
+        },
+        'NextWaypoint':{
+            'lat': nextWP.get_gps_lat(),
+            'lng': nextWP.get_gps_lng(),
+            'eta': datetime.now() + timedelta(seconds=getEta(deltapos, deltapos/deltaT))
+        },
+
+        'Destination':{
+            'lat': goalWP.get_gps_lat(),
+            'lng': goalWP.get_gps_lng(),
+            'eta': datetime.now() + timedelta(seconds = getEta(distance=getFullPathDistance(gpsPathWPs=fullSimpleRemainingPath), speed=(deltapos/deltaT)))
+        },
+
+        })
+
+## PROBAK EGITEKO ETA MISZELANEOAK ========================================================
 @app.route("/database", methods=['GET','POST'])
 def database_show():
     a1=request.form.get('a1')
@@ -270,49 +266,36 @@ def database_show():
     print(a2)
     return render_template(
         "database.html",
-        header=tables.Droneak_header,
-        items=dboutput.get_info(tables.Droneak)
     )
 
-# API FOR LIVE UPDATES
-@app.route("/getLiveData", methods=['POST'])
-def getLivePos():   
-    data = request.get_json()
-    droneID = data['droneID']
-    #print(droneID)
-    dronePos = dboutput.getRealLocations(droneID)[-1]
-    dronePosTimes = dboutput.get_timestamps(droneID, "DOW")
-    futureWPs = dboutput.get_waypoint_future(droneID)
-    nextWP = futureWPs[0]
-    goalWP = dboutput.get_waypoint_future(droneID)[-1]
-    futureWPs.insert(0, [dronePos[0], dronePos[1]])
+## HEMENDIK KENDU BEHARREKOAK ==============================================================
+## HAUEK EZ DIRA OBJEKTUETAN JOATEKOAK!! BEGIRATU MAPPLAN!! ================================
 
-    # TODO:deltaT zehatzagoak lortu... behintzat azpiegitura hor dugu!
-    
-    deltapos = getGPSDistance(compareCoords=[nextWP[0], nextWP[1]], currentCoords=[dronePos[0], dronePos[1]])
-    deltaT = (dronePosTimes[-1][0] - dronePosTimes[-2][0]).total_seconds()
+# TODO: CONTROLLER-EAN SARTU
+# GPS balio guztien artean waypoint-ak soilik hartzeko
+def __filterWaypoints(rawGpsData:list, isPastWP:bool):
+    waypoints = []
+    for gpsPoint in rawGpsData:
+        if gpsPoint.gps_way == True and gpsPoint.gps_past == isPastWP:
+            waypoints.append(gpsPoint)
+    return waypoints
 
-    return jsonify({
-        
-        'GPSPos':{
-            'lat': dronePos[0],
-            'lng': dronePos[1],
-            'cur': datetime.now()
-        },
-        'NextWaypoint':{
-            'lat': nextWP[0],
-            'lng': nextWP[1],
-            'eta': datetime.now() + timedelta(seconds=getEta(deltapos, deltapos/deltaT))
-        },
+# TODO: CONTROLLER-EAN SARTU
+# GPS balioetatik koordenatuak lortzeko, zerrenda luze baten
+def __filterSimplePath(rawGpsData):
+    waypoints = []
+    for gpsPoint in rawGpsData:
+        waypoints.append(gpsPoint.get_gps_coords())
+    return waypoints
 
-        'Destination':{
-            'lat': goalWP[0],
-            'lng': goalWP[1],
-            'eta': datetime.now() + timedelta(seconds = getEta(distance=getFullPathDistance(gpsPathWPs=futureWPs), speed=(deltapos/deltaT)))
-        },
-
-        })
-
+# TODO: CONTROLLER-EAN SARTU
+# GPS balio guztien artean dronearen benetako posizioak soilik hartzeko
+def __filterPositionLogs(rawGpsData):
+    posLog = []
+    for gpsPoint in rawGpsData:
+        if gpsPoint.gps_way == False:
+            posLog.append(gpsPoint)
+    return posLog
 
 #@app.route("/database/dowload")
 #def download_csv():

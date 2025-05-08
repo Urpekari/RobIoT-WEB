@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>modify_drone</title>
+        <title>modify_drone_page</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
@@ -25,35 +25,35 @@
         <table>
             <tr><th>Izena</th><th>Baimena</th></tr>
             {%for row in partekatuak%}
-                <tr><td>{{row[0]}}</td><td>{{row[1]}}</td></tr>
+                <tr><td>{{row.partekatze_erab.erab_izen}}</td><td>{{row.partekatze_mota}}</td></tr>
             {%endfor%}
         </table>
         <h2 class="izenburu">Instalutako sentsoreak:</h2>
         <table>
             <tr><th>Izena</th><th>Mota</th><th>Deskribapena</th></tr>
             {%for row in sents_in%}
-                <tr><td>{{row[1]}}</td><td>{{row[2]}}</td><td>{{row[3]}}</td></tr>
+                <tr><td>{{row.sents_izen}}</td><td>{{row.sents_mota}}</td><td>{{row.sents_desk}}</td></tr>
             {%endfor%}
         </table>
         <table class="no_border">
             <tr>
                 {%if aukera != '1'%}
                     <td class="no_border">
-                        <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
+                        <form action="{{url_for('modify_drone_page',drone=drone[1])}}" method="post"></formaction>
                             <button type="submit" name="botoia" value="1">Aldatu</button>
                         </form>
                     </td>
                 {%endif%}
                 {%if aukera != '2'%}
                     <td class="no_border">
-                        <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
+                        <form action="{{url_for('modify_drone_page',drone=drone[1])}}" method="post"></formaction>
                             <button type="submit" name="botoia" value="2">Sentsore gehitu</button>
                         </form>
                     </td>
                 {%endif%}
                 {%if aukera != '3'%}
                     <td class="no_border">
-                        <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post"></formaction>
+                        <form action="{{url_for('modify_drone_page',drone=drone[1])}}" method="post"></formaction>
                             <button type="submit" name="botoia" value="3">Partekatu</button>
                         </form>
                     </td>
@@ -66,7 +66,7 @@
         {%if aukera == '1'%}
 
             <table class="no_border">
-                <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post">
+                <form action="{{url_for('modify_drone_page',drone=drone[1])}}" method="post">
                     <tr><td class="no_border">Izena:</td>
                         <td class="no_border">
                             <input type="text" name="izen" id="izen" value="{{drone[1]}}" required>
@@ -95,12 +95,12 @@
 
         {%elif aukera == '2'%}
         <table class="no_border"><tr>
-            <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post">
+            <form action="{{url_for('modify_drone_page',drone=drone[1])}}" method="post">
                 <table>
                     <tr><th>Aukeratu</th><th>Sentsorea</th><th>Mota</th><th>Deskribapena</th></tr>
                     {%for element in sentsoreak%}
-                        <tr><td><input type="checkbox" id="{{element[0]}}" name="{{element[0]}}" value="{{element[0]}}"></td>
-                        <td>{{element[1]}}</td><td>{{element[2]}}</td><td>{{element[3]}}</td></tr>
+                        <tr><td><input type="checkbox" id="{{element.sents_id}}" name="sentsorea" value="{{element.sents_id}}"></td>
+                        <td>{{element.sents_izen}}</td><td>{{element.sents_mota}}</td><td>{{element.sents_desk}}</td></tr>
                     {%endfor%}
                 </table>
                 <td class="no_border"><button type="submit" name="botoia" value="5">Sartu</button></td>
@@ -111,7 +111,7 @@
         </tr></table>
         {%elif aukera == '3'%}
             <h3 class="izenburu">Norekin partekatu nahi duzu?</h3>
-            <form action="{{url_for('modify_drone',drone=drone[1])}}" method="post">
+            <form action="{{url_for('modify_drone_page',drone=drone[1])}}" method="post">
                 <input type="text" name="partekatu_erab" id="partekatu_erab" placeholder="Erabiltzailea" required>
                 <br>
                 <select id="baimena" name="baimena" required>

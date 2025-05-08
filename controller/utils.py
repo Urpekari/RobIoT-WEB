@@ -2,7 +2,6 @@ import tkinter as tk
 import haversine as hs
 from haversine import Unit
 
-
 # GPS puntu biren arteko distantzia kalkulatzen du.
 # Haversine funtzioa ez da oso zehatza poloen inguruan.
 def getGPSDistance(currentCoords, compareCoords):
