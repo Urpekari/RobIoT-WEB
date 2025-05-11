@@ -2,28 +2,31 @@ import other.banned_areas as bans
 from multimethod import *
 from app import *
 
-from model.erabiltzailea import erabiltzailea
-from model.partekatzea import partekatzea
-from model.sentsorea import sentsorea
+from model.SQL_functions import output, input
+
 from model.gpspoint import gpspoint
-from model.dronea import dronea
+from model.drone_osoa import drone_osoa
+
+from model.drone_sentsore import drone_sentsore
+from model.droneak import droneak
+from model.erabiltzaileak import erabiltzaileak
+from model.gps_kokapena import gps_kokapena
+from model.mezuak import mezuak
+from model.partekatzeak import partekatzeak
+from model.sentsore_info import sentsore_info
+from model.sentsoreak import sentsoreak
 
 # Klase bat badago datuak gordetzen dituena, klasea bidaltzea lehenetsiko dugu
 # Adibidez, droneID edo erabiltzaile izena bidali nahi izatekotan, drone klaseko objektu bat eta erabiltzailea klaseko objektuak lehenetsiko ditugu
 
-class output():
-    _instance = None
+class database_controller():
 
     def __init__(self,mysql):
         self.mysql=mysql
+        self.dboutput=output(mysql)
+        self.dbinput=input(mysql)
 
-    def get_info(self,name):
-        cur = self.mysql.connection.cursor()
-        query = "SELECT * FROM {0}".format(name)
-        cur.execute(query)
-        results = cur.fetchall()
-        cur.close()
-        return results
+    #def create_dowload_file(self,...):
 
     def create_csv(self,name):
         csv_array=[]
@@ -35,335 +38,222 @@ class output():
             csv_array=csv_array[:-1]
             csv_array.append('\n')
         return csv_array
-    
-    def erabiltzailea_egiaztatu(self,username, password):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s AND Pasahitza = %s", (username, password))
-        usuario = cur.fetchone() 
-        cur.close()
-        return True if usuario else False
-    
-    def get_erab_drone_list(self, erab):
-        baimenak=self.__get_erab_baimen(erab)
-        #baimen_drone_id = []
-        droneak = []
-        for baimena in baimenak:
-            print("Drone zenbakia:",end="")
-            print(baimena[2])
-            #baimen_drone_id.append(baimena[2])
-            droneak.append(self.get_drone_full(baimena[2]))
-        
-        return droneak
-    
-    # ===============================================================================================
-    # ALDATU: get_erab egin, erabiltzaile ID, izena eta drone zerrenda itzultzen duena
-    @multimethod
-    def get_erab_full(self: object, izena: str):
 
-        ## ERABILTZAILEA LORTZEKO FUNTZIOA
-        #  INPUTS:  Erabiltzailearen izena
-        #  OUTPUTS: Erabiltzaile objektu osoa
-        
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Erabiltzaileak WHERE Izen = %s", (izena,))
-        user = cur.fetchone()
-        cur.close()
-        if user:
-            userprofile = erabiltzailea(user)
-        return userprofile if userprofile else None
+#######################################################################
+# TAULAK LORTZEKO FUNTZIOAK
+#######################################################################
 
-    @multimethod
-    def get_erab_full(self: object, id: int):
-
-        ## ERABILTZAILEA LORTZEKO FUNTZIOA
-        #  INPUTS:  Erabiltzailearen IDa
-        #  OUTPUTS: Erabiltzaile objektu osoa
-
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Erabiltzaileak WHERE idErabiltzaileak = %s", (id,))
-        user = cur.fetchone() 
-        cur.close()
-        if user:
-            userprofile = erabiltzailea(user)
-        return userprofile if userprofile else None
-    
-    def __get_erab_baimen(self, erab):
-        ## PARTEKATZEAK LORTZEKO FUNTZIOA
-        # INPUT: erabiltzaile objektua
-        # OUTPUT: erabiltzaile horren partekatzeak/baimenak, array baten
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Erabiltzaileak_idErabiltzaileak = %s", (erab.erab_id, ))
-        baimenak = cur.fetchall() 
-        cur.close()
+    def get_Baimenak_table (self):
+        baimenak = self.dboutput.get_whole_table("Baimenak")
         return baimenak
 
+    def get_Drone_Sentsore_table (self):
+        drone_sentsore_raw = self.dboutput.get_whole_table("Drone_Sentsore")
+        drone_sentsore_list = []
+        for dron_sents in drone_sentsore_raw:
+            drone = self.dboutput.find_droneak(dron_sents[2])
+            sentsore = self.dboutput.find_sentsoreak(dron_sents[3])
+            drone_sentsore_list.append(drone_sentsore(dron_sents,droneak(drone),sentsoreak(sentsore)))
+
+        return drone_sentsore_list
+    
+    def get_Droneak_table (self):
+        droneak_raw = self.dboutput.get_whole_table("Droneak")
+        droneak_list = []
+        for dron in droneak_raw:
+            droneak_list.append(droneak(dron))
+
+        return droneak_list
+    
+    def get_Erabiltzaileak_table (self):
+        erabiltzaileak_raw = self.dboutput.get_whole_table("Erabiltzaileak")
+        erabiltzaileak_list = []
+        for erab in erabiltzaileak_raw:
+            erabiltzaileak_list.append(erabiltzaileak(erab))
+
+        return erabiltzaileak_list
+    
+    def get_GPS_kokapena_table (self):
+        gps_kokapena_raw = self.dboutput.get_whole_table("GPS_kokapena")
+        gps_kokapena_list = []
+        for gps_kokap in gps_kokapena_raw:
+            drone = self.dboutput.find_droneak(gps_kokap[1])
+            gps_kokapena_list.append(gps_kokapena(gps_kokap,droneak(drone)))
+        
+        return gps_kokapena_list
+    
+    def get_Mezuak_table (self):
+        mezuak_raw = self.dboutput.get_whole_table("Mezuak")
+        mezuak_list = []
+        for mezu in mezuak_raw:
+            drone = self.dboutput.find_droneak(mezu[1])
+            mezuak_list.append(mezuak(mezu,droneak(drone)))
+
+        return mezuak_list
+    
+    def get_Partekatzeak_table (self):
+        partekatzeak_raw = self.dboutput.get_whole_table("Partekatzeak")
+        partekatzeak_list = []
+        for partekatze in partekatzeak_raw:
+            erab = self.dboutput.find_droneak(partekatze[1])
+            drone = self.dboutput.find_droneak(partekatze[2])
+            partekatzeak_list.append(partekatzeak(partekatze,erabiltzaileak(erab),droneak(drone)))
+        
+        return partekatzeak_list
+    
+    def get_Sentsore_info_table (self):
+        sentsore_info_raw = self.dboutput.get_whole_table("Sentsore_info")
+        sentsore_info_list = []
+        for sents_info in sentsore_info_raw:
+            drone = self.dboutput.find_droneak(sents_info[1])
+            sentsore_info_list.append(sentsore_info(sents_info,droneak(drone)))
+        
+        return sentsore_info_list
+    
+    def get_Sentsoreak_table (self):
+        sentsoreak_raw = self.dboutput.get_whole_table("Sentsoreak")
+        sentsoreak_list = []
+        for sentsore in sentsoreak_raw:
+            sentsoreak_list.append(sentsoreak(sentsore))
+        
+        return sentsoreak_list
+
+#######################################################################
+# BILAKETA FUNTZIOAK
+#######################################################################
+
     @multimethod
-    def get_partekatze_full_droneArabera(self: object, id_drone: int):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Droneak_idDroneak = %s", (id_drone,))
-        erab_dron = cur.fetchall()
-        cur.close()
-        partekatzeak = []
-        for partek in erab_dron:
-            partekatzeak.append(partekatzea(partek, self.get_erab_full(partek[1]), self.get_drone_full(partek[2])))
-        return(partekatzeak)
+    def lortu_erabiltzailea(self, erab_id):
+        user_raw = self.dboutput.find_erabiltzaileak(erab_id)
+        user = erabiltzaileak(user_raw)
+        return user
     
     @multimethod
-    def get_partekatze_full_droneArabera(self: object, drone: object):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Partekatzeak WHERE Droneak_idDroneak = %s", (drone.drone_id,))
-        erab_dron = cur.fetchall()
-        cur.close()
-        partekatzeak = []
-        for partek in erab_dron:
-            partekatzeak.append(partekatzea(partek, self.get_erab_full(partek[1]), self.get_drone_full(partek[2])))
-        return(partekatzeak)
+    def lortu_erabiltzailea(self, erab_name):
+        user_raw = self.dboutput.find_erab_w_name(erab_name)
+        user = erabiltzaileak(user_raw)
+        return user
     
-    def get_baimen_posible_zerrenda(self):
-        ## Baimen onargarri guztien zerrenda
-        # INPUT: Ezer
-        # OUTPIT: Baimen array bat
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Baimenak")
-        baimenak = cur.fetchall()
-        cur.close()
-        return(baimenak)
+    def lortu_dronea(self, drone_id):
+        drone_raw = self.dboutput.find_droneak(drone_id)
+        drone = droneak(drone_raw)
+        return drone
+    
+    def lortu_sentsorea(self, sents_id):
+        sentsore_raw = self.dboutput.find_sentsoreak(sents_id)
+        sentsore = sentsoreak(sentsore_raw)
+        return sentsore
+    
+    def lortu_erabiltzailearen_droneak(self, erab_id):
+        partekatze_list_raw = self.dboutput.find_partekatzeak_w_erab(erab_id)
+        partekatze_list = []
+        for partekatze in partekatze_list_raw:
+            drone = self.dboutput.find_droneak(partekatze[2])
+            jabe = self.dboutput.find_drone_jabe_w_drone(drone[0])
+            erab = self.dboutput.find_erabiltzaileak(jabe[1])
+            partekatze_list.append(partekatzeak(partekatze,erabiltzaileak(erab),droneak(drone)))
+        
+        return partekatze_list
+    
+    def lortu_drone_info_osoa(self, drone_id):
+        drone_raw = self.dboutput.find_droneak(drone_id)
+        drone = droneak(drone_raw)
+        sentsore_list_raw = self.dboutput.find_dron_sents_w_drone(drone_id)
+        sentsore_list = []
+        for sents in sentsore_list_raw:
+            sentsore = self.dboutput.find_sentsoreak(sents[3])
+            sentsore_list.append(sentsoreak(sentsore))
 
-    # ===============================================================================================
-    # ALDAKETAK: Get drone info hurrengoa itzuli behar du: ID, izena, jabea, erabiltzaileak
+        erab_list_raw = self.dboutput.find_partekatzeak_w_drone(drone_id)
+        jabe = None
+        kontrol_list = []
+        ikus_list = []
+        for erab in erab_list_raw:
+            erabiltzaile = self.dboutput.find_erabiltzaileak(erab[1])
+            if erab[3] == "Jabea":
+                jabe = erabiltzaileak(erabiltzaile)
 
-    @multimethod
-    def get_drone_full(self: object, izena: str):
-        ## Drone informazioa lortzeko
-        #  INPUT:  Dronearen izena
-        #  OUTPUT: Drone objektu bat, guztiarekin
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Droneak WHERE Izena = %s", (izena,))
-        drone = cur.fetchone()
-        cur.close()
-        if drone:
-            sentsoreArray = self.__get_drone_sentsoreak(drone[0])
-            jabea = self.get_drone_jabe(drone[0])
-            kontroladoreak = self.__get_drone_kontrol(drone[0])
-            ikusleak = self.__get_drone_ikusle(drone[0])
-            droneprofile = dronea(drone, sentsoreArray, jabea, kontroladoreak, ikusleak)
-        return droneprofile if droneprofile else None
+            elif erab[3] == "Kontrolatu":
+                kontrol_list.append(erabiltzaileak(erabiltzaile))
 
-    @multimethod
-    def get_drone_full(self: object, droneID: int):
-        ## Drone informazioa lortzeko
-        #  INPUT:  Dronearen IDa
-        #  OUTPUT: Drone objektu bat, guztiarekin
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Droneak WHERE idDroneak = %s", (droneID,))
-        drone = cur.fetchone()
-        cur.close()
-        if drone:
-            sentsoreArray = self.__get_drone_sentsoreak(drone[0])
-            jabea = self.get_drone_jabe(drone[0])
-            kontroladoreak = self.__get_drone_kontrol(drone[0])
-            ikusleak = self.__get_drone_ikusle(drone[0])
-            droneprofile = dronea(drone, sentsoreArray, jabea, kontroladoreak, ikusleak)
-        return droneprofile if droneprofile else None
+            elif erab[3] == "Ikusi":
+                ikus_list.append(erabiltzaileak(erabiltzaile))
+        
+        drone_info_osoa = drone_osoa(drone,sentsore_list,jabe,kontrol_list,ikus_list)
 
-    @multimethod
-    def get_drone_jabe(self:object, id_dron: int):
-        ## Drone baten jabea lortzeko
-        #  INPUT:  Dronearen ID-a
-        #  OUTPUT: Erabiltzaile objektu bat, jabearen informazioarekin
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron,"Jabea"))
-        jabe_dron = cur.fetchone()
-        cur.close()
-        if jabe_dron:
-            return self.get_erab_full(jabe_dron[0])
+        return drone_info_osoa
+    
+    def lortu_drone_GPS_informazioa(self, drone_id):
+        gps_list_raw = self.dboutput.find_GPS_kokapen_w_drone(drone_id)
+        gps_list = []
+        for gps in gps_list_raw:
+            gps_list.append(gpspoint(gps))
+
+        return gps_list
+    
+    def lortu_hurrengo_jauzia(self, drone_id):
+        gps_list_raw = self.dboutput.find_GPS_kokapen_w_drone(drone_id)
+        hurr_jauz = None
+        for gps in gps_list_raw:
+            if gps[7] == "UPF":
+                hurr_jauz = gpspoint(gps)
+                break
+        
+        return hurr_jauz
+
+    def lortu_azalerak (self, droneType):
+        banned = self.dboutput.get_banned_areas(droneType)
+        resticted = self.dboutput.get_restricted_areas(droneType)
+        return banned, resticted
+
+
+#######################################################################
+# ERABILTZAILEA BILATZEKO IZEN + PASS
+#######################################################################
+
+    def erabiltzailea_egiaztatu(self,username, password):
+        user_raw = self.dboutput.find_erab_w_name_n_pass(username, password)
+        if user_raw:
+            user = erabiltzaileak(user_raw)
+            return user,True
+        
         else:
-            return None
+            return None,False
 
-    @multimethod
-    def get_drone_jabe(self:object, drone: object):
-        ## Drone baten jabea lortzekoQ
-        #  INPUT:  Drone objektu bat
-        #  OUTPUT: Erabiltzaile objektu bat, jabearen informazioarekin
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (drone.drone_id,"Jabea"))
-        jabe_dron = cur.fetchone()
-        cur.close()
-        return self.get_erab_full(jabe_dron[0])
-     
-    def __get_drone_kontrol(self,id_dron):
-        ## Drone baten kontrola duten erabiltzaileen ID-ak lortzeko
-        # INPUT:  Drone id bat
-        # OUTPUT: Erabiltzaile id array bat   
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND (Baimenak_idBaimenak = %s OR Baimenak_idBaimenak = %s)", (id_dron, "Jabea", "Kontrolatu"))
-        drone_kontrol = cur.fetchall()
-        drone_kontroladoreak = []
-        for kontroladoreId in drone_kontrol:
-            drone_kontroladoreak.append(kontroladoreId[0])
-        cur.close()
-        return drone_kontroladoreak
-      
-    def __get_drone_ikusle(self,id_dron):
-        ## Drone baten kontrola EZ duten baina ikus dezaketeen erabiltzaileen ID-ak lortzeko
-        # INPUT:  Drone id bat
-        # OUTPUT: Erabiltzaile id array bat  
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT Erabiltzaileak_idErabiltzaileak FROM Partekatzeak WHERE Droneak_idDroneak = %s AND Baimenak_idBaimenak = %s", (id_dron, "Ikusi"))
-        drone_ikusle = cur.fetchall()
-        drone_ikusleak = []
-        for ikusleId in drone_ikusle:
-            drone_ikusleak.append(ikusleId[0])
-        cur.close()
-        return drone_ikusleak
+#######################################################################
+# DATU BASERA SARTZEKO FUNTZIOAK
+#######################################################################
+
+    def sartu_erabiltzaile_berria(self, izena, abizena, pasahitza, email, dokumentuak):
+        return self.dbinput.insert_Erabiltzaileak(izena, abizena, pasahitza, email, dokumentuak)
     
-
-    def __get_drone_sentsoreak(self,id_drone):
-        ## Sentsoreen informaziioa lortzeko
-        # Input:  Drone id bat
-        # Output: Sentsore objektu array bat
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Drone_Sentsore WHERE Droneak_idDroneak = %s", (id_drone,))
-        drone_sentsore_raw = cur.fetchall()
-        cur.close()
-        drone_sentsore = []
-        for sens in drone_sentsore_raw:
-            drone_sentsore.append(sentsorea(self.__get_sentsore_info(sens[3])))
-        return drone_sentsore
+    def sartu_drone_berria(self, izena, mota, deskribapena, erab_id):
+        self.dbinput.insert_Droneak(izena, mota, deskribapena)
+        dron = self.dboutput.find_drone_w_izen_mota_desk(izena, mota, deskribapena)
+        self.dbinput.insert_Partekatzeak(erab_id,dron[0],"Jabea")
     
-    def __get_sentsore_info(self,id_sentsore):
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Sentsoreak WHERE idSentsoreak = %s", (id_sentsore,))
-        sens_info = cur.fetchone() 
-        cur.close()
-        return sens_info
-
-    def get_sentsore_guztiak(self):
-        # Sentsore ID bat erabiliz sentsore objektua lortzeko
-        # INPUT: Ezer
-        # OUTPUT: Sentsore guztien objektuen array bat
-        cur = self.mysql.connection.cursor()
-        cur.execute("SELECT * FROM Sentsoreak")
-        sens_info = cur.fetchall()
-        cur.close()
-        sentsore_osoak = []
-        for sens in sens_info:
-            sentsore_osoak.append(sentsorea(sens))
-        return sentsore_osoak
-
+    def sartu_sentsore_berria(self, izena, mota, deskribapena):
+        return self.dbinput.insert_Sentsoreak(izena, mota, deskribapena)
     
-    def get_gps_full(self, drone):
-        ## GPS datuak osotasunean lortzeko, drone baterako
-        # INPUT: Drone objektu bat
-        # OUTPUT: gpspoint objektuen array bat
-        cur = self.mysql.connection.cursor()
-        query = ("SELECT * FROM GPS_kokapena WHERE Droneak_idDroneak = %s")
-        cur.execute(query,(drone.drone_id,))
-        gps_raw = cur.fetchall()
-        cur.close()
-        gpsProfiles = []
-        for gps_raw_point in gps_raw:
-            gpsProfiles.append(gpspoint(gps_raw_point))
-        return(gpsProfiles)
+    def sartu_ibilbide_berria(self, id_drone, koord_list, alt, head, timestmp):
+        for koord in koord_list:
+            self.dbinput.insert_GPS_kokapena(id_drone, koord[1], koord[0], alt, head, timestmp, "UPF")
 
-    # ===============================================================================================
-    # Ez da datu basea baina hemen ondo dagoela esango nuke. Mota hobe kudeatzeko erarik ote dago?
-
-    def get_banned_areas(self, droneType):
-        if droneType.lower() == "plane":
-            return(bans.planeBans)
-        elif droneType.lower() == "helicopter":
-            return(bans.planeBans)
+    def sartu_momentuko_kokapena(self, drone_id, long, lat, alt, head, timestmp):
+        self.dbinput.insert_GPS_kokapena(drone_id, long, lat, alt, head, timestmp, "DOW")
     
-    def get_restricted_areas(self, droneType):
-        if droneType.lower() == "plane":
-            return(bans.planeLimits)
-        elif droneType.lower() == "helicopter":
-            return(bans.planeLimits)
-
-class input():
-    _instance = None
-
-    def __init__(self,mysql):
-        self.mysql=mysql
-
-    def insert_Drone_Sentsore(self:object,ezizen:str,id_drone:int,id_sents:int):
-        cur = self.mysql.connection.cursor()
-        query = "INSERT INTO Drone_Sentsore (Ezizena,Droneak_idDroneak,Sentsoreak_idSentsoreak) VALUES (%s,%s,%s)"
-        cur.execute(query,(ezizen,id_drone,id_sents))
-        self.mysql.connection.commit()
-        cur.close()
-
-    def insert_Droneak(self,izena,mota,deskribapena):
-        cur = self.mysql.connection.cursor()
-        query = "INSERT INTO Droneak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
-        cur.execute(query,(izena,mota,deskribapena))
-        self.mysql.connection.commit()
-        cur.close()
-
-    def insert_Erabiltzaileak(self,izena, abizena, pasahitza, email, dokumentuak):
-        try:
-            cursor = self.mysql.connection.cursor()
-            query = "INSERT INTO Erabiltzaileak (Izen, Abizena, Pasahitza, Email, Hegan_egiteko_baimena) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(query, (izena, abizena, pasahitza, email, dokumentuak))
-            self.mysql.connection.commit()
+    def dronea_partekatu(self, drone_id, erab_name, baimen):
+        erab = self.dboutput.find_erab_w_name(erab_name)
+        if erab:
+            self.dbinput.insert_Partekatzeak(erab[0],drone_id,baimen)
             return True
-        except Exception as e:
-            print("Error:", e)
+        
+        else:
             return False
-        finally:
-            cursor.close()
-
-    def insert_GPS_kokapena(self,id_drone,lng,ltd,alt,hdg,timestamp,noranzkoa):
-        cur = self.mysql.connection.cursor()
-        query = "INSERT INTO GPS_kokapena (Droneak_idDroneak,Longitude,Latitude,Altitude,Heading,Timestamp,Noranzkoa) VALUES (%s,%s,%s,%s,%s,%s,%s)"
-        cur.execute(query,(id_drone,lng,ltd,alt,hdg,timestamp,noranzkoa))
-        self.mysql.connection.commit()
-        cur.close()
-
-    def insert_Mezuak(self,id_drone,edukia,timestamp,noranzkoa):
-        cur = self.mysql.connection.cursor()
-        query = "INSERT INTO Mezuak (Droneak_idDroneak,Eduikia,Timestamp,Noranzkoa) VALUES (%s,%s,%s,%s)"
-        cur.execute(query,(id_drone,edukia,timestamp,noranzkoa))
-        self.mysql.connection.commit()
-        cur.close()
-
-    def insert_Partekatzeak(self, erabiltzailea, dronea, baimena):
-        print("Erabiltzailea:")
-        print(erabiltzailea.erab_izen)
-        print("Dronea:")
-        print(dronea.drone_izen)
-        cur = self.mysql.connection.cursor()
-        query = "INSERT INTO Partekatzeak (Erabiltzaileak_idErabiltzaileak,Droneak_idDroneak,Baimenak_idBaimenak) VALUES (%s,%s,%s)"
-        print(query)
-        cur.execute(query,(erabiltzailea.erab_id, dronea.drone_id, baimena))
-        self.mysql.connection.commit()
-        cur.close()
-        return("Done!")
-
-    def insert_Sentsore_info(self,id_drone_sents,balioa,timestamp):
-        cur = self.mysql.connection.cursor()
-        query = "INSERT INTO Sentsore_info (Dronea_Sentsore_idDroneSentsore,Balioa,Timestamp) VALUES (%s,%s,%s)"
-        cur.execute(query,(id_drone_sents,balioa,timestamp))
-        self.mysql.connection.commit()
-        cur.close()
-
-    def insert_Sentsoreak(self,izena,mota,deskribapena):
-        try:
-            cur = self.mysql.connection.cursor()
-            query = "INSERT INTO Sentsoreak (Izena,Mota,Deskribapena) VALUES (%s,%s,%s)"
-            cur.execute(query,(izena,mota,deskribapena))
-            self.mysql.connection.commit()
-            return True
-        except Exception as e:
-            print("Error:", e)
-            return False
-        finally:
-            cur.close()
     
-    def update_Droneak(self,izena,mota,deskribapena,id):
-        cur = self.mysql.connection.cursor()
-        query = "UPDATE Droneak SET Izena=%s, Mota=%s, Deskribapena=%s WHERE idDroneak=%s"
-        cur.execute(query,(izena,mota,deskribapena,id))
-        self.mysql.connection.commit()
-        cur.close()
+    def sentsoreak_esleitu(self, drone_id, sents_list):
+        for sents in sents_list:
+            self.dbinput.insert_Drone_Sentsore("", drone_id, int(sents))
+    
+    def aldatu_dronea(self, izena, mota, deskribapena, drone_id):
+        self.dbinput.update_Droneak(izena, mota, deskribapena, drone_id)

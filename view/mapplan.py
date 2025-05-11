@@ -43,9 +43,9 @@ class mapPlan():
         return posLog
 
     def __init__(self, droneID):
-        self.dbOutput = app.dboutput
-        self.drone = self.dbOutput.get_drone_full(droneID)
-        self.gpsData = self.dbOutput.get_gps_full(self.drone)
+        self.database = app.database
+        self.drone = self.database.lortu_dronea(droneID)
+        self.gpsData = self.database.lortu_drone_GPS_informazioa(droneID)
 
         self.realPath = self.__filterPositionLogs(self.gpsData)
         self.simplePath = self.__filterSimplePath(self.realPath)

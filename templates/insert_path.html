@@ -16,7 +16,7 @@
         </script>
     </div>
     <div class="izenburu_azalpena">
-        <h1 class="berezia">Aukeratu ibilbidea {{dronea}} dronearentzako</h1>
+        <h1 class="berezia">Aukeratu ibilbidea {{drone.drone_izen}} dronearentzako</h1>
         <div class="flask-container">
             <h3 class="izenburu">ⓘ</h3>
             <div class="tooltip">Koordenatu bat aukeratzeko mapan sakatu eta, behin nahi duzun koordenatua daukazunean "paste" botoia sakatu sure aukera itsasteko.
@@ -25,7 +25,7 @@
         
     </div>
     <div class="insert_bidea">
-        <form action="{{url_for('insert_path',droneIzen=dronea)}}" method="post">
+        <form action="{{url_for('insert_path',drone=drone_izen_jabe)}}" method="post">
             <input type="hidden" id="list" name="list" value="{{list}}">
             <button type="submit" name="botoia" value="1">Paste</button>
         </form>
@@ -36,7 +36,7 @@
         <table class="no_border">
             <tbody>
 
-                <form action="{{url_for('insert_path',droneIzen=dronea)}}" method="post">
+                <form action="{{url_for('insert_path',drone=drone_izen_jabe)}}" method="post">
                     <tr><td><pre style="text-align: right;" class="izenburu">Latitude:     </pre></td><td><input type="number" min="-90" max="90" step="0.000001" id="lat" name="lat" value="{{lat}}" required></td></tr>
                     <tr><td><pre class="izenburu">Longitude:     </pre></td><td><input type="number" step="0.000001" min="-180" max="180" id="long" name="long" value="{{long}}" required></td></tr>
                     </table>
@@ -53,7 +53,7 @@
             <ol style="max-height: 50%;overflow-y: scroll;" class="izenburu">
                 {%for coords in list%}
                     <li>Latitude: {{coords[0]}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Longitude: {{coords[1]}}</li>
-                    <form action="{{url_for('insert_path',droneIzen=dronea)}}" method="post">
+                    <form action="{{url_for('insert_path',drone=drone_izen_jabe)}}" method="post">
                         <input type="hidden" id="rm_coord" name="rm_coord" value="{{coords}}">
                         <input type="hidden" id="list" name="list" value="{{list}}">
                         <button type="submit" name="botoia" value="4">Ezabatu</button>
@@ -61,7 +61,7 @@
                 {%endfor%}
             </ol>
                 
-            <form action="{{url_for('insert_path',droneIzen=dronea)}}" method="post">
+            <form action="{{url_for('insert_path',drone=drone_izen_jabe)}}" method="post">
                 <input type="hidden" id="list" name="list" value="{{list}}">
                 <button type="submit" name="botoia" value="3">Gorde bidea</button>
             </form>

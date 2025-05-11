@@ -29,7 +29,7 @@ app.config['MYSQL_PASSWORD'] = env.mysql_password
 app.config['MYSQL_DB'] = env.mysql_db_name
 app.secret_key = 'hackerdeminecraft'
 
-def modify_drone(drone, dbinput, dboutput):
+def modify_drone(drone_id, database, drone_izen_jabe):
     print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
     #print(app.session)
     #session = app.session['erabiltzailea']
@@ -38,27 +38,11 @@ def modify_drone(drone, dbinput, dboutput):
     # for pos,dronea in enumerate(droneak):
     #     if dronea == drone:
     #         drone.drone_id=id[pos]
-    jabe = dboutput.get_drone_jabe(drone.drone_id)
-    print("DRONE HONEN:", end="")
-    print(drone.drone_id, end="")
-    print(" JABEA HAU DA:", end="")
-    print(jabe.erab_id)
-
-    partekatu_erab = []
-    for kontrol in drone.drone_kontroladoreak:
-        partekatu_erab.append(kontrol)
-        
-    for ikus in drone.drone_ikusleak:
-        partekatu_erab.append(ikus)
-
-    print(partekatu_erab)
-    partekatuak = []
-    for erabId in partekatu_erab:
-            partekatuak = (dboutput.get_partekatze_full_droneArabera(drone))
-    sents_in = drone.drone_sentsoreak
+    drone_info = database.lortu_drone_info_osoa(drone_id)
+    
 
     if request.method == "GET":
-        return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe.erab_izen, partekatuak=partekatuak, sents_in=sents_in)
+        return render_template('modify_drone.html', drone_info=drone_info, drone_izen_jabe=drone_izen_jabe)
     
     elif request.method == "POST":
         bot = request.form.get('botoia')
@@ -68,11 +52,15 @@ def modify_drone(drone, dbinput, dboutput):
 
         # "Sentsore gehitu" botoia
         if bot == '2':
-            sentsoreak = dboutput.get_sentsore_guztiak()
+            sentsore_guztiak = database.get_Sentsoreak_table()
+            sentsoreak = []
+            for sentsore in sentsore_guztiak:
+                if sentsore.sents_id not in [sentsore_in.sents_id for sentsore_in in drone_info.drone_sentsoreak]:
+                    sentsoreak.append(sentsore)
 
         # "Partekatu" botoia
         elif bot == '3':
-            baimen_info=dboutput.get_baimen_posible_zerrenda()
+            baimen_info=database.get_Baimenak_table()
             for row in baimen_info:
                 for baimen in row:
                     if baimen not in ["Admin","Jabea"]:
@@ -83,28 +71,23 @@ def modify_drone(drone, dbinput, dboutput):
             izena = request.form.get('izen')
             mota = request.form.get('mota')
             deskribapena = request.form.get('deskribapena')
-            dbinput.update_Droneak(izena,mota,deskribapena,drone.drone_id)
+            database.aldatu_dronea(izena,mota,deskribapena,drone_id)
+            if not drone_info.drone_info.drone_izen == izena:
+                return redirect(url_for('izen_aldaketa', drone=drone_izen_jabe, izen_berri=izena))
 
         # Sentsore berriak sartzeko "Sartu" botoia
         elif bot == '5':
             sens = request.form.getlist("sentsorea")
             print("SENS: SENS:")
             print(sens)
-
-            for sentsore in sens:
-                dbinput.insert_Drone_Sentsore(None,drone.drone_id, int(sentsore))
-            sents_in = drone.drone_sentsoreak
+            
+            database.sentsoreak_esleitu(drone_id,sens)
         
         elif bot == '6':
             partekatu_erab = request.form.get('partekatu_erab')
             baimena = request.form.get('baimena')
-            erab=dboutput.get_erab_full(partekatu_erab)
-            if erab:
-                dbinput.insert_Partekatzeak(erab,drone,baimena)
-                partekatuak = (dboutput.get_partekatze_full_droneArabera(drone))
-            else:
-                error="Ez da erabiltzaile hori existitzen"
+            database.dronea_partekatu(drone_id, partekatu_erab, baimena)
             
-        drone = dboutput.get_drone_full(drone.drone_id)
+        drone_info = database.lortu_drone_info_osoa(drone_id)
 
-    return render_template('modify_drone.html',drone=[drone.drone_id, drone.drone_izen, drone.drone_mota, drone.drone_desk], jabe=jabe.erab_izen, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak, partekatuak=partekatuak, sents_in=drone.drone_sentsoreak)
+    return render_template('modify_drone.html', drone_info=drone_info, drone_izen_jabe=drone_izen_jabe, aukera=bot, baimenak=baimenak, error=error, sentsoreak=sentsoreak)

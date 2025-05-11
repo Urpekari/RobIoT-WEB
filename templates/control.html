@@ -51,8 +51,8 @@
     </div>
     <div class="informazioaren-taula">
         {%if ikusi%}
-            <h1>Ikusten: {{dronea}}:</h1>
-            <p hidden id="droneID">{{droneID}}</p><!-- droneID elementu ID hau ez kendu! javascriptek behar du!-->
+            <h1>Ikusten: {{dronea.drone_izen}}:</h1>
+            <p hidden id="droneID">{{dronea.drone_id}}</p><!-- droneID elementu ID hau ez kendu! javascriptek behar du!-->
             <table>
                 <thead>
                     <tr>
@@ -94,13 +94,13 @@
         {%if ikusi%}
         <tr>
             <td class="no_border">
-                <a href="{{url_for('modify_drone_page',drone=dronea)}}">
+                <a href="{{url_for('modify_drone_page',drone=drone_izen_jabe)}}">
                     <button>Dronearen informazioa</button>
                 </a>
             </td>
             {%if ikusi%}
             <td class="no_border">
-                    <a href="{{url_for('insert_path',droneIzen=dronea)}}">
+                    <a href="{{url_for('insert_path',drone=drone_izen_jabe)}}">
                         <button>Ibilbidea gehitu</button>
                     </a>
             </td>
@@ -142,7 +142,7 @@
                         </form>
                     </td>
                     <td>
-                        {{row.drone_jabea.erab_izen}}
+                        {{row.partekatze_erab.erab_izen}}
                     </td>
                 </tr>
                 {% endfor %}
@@ -158,12 +158,12 @@
                     <tr>
                         <td>
                             <form action="/control" method="post">
-                                <input type="hidden" name="droneReq" value="{{ row.drone_id }}">
-                                <button class="link-button" name="botoia" value="1">{{ row.drone_izen }}</button>
+                                <input type="hidden" name="droneReq" value="{{ row.partekatze_drone.drone_id }}">
+                                <button class="link-button" name="botoia" value="1">{{ row.partekatze_drone.drone_izen }}</button>
                             </form>
                         </td>
                         <td>
-                            {{row.drone_jabea.erab_izen}}
+                            {{row.partekatze_erab.erab_izen}}
                         </td>
                     </tr>
                     {% endfor %}

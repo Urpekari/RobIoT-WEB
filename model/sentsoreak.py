@@ -1,5 +1,5 @@
 import json
-class sentsorea():
+class sentsoreak():
     sents_id = 0
     sents_izen = ""
     sents_mota = ""

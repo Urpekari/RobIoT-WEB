@@ -20,12 +20,15 @@ class gpspoint():
         if rawGpsPoint[7] == "DOW":
             self.gps_way = False
             self.gps_past = True
+
         elif rawGpsPoint[7] == "UPF":
             self.gps_way = True
             self.gps_past = False
+
         else:
             self.gps_way = True
             self.gps_past = True
+            
         self.gps_timestamp = rawGpsPoint[6]
 
 

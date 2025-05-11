@@ -43,14 +43,13 @@ class mapPage():
                 posLog.append(gpsPoint)
         return posLog
 
-    def __init__(self, dboutput, droneID):
-        dbOutput=dboutput
-        self.drone = dbOutput.get_drone_full(droneID)
+    def __init__(self, database, droneID):
+        self.drone = database.lortu_dronea(droneID)
         self.droneID = self.drone.drone_id
         self.droneName = self.drone.drone_izen
         self.droneType = self.drone.drone_mota
         
-        self.gpsData = dbOutput.get_gps_full(self.drone)
+        self.gpsData = database.lortu_drone_GPS_informazioa(self.drone.drone_id)
 
         self.realPath = self.__filterPositionLogs(self.gpsData)
         self.simplePath = self.__filterSimplePath(self.realPath)
@@ -61,8 +60,7 @@ class mapPage():
         self.nextWaypoints = self.__filterWaypoints(self.gpsData, isPastWP=False)
         self.simpleNextWaypoints = self.__filterSimplePath(self.nextWaypoints)
 
-        self.bannedAreas = dbOutput.get_banned_areas(self.droneType)
-        self.restrictedAreas = dbOutput.get_restricted_areas(self.droneType)
+        self.bannedAreas, self.restrictedAreas = database.lortu_azalerak(self.droneType)
 
     def waypointakMarkatu(self, pastWPs, futureWPs, futureLine):
         if len(self.pastWaypoints) > 0:
