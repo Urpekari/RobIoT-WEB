@@ -179,7 +179,7 @@ def gw_insert(gwid):
     waypoint = []
     waypoint = database.lortu_hurrengo_jauzia(content['robiotId'])
 
-    if len(waypoint) > 0:
+    if waypoint:
         #print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
         reply = {
             "gwid":gwid,
@@ -206,9 +206,7 @@ def get_coords():
 
 @app.route("/debug", methods=['GET', 'POST']) #<---------------------- Creo que son pruebas (borrar)
 def debug_show():
-    erab = database.get_erab_full(5)
-    drone = database.get_drone_full(4)
-    return render_template("debugShowVar.html",var=database.get_gps_full(drone))
+    return render_template("debugShowVar.html",var=database.lortu_hurrengo_jauzia(2))
 
 # API FOR LIVE UPDATES
 @app.route("/getLiveData", methods=['POST'])
