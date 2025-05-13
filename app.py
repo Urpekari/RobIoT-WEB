@@ -9,7 +9,7 @@ import env
 # .gitignore fitxategi baten bera ekidituko dugu!
 
 from controller.database_controller import database_controller
-from controller.insert_path import *
+from view.insert_path import *
 from controller.utils import *
 from controller.modify_drone import *
 

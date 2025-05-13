@@ -12,7 +12,7 @@ import env
 # Hau agian view-ean egon behar du
 
 from controller.database_controller import *
-from controller.insert_path import *
+from view.insert_path import *
 from controller.utils import *
 
 from app import *
