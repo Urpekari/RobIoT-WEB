@@ -14,8 +14,14 @@ import tkinter as tk
 from controller.database_controller import *
 import app
 
+import os
+
 class insertPath():
+
     def insertWaypoints(drone, drone_izen_jabe):
+
+        if os.environ.get('DISPLAY', '') == '':
+            os.environ.__setitem__('DISPLAY', ':0.0')
 
         mapplanpage = mapPlan(drone.drone_id)
 

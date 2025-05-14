@@ -31,6 +31,11 @@ mysql=MySQL(app)
 
 database = database_controller(mysql)
 
+import os
+
+if os.environ.get('DISPLAY', '') == '':
+    os.environ.__setitem__('DISPLAY', ':0.0')
+
 @app.route("/")
 def index():
     session.pop('erabiltzailea', None)
