@@ -15,7 +15,7 @@
     {% endif %}
     <div class="login-container" style=" z-index: 5;">
         <h2>Sartu zure erabiltzaile eta pasahitza</h2>
-        <form action="/login" method="post">
+        <form id="login_form">
             <input type="text" id="erabiltzailea" name="erabiltzailea" placeholder="Erabiltzailea" required>
             <input type="password" id="pasahitza" name="pasahitza" placeholder="Pasahitza" required>
             {% if error %}
@@ -24,6 +24,33 @@
             <button type="submit">Sartu</button>
         </form>
     </div>
+
+    <script>
+        const form = document.getElementById('login_form');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const erabiltzailea = document.getElementById('erabiltzailea').value;
+            const pasahitza = document.getElementById('pasahitza').value;
+
+            const encoder = new TextEncoder();
+            const data = encoder.encode(pasahitza);
+
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashpasahitza = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+
+            const response = await fetch("/login", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({erabiltzailea: erabiltzailea, hash: hashpasahitza })
+            });
+        });
+    </script>
 
     <!-- HAU TEMPLATEEKIN EGITEA KOMENIGARRIA LITEKE!-->
      <div class="footer" style=" z-index: 1;">

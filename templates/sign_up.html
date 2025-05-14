@@ -15,7 +15,7 @@
     {% endif %}
     <div class="login-container" style=" z-index: 5;">
         <h2>Sortu kontua:</h2>
-        <form action="/sign-up" method="post">
+        <form id="sign_up_form">
             <input type="text" id="izena" name="izena" placeholder="Izena" required>
             <input type="text" id="abizena" name="abizena" placeholder="Abizena">
             <input type="password" id="pasahitza" name="pasahitza" placeholder="Pasahitza" required>
@@ -27,6 +27,35 @@
             <button type="submit">Sartu</button>
         </form>
     </div>
+    <script>
+        const form = document.getElementById('sign_up_form');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const izena = document.getElementById('izena').value;
+            const abizena = document.getElementById('abizena').value;
+            const pasahitza = document.getElementById('pasahitza').value;
+            const email = document.getElementById('email').value;
+            const dokumentuak = document.getElementById('dokumentuak').value;
+
+            const encoder = new TextEncoder();
+            const data = encoder.encode(pasahitza);
+
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashpasahitza = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+
+            const response = await fetch("/sign-up", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({izena: izena, abizena: abizena, hash: hashpasahitza, email: email,dokumentuak: dokumentuak})
+            });
+        });
+    </script>
 
     <!-- HAU TEMPLATEEKIN EGITEA KOMENIGARRIA LITEKE!-->
     <div class="footer" style=" z-index: 1;">

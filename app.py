@@ -41,8 +41,9 @@ def login():
     if request.method == 'GET':
         return render_template('login.html',error = None)
     elif request.method == 'POST':
-        username = request.form['erabiltzailea']
-        password = request.form['pasahitza']
+        data = request.get_json()
+        username = data.get('erabiltzailea')
+        password = data.get('hash')
         erab,erabExist = database.erabiltzailea_egiaztatu(username, password)
         if erabExist:
             session['erabiltzailea'] = erab.erab_id
@@ -55,11 +56,12 @@ def erregistratu():
     if request.method == 'GET':
         return render_template('sign_up.html',error=None)
     elif request.method == 'POST':
-        izena = request.form.get('izena')
-        abizena = request.form.get('abizena')
-        pasahitza = request.form.get('pasahitza')
-        email = request.form.get('email')
-        dokumentuak = request.form.get('dokumentuak')
+        data = request.get_json()
+        izena = data.get('izena')
+        abizena = data.get('abizena')
+        pasahitza = data.get('hash')
+        email = data.get('email')
+        dokumentuak = data.get('dokumentuak')
 
         if database.sartu_erabiltzaile_berria(izena, abizena, pasahitza, email, dokumentuak):
             session['erabiltzailea'] = database.lortu_erabiltzailea(izena).erab_id
@@ -71,11 +73,9 @@ def erregistratu():
 def control():
     try:
         if request.method == 'GET':
-
             droneak = database.lortu_erabiltzailearen_droneak(session['erabiltzailea'])
             header, body_html, script=mapInit.map_empty()
             return render_template("control.html", header=header, body_html=body_html, script=script, droneak=droneak)
-        
         elif request.method == 'POST':
             droneReq = int(request.form.get('droneReq'))
             selected_drone = database.lortu_dronea(droneReq)
