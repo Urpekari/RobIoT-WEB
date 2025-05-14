@@ -11,7 +11,7 @@ import env
 from controller.database_controller import database_controller
 from view.insert_path import *
 from controller.utils import *
-from controller.modify_drone import *
+from view.modify_drone import *
 
 from model import *
 
@@ -79,21 +79,19 @@ def control():
         elif request.method == 'POST':
             droneReq = int(request.form.get('droneReq'))
             selected_drone = database.lortu_dronea(droneReq)
-            ikusi = 0
+            ikusi = 1
+            ikus_baimen = 1
             droneak = database.lortu_erabiltzailearen_droneak(session['erabiltzailea'])
             drone_izen_jabe = ""
             for dronea in droneak:
                 if dronea.partekatze_drone.drone_id == selected_drone.drone_id:
                     drone_izen_jabe = str(selected_drone.drone_izen) + "_" + dronea.partekatze_erab.erab_izen
                     if dronea.partekatze_baimen == "Ikusi":
-                        ikusi = 0
-
-                    else:
-                        ikusi = 1
+                        ikus_baimen = 0
 
             page = mapPage(database,droneReq)
             header, body_html, script=page.map()
-            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=selected_drone, droneak=droneak, drone_izen_jabe=drone_izen_jabe, ikusi=ikusi)
+            return render_template("control.html", header=header, body_html=body_html, script=script, dronea=selected_drone, droneak=droneak, drone_izen_jabe=drone_izen_jabe, ikusi=ikusi, ikus_baimen=ikus_baimen)
     
     except KeyError as e:
         return redirect(url_for('index'))
@@ -139,7 +137,7 @@ def modify_drone_page(drone):
     for dron in droneak:
         if dron.partekatze_drone.drone_izen == drone_izen and dron.partekatze_erab.erab_izen == drone_jabe:
             drone_id = dron.partekatze_drone.drone_id
-    return (modify_drone(drone_id, database, drone))  # <----------- FALTA!!!!!!!!!!!!!!!!!
+    return (modify_drone(drone_id, database, drone, session['erabiltzailea']))  # <----------- FALTA!!!!!!!!!!!!!!!!!
 
 @app.route('/izen-aldaketa/<drone>/<izen_berri>', methods=['GET'])
 def izen_aldaketa(drone,izen_berri):
@@ -218,34 +216,41 @@ def getLivePos():
     dronePos = __filterPositionLogs(gpsData)
     futureWPs = __filterWaypoints(gpsData, False)
 
-    nextWP = futureWPs[0]
-    goalWP = futureWPs[-1]
+    nextWP = None
+    goalWP = None
+
+    if not len(futureWPs) == 0:
+        nextWP = futureWPs[0]
+        goalWP = futureWPs[-1]
 
     fullSimpleRemainingPath = __filterSimplePath(futureWPs)
-    fullSimpleRemainingPath.insert(0, dronePos[-1].get_gps_coords())
+    
+    if not len(dronePos) == 0:
+        fullSimpleRemainingPath.insert(0, dronePos[-1].get_gps_coords())
 
     # TODO:deltaT zehatzagoak lortu... behintzat azpiegitura hor dugu!
     
-    deltapos = getGPSDistance(compareCoords=nextWP.get_gps_coords(), currentCoords=dronePos[-1].get_gps_coords())
-    deltaT = (dronePos[-1].get_gps_timestamp() - dronePos[-2].get_gps_timestamp()).total_seconds()
+    if nextWP:
+        deltapos = getGPSDistance(compareCoords=nextWP.get_gps_coords(), currentCoords=dronePos[-1].get_gps_coords())
+        deltaT = (dronePos[-1].get_gps_timestamp() - dronePos[-2].get_gps_timestamp()).total_seconds()
 
     return jsonify({
         
         'GPSPos':{
-            'lat': dronePos[-1].get_gps_lat(),
-            'lng': dronePos[-1].get_gps_lng(),
-            'cur': dronePos[-1].get_gps_timestamp()
+            'lat': dronePos[-1].get_gps_lat() if dronePos else "NAN",
+            'lng': dronePos[-1].get_gps_lng() if dronePos else "NAN",
+            'cur': dronePos[-1].get_gps_timestamp() if dronePos else "NAN"
         },
         'NextWaypoint':{
-            'lat': nextWP.get_gps_lat(),
-            'lng': nextWP.get_gps_lng(),
-            'eta': datetime.now() + timedelta(seconds=getEta(deltapos, deltapos/deltaT))
+            'lat': nextWP.get_gps_lat() if nextWP else "NAN",
+            'lng': nextWP.get_gps_lng()  if nextWP else "NAN",
+            'eta': datetime.now() + timedelta(seconds=getEta(deltapos, deltapos/deltaT)) if nextWP else "NAN",
         },
 
         'Destination':{
-            'lat': goalWP.get_gps_lat(),
-            'lng': goalWP.get_gps_lng(),
-            'eta': datetime.now() + timedelta(seconds = getEta(distance=getFullPathDistance(gpsPathWPs=fullSimpleRemainingPath), speed=(deltapos/deltaT)))
+            'lat': goalWP.get_gps_lat() if goalWP else "NAN",
+            'lng': goalWP.get_gps_lng() if goalWP else "NAN",
+            'eta': datetime.now() + timedelta(seconds = getEta(distance=getFullPathDistance(gpsPathWPs=fullSimpleRemainingPath), speed=(deltapos/deltaT))) if goalWP else "NAN"
         },
 
         })

@@ -63,27 +63,27 @@
                 <tbody>
                     <tr>
                         <td colspan="2">Position</td>
-                        <td rowspan="2"><span id="livetime">NA</span></td>
+                        <td rowspan="2"><span id="livetime">NAN</span></td>
                     </tr>
                     <tr>
-                        <td><span id="liveLat">NA</span></td><!--Orain dronak duen posizioa sartu-->
-                        <td><span id="liveLng">NA</span></td>
+                        <td><span id="liveLat">NAN</span></td><!--Orain dronak duen posizioa sartu-->
+                        <td><span id="liveLng">NAN</span></td>
                     </tr>
                     <tr>
                         <td colspan="2">Next Waypoint</td>
-                        <td rowspan="2">ETA: <span id="nextWPETA">NA</span> </td>
+                        <td rowspan="2">ETA: <span id="nextWPETA">NAN</span> </td>
                     </tr>
                     <tr>
-                        <td><span id="nextWPlat">NA</span></td>
-                        <td><span id="nextWPlng">NA</span></td>
+                        <td><span id="nextWPlat">NAN</span></td>
+                        <td><span id="nextWPlng">NAN</span></td>
                     </tr>
                     <tr>
                         <td colspan="2">Destination</td>
-                        <td rowspan="2">ETA: <span id="goalWPETA">NA</span> </td>
+                        <td rowspan="2">ETA: <span id="goalWPETA">NAN</span> </td>
                     </tr>
                     <tr>
-                        <td><span id="goalWPlat">NA</span></td>
-                        <td><span id="goalWPlng">NA</span></td>
+                        <td><span id="goalWPlat">NAN</span></td>
+                        <td><span id="goalWPlng">NAN</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -98,19 +98,19 @@
                     <button>Dronearen informazioa</button>
                 </a>
             </td>
-            {%if ikusi%}
             <td class="no_border">
+                {%if ikus_baimen%}
                     <a href="{{url_for('insert_path',drone=drone_izen_jabe)}}">
                         <button>Ibilbidea gehitu</button>
                     </a>
+                {%endif%}
             </td>
-            {%endif%}
         </tr>
         {%endif%}
         <tr>
             <td class="no_border">
                 <a href="/">
-                    <button>Deskargatu informazioa</button>
+                    <button>Sesioa amaitu</button>
                 </a>
             </td>
             <td class="no_border">
@@ -124,10 +124,7 @@
 </div>
     <div class="dronen-taula">
         <h1>Dronen zerrenda:</h1>
-        <table style="width: 100%;">
-            <tr>
-                <th>Dronea</th>
-                <th>Jabea</th>
+        
               
 <!--
 33-enh---apppy-garbitu BRANCH-ETIK ZETORRENA. EZ DAKIT ZER NAHIAGO DUGUN!
@@ -149,20 +146,25 @@
             </tbody>
 -->
               
-            </tr>
-        </table>
-        <div style="height: 45%;overflow: auto">
+            
+        <div style="height: 45%;overflow: auto;">
+            <table style="width: 100%;position: sticky;top: 0;background-color: #1c1c1c;">
+                <tr>
+                    <th style="width: 70%;">Dronea</th>
+                    <th style="width: 30%;">Jabea</th>
+                </tr>
+            </table>
             <table style="width: 100%;">
                 <tbody>
                     {% for row in droneak %}
                     <tr>
-                        <td>
+                        <td style="width: 70%;">
                             <form action="/control" method="post">
                                 <input type="hidden" name="droneReq" value="{{ row.partekatze_drone.drone_id }}">
                                 <button class="link-button" name="botoia" value="1">{{ row.partekatze_drone.drone_izen }}</button>
                             </form>
                         </td>
-                        <td>
+                        <td style="width: 30%;">
                             {{row.partekatze_erab.erab_izen}}
                         </td>
                     </tr>

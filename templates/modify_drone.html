@@ -39,31 +39,33 @@
                 <tr><td>{{row.sents_izen}}</td><td>{{row.sents_mota}}</td><td>{{row.sents_desk}}</td></tr>
             {%endfor%}
         </table>
-        <table class="no_border">
-            <tr>
-                {%if aukera != '1'%}
-                    <td class="no_border">
-                        <form action="{{url_for('modify_drone_page',drone=drone_izen_jabe)}}" method="post"></formaction>
-                            <button type="submit" name="botoia" value="1">Aldatu</button>
-                        </form>
-                    </td>
-                {%endif%}
-                {%if aukera != '2'%}
-                    <td class="no_border">
-                        <form action="{{url_for('modify_drone_page',drone=drone_izen_jabe)}}" method="post"></formaction>
-                            <button type="submit" name="botoia" value="2">Sentsore gehitu</button>
-                        </form>
-                    </td>
-                {%endif%}
-                {%if aukera != '3'%}
-                    <td class="no_border">
-                        <form action="{{url_for('modify_drone_page',drone=drone_izen_jabe)}}" method="post"></formaction>
-                            <button type="submit" name="botoia" value="3">Partekatu</button>
-                        </form>
-                    </td>
-                {%endif%}
-            </tr>
-        </table>
+        {%if jabe%}
+            <table class="no_border">
+                <tr>
+                    {%if aukera != '1'%}
+                        <td class="no_border">
+                            <form action="{{url_for('modify_drone_page',drone=drone_izen_jabe)}}" method="post"></formaction>
+                                <button type="submit" name="botoia" value="1">Aldatu</button>
+                            </form>
+                        </td>
+                    {%endif%}
+                    {%if aukera != '2'%}
+                        <td class="no_border">
+                            <form action="{{url_for('modify_drone_page',drone=drone_izen_jabe)}}" method="post"></formaction>
+                                <button type="submit" name="botoia" value="2">Sentsore gehitu</button>
+                            </form>
+                        </td>
+                    {%endif%}
+                    {%if aukera != '3'%}
+                        <td class="no_border">
+                            <form action="{{url_for('modify_drone_page',drone=drone_izen_jabe)}}" method="post"></formaction>
+                                <button type="submit" name="botoia" value="3">Partekatu</button>
+                            </form>
+                        </td>
+                    {%endif%}
+                </tr>
+            </table>
+        {%endif%}
         {%if error%}
         <p class="error"><strong>{{error}}</strong></p>
         {%endif%}
