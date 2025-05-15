@@ -156,32 +156,46 @@ class database_controller():
         return partekatze_list
     
     def lortu_drone_info_osoa(self, drone_id):
-        drone_raw = self.dboutput.find_droneak(drone_id)
-        drone = droneak(drone_raw)
-        sentsore_list_raw = self.dboutput.find_dron_sents_w_drone(drone_id)
-        sentsore_list = []
-        for sents in sentsore_list_raw:
-            sentsore = self.dboutput.find_sentsoreak(sents[3])
-            sentsore_list.append(sentsoreak(sentsore))
+        if drone_id and isinstance(drone_id, (int)):
+            try:
+                drone_raw = self.dboutput.find_droneak(drone_id)
+                
+                if not drone_raw:
+                    return(-1)
+                
+                drone = droneak(drone_raw)
+                sentsore_list_raw = self.dboutput.find_dron_sents_w_drone(drone_id)
+                sentsore_list = []
+                for sents in sentsore_list_raw:
+                    sentsore = self.dboutput.find_sentsoreak(sents[3])
+                    sentsore_list.append(sentsoreak(sentsore))
 
-        erab_list_raw = self.dboutput.find_partekatzeak_w_drone(drone_id)
-        jabe = None
-        kontrol_list = []
-        ikus_list = []
-        for erab in erab_list_raw:
-            erabiltzaile = self.dboutput.find_erabiltzaileak(erab[1])
-            if erab[3] == "Jabea":
-                jabe = erabiltzaileak(erabiltzaile)
+                erab_list_raw = self.dboutput.find_partekatzeak_w_drone(drone_id)
+                jabe = None
+                kontrol_list = []
+                ikus_list = []
+                for erab in erab_list_raw:
+                    erabiltzaile = self.dboutput.find_erabiltzaileak(erab[1])
+                    if erab[3] == "Jabea":
+                        jabe = erabiltzaileak(erabiltzaile)
 
-            elif erab[3] == "Kontrolatu":
-                kontrol_list.append(erabiltzaileak(erabiltzaile))
+                    elif erab[3] == "Kontrolatu":
+                        kontrol_list.append(erabiltzaileak(erabiltzaile))
 
-            elif erab[3] == "Ikusi":
-                ikus_list.append(erabiltzaileak(erabiltzaile))
-        
-        drone_info_osoa = drone_osoa(drone,sentsore_list,jabe,kontrol_list,ikus_list)
-
-        return drone_info_osoa
+                    elif erab[3] == "Ikusi":
+                        ikus_list.append(erabiltzaileak(erabiltzaile))
+                
+                drone_info_osoa = drone_osoa(drone,sentsore_list,jabe,kontrol_list,ikus_list)
+                if drone_info_osoa:
+                    print(drone_info_osoa)
+                    return drone_info_osoa
+                else:
+                    return -1
+            
+            except:
+                return(-1)
+        else:
+            return(-1)
     
     def lortu_drone_GPS_informazioa(self, drone_id):
         gps_list_raw = self.dboutput.find_GPS_kokapen_w_drone(drone_id)
@@ -241,6 +255,9 @@ class database_controller():
 
     def sartu_momentuko_kokapena(self, drone_id, long, lat, alt, head, timestmp):
         self.dbinput.insert_GPS_kokapena(drone_id, long, lat, alt, head, timestmp, "DOW")
+
+    def eguneratu_heldutako_waypoint(self, gps_id):
+        self.dbinput.update_GPS_kokapena(gps_id)
     
     def dronea_partekatu(self, drone_id, erab_name, baimen):
         erab = self.dboutput.find_erab_w_name(erab_name)

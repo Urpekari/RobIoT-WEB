@@ -67,7 +67,7 @@ class mapPage():
             
             # Hasierako waypoint-a
             folium.Marker(
-                location=self.pastWaypoints[0],
+                location=self.pastWaypoints[0].get_gps_coords(),
                 tooltip="Home point: {}".format(self.pastWaypoints[0].get_gps_coords()),
                 popup="Home at {} for {}".format(self.pastWaypoints[0].get_gps_coords(), self.droneName),
                 icon=folium.Icon(color='black', icon_color='#FFB60C',prefix="fa", icon="house")
@@ -124,7 +124,7 @@ class mapPage():
 
     def ibilbideaMarkatu(self, m, realLine):
 
-        print(self.realPath[-1].get_gps_heading())
+        #print(self.realPath[-1].get_gps_heading())
 
         folium.plugins.BoatMarker(
             location=(self.realPath[-1].get_gps_coords()),

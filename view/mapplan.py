@@ -30,7 +30,7 @@ class mapPlan():
         waypoints = []
         for gpsPoint in rawGpsData:
             waypoints.append(gpsPoint.get_gps_coords())
-        print(waypoints)
+        #print(waypoints)
         return waypoints
 
     # TODO: CONTROLLER-EAN SARTU

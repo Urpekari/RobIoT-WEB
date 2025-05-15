@@ -164,18 +164,30 @@ def insert_sensor():
 
 @app.route("/gwInsert/<gwid>",methods=['POST'])
 def gw_insert(gwid):
+    #try:
+    gwid_interp = int(gwid)
+    
     content = request.get_json()
 
-    print("CONTENT")
-    print(content)
+    #print("CONTENT")
+    #print(content)
 
     date = datetime.now()
-    print(date)
+    #print(date)
     time_parsed = date #.strftime("%y-%m-%d %H:%M:%S.%f")
 
     database.sartu_momentuko_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], content['hdg'], time_parsed)
+    
     waypoint = []
     waypoint = database.lortu_hurrengo_jauzia(content['robiotId'])
+    distance_to_wp = getGPSDistance([float(content['lat']), float(content['lon'])], [waypoint.gps_lat, waypoint.gps_lng])
+    print(distance_to_wp, end='')
+    print("m-ko distantzia")
+    if(distance_to_wp<100):
+        database.eguneratu_heldutako_waypoint(waypoint.gps_id)
+        waypoint = database.lortu_hurrengo_jauzia(content['robiotId'])
+
+    #print(waypoint.get_gps_coords())
 
     if waypoint:
         #print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
@@ -192,19 +204,57 @@ def gw_insert(gwid):
         }
 
     return(reply)
+    #except:
+        
+    #   return Response("BAD REQUEST", status=400)
 
 @app.route('/get_coords', methods=['POST'])
 def get_coords():
     data = request.get_json()
     lat = data['lat']
     lng = data['lng']
-    print(lat)
-    print(lng)
+    #print(lat)
+    #print(lng)
     return jsonify({'lat': lat, 'lng': lng})
 
 @app.route("/debug", methods=['GET', 'POST']) #<---------------------- Creo que son pruebas (borrar)
 def debug_show():
-    return render_template("debugShowVar.html",var=database.lortu_hurrengo_jauzia(2))
+
+
+    try:
+        # INT espero duen funtzio baten String, int, existitzen ez den drone bat eta char sartzen.
+        # Hau API-ko funtzioa denez, garrantzitsua da gwid-ak ez inbentatu izana
+        gw_insert_emaitzak = [gw_insert("Patata"), gw_insert('E'), gw_insert(None), gw_insert(1), gw_insert(2)]
+        if(None in gw_insert_emaitzak):
+            gw_emaitza = "FAIL"
+        else:
+            gw_emaitza = "PASS"
+    except:
+        gw_emaitza = "FAIL"
+
+    try:
+        # INT Espero duen funtzio baten String, int, none eta objektu bat sartzen.
+        lortu_drone_info_osoa_emaitzak = [database.lortu_drone_info_osoa("Patata"), database.lortu_drone_info_osoa(1), database.lortu_drone_info_osoa(None), database.lortu_drone_info_osoa(database.lortu_drone_GPS_informazioa(1)), database.lortu_drone_info_osoa(5000)]
+        if(None in lortu_drone_info_osoa_emaitzak):
+            drone_emaitza = "FAIL"
+        else:
+            drone_emaitza = "PASS"
+    except:
+        drone_emaitza = "FAIL"
+
+    try:
+        # INT Espero duen funtzio baten String, int, none eta objektu bat sartzen.
+        lortu_drone_GPS_informazioa_emaitzak = [database.lortu_drone_GPS_informazioa("Patata"), database.lortu_drone_GPS_informazioa(1), database.lortu_drone_GPS_informazioa(None), database.lortu_drone_GPS_informazioa(database.lortu_drone_info_osoa(1))]
+        if(None in lortu_drone_GPS_informazioa_emaitzak):
+            gps_emaitza = "FAIL"
+        else:
+            gps_emaitza = "PASS"
+    except:
+        gps_emaitza = "FAIL"
+    
+
+    return render_template("debugShowVar.html",var=[["gw_insert", gw_emaitza], ["lortu_drone_info_osoa", drone_emaitza], ["lortu_drone_GPS_informazioa", gps_emaitza]])
+
 
 # API FOR LIVE UPDATES
 @app.route("/getLiveData", methods=['POST'])

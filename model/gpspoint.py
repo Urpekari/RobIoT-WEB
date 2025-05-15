@@ -3,6 +3,7 @@ import json
 # Drone-erabiltzaile partekatzeen lotura
 
 class gpspoint():
+    gps_id = 0
     gps_lat = 0
     gps_lng = 0
     gps_alt = 0
@@ -13,6 +14,7 @@ class gpspoint():
 
     def __init__(self, rawGpsPoint):
         #print(rawGpsPoint)
+        self.gps_id = rawGpsPoint[0]
         self.gps_lat = rawGpsPoint[3]
         self.gps_lng = rawGpsPoint[2]
         self.gps_alt = rawGpsPoint[4]
