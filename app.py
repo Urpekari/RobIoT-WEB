@@ -166,48 +166,57 @@ def insert_sensor():
 
 @app.route("/gwInsert/<gwid>",methods=['POST'])
 def gw_insert(gwid):
-    try:
-        if not isinstance(gwid, (int)):
-            return Response("BAD REQUEST", status=400)
-        
-        content = request.get_json()
+    #try:
+    gwid_interp = int(gwid)
+    
+    content = request.get_json()
 
-        print("CONTENT")
-        print(content)
+    #print("CONTENT")
+    #print(content)
 
-        date = datetime.now()
-        print(date)
-        time_parsed = date #.strftime("%y-%m-%d %H:%M:%S.%f")
+    date = datetime.now()
+    #print(date)
+    time_parsed = date #.strftime("%y-%m-%d %H:%M:%S.%f")
 
-        database.sartu_momentuko_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], content['hdg'], time_parsed)
-        waypoint = []
+    database.sartu_momentuko_kokapena(content['robiotId'], content['lon'], content['lat'], content['alt'], content['hdg'], time_parsed)
+    
+    waypoint = []
+    waypoint = database.lortu_hurrengo_jauzia(content['robiotId'])
+    distance_to_wp = getGPSDistance([float(content['lat']), float(content['lon'])], [waypoint.gps_lat, waypoint.gps_lng])
+    print(distance_to_wp, end='')
+    print("m-ko distantzia")
+    if(distance_to_wp<100):
+        database.eguneratu_heldutako_waypoint(waypoint.gps_id)
         waypoint = database.lortu_hurrengo_jauzia(content['robiotId'])
 
-        if waypoint:
-            #print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
-            reply = {
-                "gwid":gwid,
-                "robiotId" : content['robiotId'],
-                "wpLat" : waypoint.gps_lat,
-                "wpLon" : waypoint.gps_lng,
-                "wpAlt" : waypoint.gps_alt,
-            }
-        else:
-            reply = {
-                "gwid":gwid,
-            }
+    #print(waypoint.get_gps_coords())
 
-        return(reply)
-    except:
-        return Response("BAD REQUEST", status=400)
+    if waypoint:
+        #print(getGPSDistance([content['lat'], content['lon']], [waypoint[0], waypoint[1]]))
+        reply = {
+            "gwid":gwid,
+            "robiotId" : content['robiotId'],
+            "wpLat" : waypoint.gps_lat,
+            "wpLon" : waypoint.gps_lng,
+            "wpAlt" : waypoint.gps_alt,
+        }
+    else:
+        reply = {
+            "gwid":gwid,
+        }
+
+    return(reply)
+    #except:
+        
+    #   return Response("BAD REQUEST", status=400)
 
 @app.route('/get_coords', methods=['POST'])
 def get_coords():
     data = request.get_json()
     lat = data['lat']
     lng = data['lng']
-    print(lat)
-    print(lng)
+    #print(lat)
+    #print(lng)
     return jsonify({'lat': lat, 'lng': lng})
 
 @app.route("/debug", methods=['GET', 'POST']) #<---------------------- Creo que son pruebas (borrar)

@@ -255,6 +255,9 @@ class database_controller():
 
     def sartu_momentuko_kokapena(self, drone_id, long, lat, alt, head, timestmp):
         self.dbinput.insert_GPS_kokapena(drone_id, long, lat, alt, head, timestmp, "DOW")
+
+    def eguneratu_heldutako_waypoint(self, gps_id):
+        self.dbinput.update_GPS_kokapena(gps_id)
     
     def dronea_partekatu(self, drone_id, erab_name, baimen):
         erab = self.dboutput.find_erab_w_name(erab_name)

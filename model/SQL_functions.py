@@ -201,8 +201,16 @@ class input():
 
     def insert_GPS_kokapena(self,id_drone,lng,ltd,alt,hdg,timestamp,noranzkoa):
         cur = self.mysql.connection.cursor()
-        query = "INSERT INTO GPS_kokapena (Droneak_idDroneak,Longitude,Latitude,Altitude,Heading,Timestamp,Noranzkoa) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        query = "INSERT INTO GPS_kokapena (Droneak_idDroneak,Longitude,Latitude,Altitude,Heading,Timestamp,Noranzkoa) VALUES (%s,%s,%s,%s,%s,%s,%s)" 
         cur.execute(query,(id_drone,lng,ltd,alt,hdg,timestamp,noranzkoa))
+        self.mysql.connection.commit()
+        cur.close()
+
+    def update_GPS_kokapena(self,gps_id):
+        cur = self.mysql.connection.cursor()
+        query = "UPDATE GPS_kokapena SET Noranzkoa = %s WHERE idGPS_kokapena = %s"
+        print(f"Executing query: {query} with params: {('UPP', gps_id)}")
+        cur.execute(query,("UPP", gps_id))
         self.mysql.connection.commit()
         cur.close()
 
