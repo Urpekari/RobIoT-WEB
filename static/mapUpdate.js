@@ -36,7 +36,7 @@ function autoUpdater(droneJSON){
 }
 
 async function getEpicThing(){
-    let url = 'http://localhost:5000/getLiveData';
+    let url = 'http://192.168.161.143:5000/getLiveData';
 
     console.log(JSON.stringify({droneID : selectedDroneID}))
     try{
