@@ -46,8 +46,15 @@ mysql_db_name = '[database name in plaintext]'      #(default: robiot)
 ```
 The default credentials are **NO-GOOD FOR A LARGE DEPLOYMENT**
 
+## Required per-deployment changes:
+*(This should be enhanced and automated in a future release)*
+
+- Adjust the IP addresses/URLs of any scripts to match your exact deployment in the following files:
+  - mapUpdate.js
+
 ## Launching via cli:
 *Remember to use the correct virtual environment!*
+
 **Debug:**
 python -m flask --debug run
 
